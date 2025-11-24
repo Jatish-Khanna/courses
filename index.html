@@ -3,507 +3,549 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ਪੰਜਾਬੀ ਕਵਿਤਾ ਕੁਇਜ਼ (Offline)</title>
+    <title>ਪੰਜਾਬੀ ਕਵਿਤਾ ਕੁਇਜ਼</title>
     <script src="data.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts & Material Symbols -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Devanagari:wght@400;500;700&family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Laila:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
     <style>
-        body { font-family: 'Inter', sans-serif; }
+        /* Base styles using Material Design principles */
+        body { 
+            font-family: 'Roboto', 'Noto Sans Devanagari', sans-serif; 
+            background-color: #f4f5f7; /* Material Grey 100 */
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            vertical-align: middle;
+        }
         .page { display: none; }
-        .page.active { display: block; }
-        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+Devanagari:wght@400;500;700&display=swap');
-        body, .font-punjabi { font-family: 'Noto Sans Devanagari', sans-serif; }
-        .option-btn.selected { background-color: #dbeafe; border-color: #2563eb; color: #1e40af; font-weight: bold; }
-        @media print {
-            body * { visibility: hidden; }
-            #page-results-view, #page-results-view * { visibility: visible; }
-            #page-results-view { position: absolute; left: 0; top: 0; width: 100%; }
-            .no-print { display: none; }
+        .page.active { display: block; animation: fadeIn 0.4s ease-in-out; }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Ripple effect */
+        .ripple-surface {
+            position: relative;
+            overflow: hidden;
+            -webkit-tap-highlight-color: rgba(0,0,0,0);
+        }
+        .ripple {
+            position: absolute;
+            border-radius: 50%;
+            background-color: rgba(0, 0, 0, 0.1);
+            transform: scale(0);
+            animation: ripple-animation 0.6s linear;
+        }
+        @keyframes ripple-animation {
+            to {
+                transform: scale(4);
+                opacity: 0;
+            }
+        }
+
+        /* Custom component styles */
+        .top-app-bar {
+            background-color: #3f51b5; /* Material Indigo 500 */
+        }
+        .chip {
+            transition: all 0.2s ease-in-out;
+        }
+        .chip.active {
+            background-color: #e8eaf6; /* Indigo 50 */
+            color: #3f51b5; /* Indigo 500 */
+            border-color: #3f51b5; /* Indigo 500 */
+        }
+        .fab {
+            background-color: #e91e63; /* Material Pink 500 */
+            transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .fab:hover {
+            transform: scale(1.05);
+        }
+
+        /* Poem styles */
+        .font-laila {
+            font-family: 'Laila', 'Noto Sans Devanagari', serif;
+        }
+        #poem-panel {
+            background: linear-gradient(135deg, #ffffff 0%, #f7f8fa 100%);
+            border-radius: 1.5rem;
+            padding: 2rem;
+            transition: all 0.3s ease-in-out;
+        }
+        #poem-title {
+            color: #4a5568;
+            border-color: #e2e8f0;
+            padding-bottom: 1rem;
+            margin-bottom: 1.5rem;
+        }
+        #poem-content {
+            background: linear-gradient(135deg, #fafbfc 0%, #f0f4f8 100%);
+            padding: 2.5rem 2rem;
+            border-radius: 1.5rem;
+            position: relative;
+            overflow-y: auto;
+            max-height: 60vh;
+        }
+        #poem-content .poem-line {
+            line-height: 2.8;
+            font-size: 1.4rem;
+            color: #1a202c;
+            font-weight: 600;
+            text-align: center;
+            letter-spacing: 1px;
+            word-spacing: 4px;
+            margin: 1.5rem 0;
+            padding: 1rem 1.5rem;
+            border-radius: 0.75rem;
+            transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.05), rgba(168, 85, 247, 0.05));
+            position: relative;
+            overflow: hidden;
+        }
+        #poem-content .poem-line::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+            transition: left 0.5s ease;
+            animation: autoSlide 2s ease-in-out infinite;
+        }
+        @keyframes autoSlide {
+            0%, 100% { left: -100%; }
+            50% { left: 100%; }
+        }
+        #poem-content .poem-line:hover::before {
+            animation: none;
+            left: 100%;
+        }
+        #poem-content .poem-line:hover {
+            transform: scale(1.02);
+            box-shadow: 0 8px 24px rgba(99, 102, 241, 0.2);
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.15), rgba(168, 85, 247, 0.15));
+        }
+        @keyframes slideInFromLeft {
+            from {
+                opacity: 0;
+                transform: translateX(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+        #poem-content .poem-line {
+            animation: slideInFromLeft 0.6s ease-out forwards;
+        }
+        #poem-content .poem-line:nth-child(1) { animation-delay: 0.1s; }
+        #poem-content .poem-line:nth-child(2) { animation-delay: 0.2s; }
+        #poem-content .poem-line:nth-child(3) { animation-delay: 0.3s; }
+        #poem-content .poem-line:nth-child(4) { animation-delay: 0.4s; }
+        #poem-content .poem-line:nth-child(5) { animation-delay: 0.5s; }
+        #poem-content .poem-line:nth-child(6) { animation-delay: 0.6s; }
+        #poem-content .poem-line:nth-child(7) { animation-delay: 0.7s; }
+        #poem-content .poem-line:nth-child(n+8) { animation-delay: 0.8s; }
+        
+        /* Custom scrollbar */
+        #poem-content::-webkit-scrollbar {
+            width: 12px;
+        }
+        #poem-content::-webkit-scrollbar-track {
+            background: linear-gradient(180deg, #e0e7ff 0%, #f0f4f8 100%);
+            border-radius: 10px;
+        }
+        #poem-content::-webkit-scrollbar-thumb {
+            background: linear-gradient(180deg, #6366f1 0%, #a855f7 100%);
+            border-radius: 10px;
+            border: 2px solid #f0f4f8;
+        }
+        #poem-content::-webkit-scrollbar-thumb:hover {
+            background: linear-gradient(180deg, #4f46e5 0%, #9333ea 100%);
         }
     </style>
 </head>
-<body class="bg-gradient-to-br from-sky-50 via-white to-indigo-50 text-gray-900 font-punjabi min-h-screen">
+<body class="text-slate-800">
 
-    <div class="container mx-auto p-4 max-w-5xl">
-        <header class="my-4">
-            <div class="flex items-center justify-between gap-4">
-                <div>
-                    <h1 class="text-4xl font-extrabold text-blue-700 flex items-center gap-3">
-                        <span class="inline-flex items-center justify-center w-12 h-12 rounded-full bg-yellow-100 border border-yellow-300 text-2xl">
-                            📚
-                        </span>
-                        <span>ਪੰਜਾਬੀ ਕਵਿਤਾ ਕੁਇਜ਼</span>
-                    </h1>
-                    <p class="text-md md:text-lg text-gray-600 mt-1">
-                        6ਵੀਂ ਅਤੇ 7ਵੀਂ ਜਮਾਤ (ਗਣਿਤ) ਲਈ ਮਜ਼ੇਦਾਰ ਪ੍ਰੈਕਟਿਸ 🎯
-                    </p>
+    <!-- Top App Bar -->
+    <header class="top-app-bar text-white shadow-2xl sticky top-0 z-20 py-4 md:py-5">
+        <div class="container mx-auto px-4">
+            <div class="flex items-center justify-between">
+                <!-- Left Section: Logo & Title -->
+                <div class="flex items-center gap-4">
+                    <div class="bg-gradient-to-br from-indigo-400 to-purple-500 p-2.5 rounded-xl shadow-lg">
+                        <span class="material-symbols-outlined text-2xl md:text-3xl">library_books</span>
+                    </div>
+                    <div>
+                        <h1 class="text-xl md:text-2xl font-bold font-laila leading-tight">ਕਵਿਤਾ ਕੁਇਜ਼</h1>
+                        <p class="text-xs md:text-sm text-indigo-100 font-medium">ਗਣਿਤ ਤੇ ਕਲਾ</p>
+                    </div>
                 </div>
-                <div class="hidden md:flex gap-3">
-                    <div class="w-20 h-20 rounded-2xl bg-pink-100 flex items-center justify-center text-4xl shadow-sm">
-                        🧮
-                    </div>
-                    <div class="w-20 h-20 rounded-2xl bg-green-100 flex items-center justify-center text-4xl shadow-sm">
-                        ✏️
-                    </div>
-                    <div class="w-20 h-20 rounded-2xl bg-blue-100 flex items-center justify-center text-4xl shadow-sm">
-                        😺
+                
+                <!-- Right Section: Class Dropdown -->
+                <div class="flex items-center gap-3">
+                    <div class="hidden sm:flex items-center gap-2">
+                        <span class="material-symbols-outlined text-xl text-indigo-100">school</span>
+                        <select id="class-dropdown-header" class="bg-indigo-500 hover:bg-indigo-600 text-white px-3 py-2 rounded-lg text-sm font-semibold border border-indigo-400 focus:outline-none focus:ring-2 focus:ring-indigo-300 transition cursor-pointer">
+                            <!-- Filled by JS -->
+                        </select>
                     </div>
                 </div>
             </div>
-        </header>
+        </div>
+    </header>
 
+    <!-- Hero Section with Background -->
+    <section class="relative h-40 md:h-48 bg-gradient-to-r from-indigo-600 via-purple-500 to-pink-500 overflow-hidden">
+        <!-- Background decorative elements -->
+        <div class="absolute inset-0 opacity-15">
+            <div class="absolute -top-8 -left-8 w-32 h-32 bg-white rounded-full blur-2xl"></div>
+            <div class="absolute -bottom-8 -right-8 w-40 h-40 bg-white rounded-full blur-2xl"></div>
+        </div>
+        
+        <!-- Animated grid pattern -->
+        <div class="absolute inset-0 opacity-10">
+            <svg class="w-full h-full" viewBox="0 0 100 100" preserveAspectRatio="xMidYMid slice">
+                <defs>
+                    <pattern id="grid" patternUnits="userSpaceOnUse" width="20" height="20">
+                        <circle cx="10" cy="10" r="1" fill="white"/>
+                    </pattern>
+                </defs>
+                <rect width="100" height="100" fill="url(#grid)"/>
+            </svg>
+        </div>
+        
+        <!-- Content -->
+        <div class="relative h-full flex flex-col items-center justify-center text-white text-center px-4">
+            <!-- Main heading -->
+            <h2 class="text-3xl md:text-4xl font-bold font-laila drop-shadow-lg">ਕਵਿਤਾ ਕੁਇਜ਼</h2>
+            
+            <!-- Subtitle -->
+            <p class="text-xs md:text-sm text-indigo-100 drop-shadow-lg font-medium mt-1">ਗਣਿਤ ਤੇ ਕਲਾ</p>
+        </div>
+    </section>
 
-        <!-- Main View: Sidebar + Poem (Class & Chapter selection here) -->
+    <main class="container mx-auto p-3 md:p-4 mb-4">
+        <!-- Main View: Chapter Selection -->
         <div id="page-chapter-selection" class="page">
-            <div class="flex justify-between items-center mb-4 bg-white p-4 rounded-2xl shadow-sm">
-                <div id="student-info" class="text-right">
-                    <div id="display-student-name" class="font-bold text-lg leading-tight"></div>
-                    <div id="display-student-class" class="text-xs text-gray-500"></div>
-                </div>
-            </div>
-
-            <div class="flex flex-col md:flex-row gap-4 items-start">
-                <!-- Sidebar: Class + Chapters -->
-                <aside class="w-full md:w-72 bg-white rounded-2xl shadow-md p-4 space-y-4">
-                    <h3 class="font-bold text-lg flex items-center gap-2 mb-2">
-                        <span>🧑‍🎓</span> <span>ਜਮਾਤ ਅਤੇ ਪਾਠ</span>
-                    </h3>
-
-                    <!-- Class selector buttons -->
-                    <div id="sidebar-class-buttons" class="flex flex-wrap gap-2 mb-3">
-                        <!-- Filled by JS -->
-                    </div>
-
-                    <div class="bg-sky-50 rounded-xl p-3 mb-2 text-xs text-gray-600 flex gap-2 items-start">
-                        <span class="text-lg">💡</span>
-                        <span>ਪਹਿਲਾਂ ਜਮਾਤ ਚੁਣੋ, ਫਿਰ ਪਾਠ 'ਤੇ click ਕਰੋ ਤਾਂ ਸੱਜੇ ਪਾਸੇ ਕਵਿਤਾ ਅਤੇ ਕੁਇਜ਼ ਦਾ ਬਟਨ ਆ ਜਾਵੇਗਾ।</span>
-                    </div>
-
-                    <h4 class="text-sm font-semibold text-gray-700 mb-1 flex items-center gap-1">
-                        <span>📖</span> <span>ਪਾਠ ਚੁਣੋ (Select Chapter)</span>
-                    </h4>
-                    <div id="chapter-list" class="space-y-2 max-h-[26rem] overflow-y-auto pr-1">
-                        <!-- buttons from JS -->
+            <div class="flex flex-col lg:flex-row gap-5 items-start">
+                <!-- Sidebar -->
+                <aside class="w-full lg:w-80 space-y-6">
+                    <div class="bg-gradient-to-br from-blue-50 to-cyan-50 rounded-2xl shadow-lg border border-blue-100 p-4">
+                         <h3 class="text-xl md:text-2xl font-bold text-blue-700 flex items-center gap-2 mb-3 font-laila">
+                            <span class="material-symbols-outlined text-blue-600 text-3xl">list_alt</span>
+                            ਪਾਠ
+                        </h3>
+                        <div id="chapter-list" class="space-y-1 max-h-[60vh] overflow-y-auto -mr-2 pr-2">
+                            <!-- JS will fill this -->
+                        </div>
                     </div>
                 </aside>
 
-                <!-- Main content: Poem + Start Quiz -->
-                <section class="flex-1 w-full bg-white rounded-2xl shadow-md p-5 min-h-[320px]">
-                    <div id="poem-empty-state" class="h-full flex flex-col items-center justify-center text-center text-gray-500">
-                        <div class="text-5xl mb-2">😺📚</div>
-                        <p class="font-semibold mb-1">ਸਭ ਤੋਂ ਪਹਿਲਾਂ ਬਾਏ ਪਾਸੇ ਤੋਂ ਜਮਾਤ ਅਤੇ ਪਾਠ ਚੁਣੋ</p>
-                        <p class="text-xs text-gray-400">ਫਿਰ ਇੱਥੇ ਕਵਿਤਾ ਅਤੇ "Start Quiz" ਦਿਖੇਗਾ</p>
+                <!-- Main content -->
+                <section class="flex-1 w-full bg-gradient-to-br from-white to-gray-50 rounded-3xl shadow-2xl border border-gray-100 min-h-[600px] relative overflow-hidden">
+                    <div id="poem-empty-state" class="h-full flex flex-col items-center justify-center text-center text-gray-500 p-4">
+                        <div class="relative mb-3">
+                            <span class="material-symbols-outlined text-7xl md:text-8xl text-gray-200 drop-shadow-sm">auto_stories</span>
+                            <span class="material-symbols-outlined text-5xl text-indigo-400 absolute bottom-1 right-0">light_mode</span>
+                        </div>
+                        <p class="font-medium text-2xl md:text-3xl mt-3 text-gray-700 font-laila">ਕਵਿਤਾ ਪੜੋ</p>
+                        <p class="text-base text-gray-400 mt-1">ਇੱਕ ਪਾਠ ਚੁਣੋ ਅਤੇ ਕਵਿਤਾ ਪੜ੍ਹੋ</p>
                     </div>
 
-                    <div id="poem-panel" class="hidden">
-                        <h2 id="poem-title" class="text-2xl md:text-3xl font-bold mb-4 text-blue-800 border-b pb-3 flex items-center gap-2">
-                            <span class="text-2xl">📝</span>
-                            <span id="poem-title-text"></span>
-                        </h2>
-                        <div id="poem-content" class="text-base md:text-lg leading-relaxed whitespace-pre-line font-medium text-gray-700 bg-yellow-50 p-4 md:p-5 rounded-xl border border-yellow-100 shadow-inner max-h-[320px] overflow-y-auto"></div>
-                        <button onclick="startQuiz()" class="mt-6 w-full bg-green-600 text-white py-3 md:py-4 px-6 rounded-xl text-lg font-bold hover:bg-green-700 shadow-lg transition transform hover:scale-[1.02] flex items-center justify-center gap-2">
-                            <span>ਟੈਸਟ ਸ਼ੁਰੂ ਕਰੋ (Start Quiz)</span> <span>🚀</span>
-                        </button>
-
-        <!-- Admin Login -->
-        <div id="page-admin-login" class="page">
-            <div class="max-w-md mx-auto bg-white p-8 rounded-2xl shadow-md mt-10">
-                <h2 class="text-2xl font-bold mb-6 text-center text-gray-800 flex items-center justify-center gap-2">
-                    <span>🧑‍🏫</span><span>ਐਡਮਿਨ ਲੌਗਇਨ</span>
-                </h2>
-                <div class="mb-4">
-                    <label class="block text-gray-700 text-sm font-bold mb-2">User ID</label>
-                    <input type="text" id="admin-userid" class="w-full p-2 border rounded" placeholder="Enter User ID">
-                </div>
-                <div class="mb-6">
-                    <label class="block text-gray-700 text-sm font-bold mb-2">Password</label>
-                    <input type="password" id="admin-password" class="w-full p-2 border rounded" placeholder="Enter Password">
-                </div>
-                <p id="login-error" class="text-red-500 text-sm mb-4 hidden text-center font-bold">ਗਲਤ User ID ਜਾਂ Password!</p>
-                <button onclick="checkAdminLogin()" class="w-full bg-blue-600 text-white font-bold py-2 px-4 rounded hover:bg-blue-700">Login</button>
-                <button onclick="showPage('studentLogin')" class="w-full mt-4 text-gray-500 text-sm hover:underline">Cancel</button>
+                    <div id="poem-panel" class="hidden p-4 md:p-6">
+                        <div class="mb-4">
+                            <h2 id="poem-title" class="text-3xl md:text-4xl font-bold font-laila text-indigo-700 flex items-center gap-3 pb-3 border-b-4 border-gradient-to-r from-indigo-300 to-purple-300">
+                                <span class="material-symbols-outlined text-4xl md:text-5xl text-indigo-600">library_books</span>
+                                <span id="poem-title-text"></span>
+                            </h2>
+                        </div>
+                        <div id="poem-content" class="font-laila max-h-[60vh] overflow-y-auto"></div>
+                    </div>
+                    
+                    <button id="start-quiz-fab" onclick="startQuiz(event)" class="fab text-white rounded-full shadow-2xl absolute bottom-6 right-6 px-6 py-4 font-bold flex items-center gap-2 ripple-surface hidden transform hover:scale-110 transition-transform duration-200">
+                        <span class="material-symbols-outlined text-3xl">quiz</span>
+                        <span class="text-lg font-laila">ਟੈਸਟ ਸ਼ੁਰੂ ਕਰੋ</span>
+                    </button>
+                </section>
             </div>
         </div>
 
-        <!-- Admin Panel -->
-        <div id="page-admin" class="page">
-            <div class="flex justify-between items-center mb-6 border-b pb-4">
-                <h2 class="text-2xl font-semibold flex items-center gap-2">
-                    <span>📊</span><span>ਐਡਮਿਨ ਪੈਨਲ (Server Data)</span>
-                </h2>
-                <button onclick="logoutAdmin()" class="text-red-600 hover:text-red-800 text-sm border border-red-200 px-3 py-1 rounded">Logout</button>
-            </div>
-            
-            <div class="bg-yellow-50 border-l-4 border-yellow-400 p-4 mb-4 text-sm text-yellow-800">
-                <strong>ਨੋਟ (Note):</strong> ਨਤੀਜੇ ਇਸ ਕੰਪਿਊਟਰ ਦੀ <code>results.json</code> ਫਾਈਲ ਵਿੱਚ ਸੇਵ ਹੁੰਦੇ ਹਨ (Flask ਸਰਵਰ ਰਾਹੀਂ)। ਹੋਰ ਡਿਵਾਈਸਾਂ ਤੋਂ ਟੈਸਟ ਦੇਣ 'ਤੇ ਉਹਨਾਂ ਦੇ ਨਤੀਜੇ ਵੀ ਇੱਥੇ ਜੁੜ ਜਾਣਗੇ।
-            </div>
 
-            <div id="admin-section-results">
-                <div class="flex justify-between items-center mb-4">
-                    <h3 class="font-bold text-lg flex items-center gap-2">
-                        <span>👨‍👩‍👧‍👦</span> <span>ਸਾਰੇ ਨਤੀਜੇ (Results on this Server)</span>
-                    </h3>
-                    <button onclick="renderAdminResults()" class="text-blue-600 text-sm hover:underline">Refresh Data</button>
-                </div>
-                <div class="overflow-x-auto rounded-lg border border-gray-200 shadow-sm">
-                    <table class="min-w-full bg-white">
-                        <thead class="bg-gray-50">
-                            <tr>
-                                <th class="py-3 px-4 border-b text-left text-xs font-bold text-gray-500 uppercase">ਨਾਮ</th>
-                                <th class="py-3 px-4 border-b text-left text-xs font-bold text-gray-500 uppercase">ਰੋਲ</th>
-                                <th class="py-3 px-4 border-b text-left text-xs font-bold text-gray-500 uppercase">ਜਮਾਤ</th>
-                                <th class="py-3 px-4 border-b text-left text-xs font-bold text-gray-500 uppercase">ਪਾਠ ਅਤੇ ਅੰਕ (Chapters & Scores)</th>
-                            </tr>
-                        </thead>
-                        <tbody id="results-table-body" class="divide-y divide-gray-200"></tbody>
-                    </table>
-                    <p id="results-status" class="text-center text-gray-500 mt-4 p-4 text-sm"></p>
-                </div>
-                <button onclick="clearLocalData()" class="mt-6 text-red-500 text-xs hover:underline">Clear All Server Data (manual)</button>
-            </div>
-        </div>
-    </div>
 
-    <!-- main app logic -->
+    </main>
+
     <script>
-        // --- Application Logic ---
-        let studentName = "";
-        let studentRoll = "";
+        // --- UI & Application Logic ---
         let selectedClassId = null;
         let currentClassData = null;
-
         let currentChapterId, currentPoemData;
-        let currentQuestionIndex = 0;
-        let userAnswers = [];
-        let questionStartTime, quizStartTime;
-        let questionTimerInterval;
-
-        // Pages object will be initialized in onload
         let pages = {};
+        let completedChapters = {}; // Track completed chapters per class
+
+        // Initialize completion tracking from sessionStorage
+        function initializeCompletionTracking() {
+            const stored = sessionStorage.getItem('completedChapters');
+            completedChapters = stored ? JSON.parse(stored) : {};
+        }
+
+        // Save chapter completion status
+        function markChapterCompleted(classId, chapterId) {
+            if (!completedChapters[classId]) {
+                completedChapters[classId] = [];
+            }
+            if (!completedChapters[classId].includes(chapterId)) {
+                completedChapters[classId].push(chapterId);
+                sessionStorage.setItem('completedChapters', JSON.stringify(completedChapters));
+            }
+        }
+
+        // Check if chapter is completed
+        function isChapterCompleted(classId, chapterId) {
+            return completedChapters[classId] && completedChapters[classId].includes(chapterId);
+        }
+
+        // Get completion status for a class
+        function getClassCompletionStatus(classId) {
+            const classData = Object.values(CLASSES).find(cls => cls.id === classId);
+            if (!classData) return { completed: 0, total: 0, percentage: 0 };
+            
+            const total = classData.chapters.length;
+            const completed = completedChapters[classId] ? completedChapters[classId].length : 0;
+            const percentage = Math.round((completed / total) * 100);
+            
+            return { completed, total, percentage };
+        }
+
+        // Ripple Effect
+        function createRipple(event) {
+            const button = event.currentTarget;
+            const circle = document.createElement("span");
+            const diameter = Math.max(button.clientWidth, button.clientHeight);
+            const radius = diameter / 2;
+
+            circle.style.width = circle.style.height = `${diameter}px`;
+            circle.style.left = `${event.clientX - button.getBoundingClientRect().left - radius}px`;
+            circle.style.top = `${event.clientY - button.getBoundingClientRect().top - radius}px`;
+            circle.classList.add("ripple");
+
+            const ripple = button.getElementsByClassName("ripple")[0];
+            if (ripple) ripple.remove();
+            
+            button.appendChild(circle);
+        }
 
         function showPage(pageName) {
-            Object.values(pages).forEach(page => {
-                if (page) page.classList.remove('active');
-            });
-            if (pages[pageName]) {
-                pages[pageName].classList.add('active');
-            }
-        }
-
-        function populateClassSelect() {
-            const select = document.getElementById('student-class-select');
-            if (!select) return;
-
-            select.innerHTML = "";
-
-            const classEntries = Object.values(CLASSES);
-            if (classEntries.length === 0) {
-                const opt = document.createElement('option');
-                opt.value = "";
-                opt.textContent = "No classes found in data.js";
-                select.appendChild(opt);
-                return;
-            }
-
-            classEntries.forEach(cls => {
-                const opt = document.createElement('option');
-                opt.value = cls.id;
-                opt.textContent = cls.name;
-                select.appendChild(opt);
-            });
-        }
-
-        function populateSidebarClassButtons() {
-            const container = document.getElementById('sidebar-class-buttons');
-            if (!container) return;
-            container.innerHTML = "";
-
-            // Create buttons for each class in CLASSES object
-            Object.keys(CLASSES).forEach(classKey => {
-                const cls = CLASSES[classKey];
-                const btn = document.createElement('button');
-                const emoji = cls.id === "class_6" ? "🐣" : "🦉";
-                btn.className = "px-3 py-2 rounded-full text-xs md:text-sm border flex items-center gap-2 hover:bg-blue-50 transition";
-                btn.dataset.classId = cls.id;
-                btn.innerHTML = `<span>${emoji}</span><span>${cls.name}</span>`;
-                btn.onclick = () => switchClassFromSidebar(cls.id);
-                container.appendChild(btn);
-            });
-
-            highlightActiveSidebarClass();
+            Object.values(pages).forEach(page => page && page.classList.remove('active'));
+            if (pages[pageName]) pages[pageName].classList.add('active');
         }
 
         function highlightActiveSidebarClass() {
-            const container = document.getElementById('sidebar-class-buttons');
-            if (!container) return;
-            const buttons = container.querySelectorAll('button');
-            buttons.forEach(btn => {
+            document.querySelectorAll('#sidebar-class-buttons .chip').forEach(btn => {
+                const checkIcon = btn.querySelector('.check-icon');
                 if (btn.dataset.classId === selectedClassId) {
-                    btn.classList.add("bg-blue-600", "text-white", "border-blue-600");
-                    btn.classList.remove("hover:bg-blue-50");
+                    btn.classList.add("active");
+                    checkIcon.classList.remove("hidden");
                 } else {
-                    btn.classList.remove("bg-blue-600", "text-white", "border-blue-600");
-                    btn.classList.add("hover:bg-blue-50");
+                    btn.classList.remove("active");
+                    checkIcon.classList.add("hidden");
                 }
             });
         }
 
         function switchClassFromSidebar(classId) {
-            // Find the CLASSES key for this class id
-            let classKey = null;
-            for (let key in CLASSES) {
-                if (CLASSES[key].id === classId) {
-                    classKey = key;
-                    break;
-                }
-            }
+            let classKey = Object.keys(CLASSES).find(key => CLASSES[key].id === classId);
             if (!classKey) return;
             
             selectedClassId = classId;
             currentClassData = CLASSES[classKey];
-            document.getElementById('display-student-class').textContent = currentClassData.name || "";
+            sessionStorage.setItem('selectedClassId', selectedClassId);
+
             highlightActiveSidebarClass();
             clearPoemPanel();
-            loadChapters(false); // don't change page, only reload list
+            loadChapters();
         }
 
         function clearPoemPanel() {
-            const panel = document.getElementById('poem-panel');
-            const empty = document.getElementById('poem-empty-state');
-            if (panel) panel.classList.add('hidden');
-            if (empty) empty.classList.remove('hidden');
+            document.getElementById('poem-panel').classList.add('hidden');
+            document.getElementById('start-quiz-fab').classList.add('hidden');
+            document.getElementById('poem-empty-state').classList.remove('hidden');
         }
 
-        // --- Initialization ---
         window.onload = function() {
-            // Initialize pages object now that DOM is loaded
             pages = {
                 chapterSelection: document.getElementById('page-chapter-selection'),
-                quizView: document.getElementById('page-quiz-view'),
-                resultsView: document.getElementById('page-results-view'),
-                adminLogin: document.getElementById('page-admin-login'),
-                admin: document.getElementById('page-admin'),
             };
             
-            // Get student data from sessionStorage
-            studentName = sessionStorage.getItem('studentName') || "";
-            studentRoll = sessionStorage.getItem('studentRoll') || "";
-            selectedClassId = sessionStorage.getItem('selectedClassId') || null;
-
-            if (selectedClassId && CLASSES[selectedClassId]) {
-                currentClassData = CLASSES[selectedClassId];
-                // Display student info
-                document.getElementById('display-student-name').textContent = studentName;
-                document.getElementById('display-student-class').textContent = currentClassData.name || "";
-            } else {
-                // No student logged in - use default class
-                selectedClassId = 'class_6';
-                currentClassData = CLASSES.CLASS_6;
-            }
+            // Initialize completion tracking from sessionStorage
+            initializeCompletionTracking();
             
-            populateSidebarClassButtons();
-            loadChapters(false);
+            selectedClassId = sessionStorage.getItem('selectedClassId');
+            let classKey = selectedClassId ? Object.keys(CLASSES).find(key => CLASSES[key].id === selectedClassId) : undefined;
+            
+            if (!classKey) {
+                classKey = Object.keys(CLASSES)[0];
+                selectedClassId = CLASSES[classKey].id;
+            }
+            currentClassData = CLASSES[classKey];
+            
+            populateClassDropdown();
+            loadChapters();
             showPage('chapterSelection');
         };
 
-        // --- Student Flow ---
-        window.submitStudentDetails = () => {
-            const name = document.getElementById('student-name').value.trim();
-            const roll = document.getElementById('student-roll').value.trim();
-            const classSelect = document.getElementById('student-class-select');
-            const classId = classSelect.value;
-
-            if (!name || !roll || !classId) {
-                alert("ਕਿਰਪਾ ਕਰਕੇ ਸਾਰੇ ਵੇਰਵੇ ਭਰੋ ਅਤੇ ਜਮਾਤ ਚੁਣੋ (Please fill all details and select class).");
-                return;
-            }
-
-            if (!CLASSES[classId]) {
-                alert("Selected class not found in data.js");
-                return;
-            }
-
-            studentName = name;
-            studentRoll = roll;
-            selectedClassId = classId;
-            currentClassData = CLASSES[classId];
-
-            document.getElementById('display-student-name').textContent = studentName;
-            document.getElementById('display-student-class').textContent = currentClassData.name || "";
-
-            populateSidebarClassButtons();
-            loadChapters(true);
-        };
-
-        window.loadChapters = (goToPage = true) => {
-            if (!currentClassData) {
-                alert("Class data not loaded.");
-                return;
-            }
-
+        function loadChapters() {
             const chapterList = document.getElementById('chapter-list');
+            chapterList.innerHTML = '<p class="text-sm text-gray-400">Loading chapters...</p>';
+
+            if (!currentClassData) return;
+
+            const sortedChapters = [...currentClassData.chapters].sort((a, b) => (a.name.match(/\d+/)?.[0] || 0) - (b.name.match(/\d+/)?.[0] || 0));
             chapterList.innerHTML = '';
 
-            if (goToPage) {
-                showPage('chapterSelection');
-            }
-
-            const sortedChapters = currentClassData.chapters.slice().sort((a, b) => {
-                const numA = parseInt(a.name.match(/\d+/)?.[0] || 0);
-                const numB = parseInt(b.name.match(/\d+/)?.[0] || 0);
-                return numA - numB;
-            });
-
-            sortedChapters.forEach(chapter => {
-                const btn = document.createElement('button');
-                btn.className = "w-full bg-white p-3 rounded-xl shadow-sm text-sm md:text-base font-medium hover:bg-gray-50 border-l-4 border-blue-500 text-left transition transform hover:translate-x-1 flex items-center justify-between gap-2";
-                btn.innerHTML = `
-                    <div class="flex flex-col">
-                        <span>${chapter.name}</span>
-                        <span class="text-[10px] text-gray-400">Click to read poem & start quiz</span>
-                    </div>
-                    <span class="text-lg">➡️</span>
-                `;
+            sortedChapters.forEach((chapter, index) => {
+                const item = document.createElement('div');
+                const isCompleted = isChapterCompleted(selectedClassId, chapter.id);
+                const hasQuestions = chapter.questions && chapter.questions.length > 0;
                 
-                if (!chapter.questions || chapter.questions.length === 0) {
-                    btn.classList.add('opacity-60', 'cursor-not-allowed');
-                    btn.innerHTML = `
-                        <div class="flex flex-col">
-                            <span>${chapter.name}</span>
-                            <span class="text-[10px] text-gray-400">(Coming Soon)</span>
-                        </div>
-                    `;
+                // Determine styling based on state
+                let bgClass, borderClass, hoverClass, statusIcon, textClass;
+                
+                if (isCompleted) {
+                    // Completed: Vibrant Green
+                    bgClass = 'bg-green-100';
+                    borderClass = 'border-green-600';
+                    hoverClass = 'hover:bg-green-150 hover:shadow-lg';
+                    statusIcon = '✅';
+                    textClass = 'text-green-900';
+                } else if (!hasQuestions) {
+                    // Coming soon: Light Gray
+                    bgClass = 'bg-gray-100';
+                    borderClass = 'border-gray-500';
+                    hoverClass = '';
+                    statusIcon = '🔒';
+                    textClass = 'text-gray-600';
                 } else {
-                    btn.onclick = () => loadPoem(chapter);
+                    // Pending/Active: Vibrant Blue
+                    bgClass = 'bg-blue-100';
+                    borderClass = 'border-blue-600';
+                    hoverClass = 'hover:bg-blue-150 hover:shadow-lg';
+                    statusIcon = '';
+                    textClass = 'text-blue-900';
                 }
                 
-                chapterList.appendChild(btn);
+                item.className = `w-full text-left p-3 mb-2 rounded-lg flex items-center justify-between ${bgClass} border-l-4 ${borderClass} ${hoverClass} shadow-sm transition-all duration-200`;
+                
+                item.innerHTML = `
+                    <div class="flex-1">
+                        <div class="font-bold text-base ${textClass}">${chapter.name}</div>
+                        <div class="text-xs ${textClass} opacity-75">${chapter.questions?.length || 0} ਸਵਾਲ</div>
+                    </div>
+                    <span class="text-xl">${statusIcon}</span>
+                `;
+                
+                if (!hasQuestions) {
+                    item.classList.add('opacity-60', 'cursor-not-allowed');
+                    item.title = "Coming Soon";
+                } else {
+                    item.classList.add('cursor-pointer', 'ripple-surface');
+                    item.onclick = (e) => {
+                        createRipple(e);
+                        loadPoem(chapter);
+                    };
+                }
+                chapterList.appendChild(item);
             });
-        };
+            
+            // Show class completion progress at the top
+            showClassProgress();
+        }
 
-        window.loadPoem = (chapterData) => {
+        function showClassProgress() {
+            const status = getClassCompletionStatus(selectedClassId);
+            const progressContainer = document.getElementById('chapter-list');
+            
+            if (status.total > 0) {
+                const progressBar = document.createElement('div');
+                progressBar.className = "mb-4 p-3 bg-gradient-to-r from-indigo-50 to-blue-50 rounded-lg border border-indigo-200";
+                progressBar.innerHTML = `
+                    <div class="flex justify-between items-center mb-2">
+                        <span class="text-sm font-bold text-indigo-700">ਪਾਠ ਤਰੱਕੀ (Chapter Progress)</span>
+                        <span class="text-sm font-bold text-indigo-600">${status.completed}/${status.total}</span>
+                    </div>
+                    <div class="w-full bg-gray-300 rounded-full h-2">
+                        <div class="bg-gradient-to-r from-indigo-500 to-blue-500 h-2 rounded-full transition-all duration-300" style="width: ${status.percentage}%"></div>
+                    </div>
+                    <div class="text-xs text-indigo-600 mt-2 font-semibold">${status.percentage}% ✨</div>
+                `;
+                progressContainer.insertBefore(progressBar, progressContainer.firstChild);
+            }
+        }
+
+        function populateClassDropdown() {
+            const dropdown = document.getElementById('class-dropdown-header');
+            if (!dropdown) return;
+            
+            dropdown.innerHTML = '<option value="">ਜਮਾਤ ਚੁਣੋ</option>';
+            
+            Object.keys(CLASSES).forEach(classKey => {
+                const cls = CLASSES[classKey];
+                const opt = document.createElement('option');
+                opt.value = cls.id;
+                opt.textContent = cls.name;
+                if (cls.id === selectedClassId) {
+                    opt.selected = true;
+                }
+                dropdown.appendChild(opt);
+            });
+            
+            dropdown.addEventListener('change', (e) => {
+                const classId = e.target.value;
+                if (classId) {
+                    switchClassFromSidebar(classId);
+                }
+            });
+        }
+
+        function loadPoem(chapterData) {
             currentChapterId = chapterData.id;
             currentPoemData = chapterData;
 
-            const panel = document.getElementById('poem-panel');
-            const empty = document.getElementById('poem-empty-state');
-            if (empty) empty.classList.add('hidden');
-            if (panel) panel.classList.remove('hidden');
+            document.getElementById('poem-empty-state').classList.add('hidden');
+            document.getElementById('poem-panel').classList.remove('hidden');
+            document.getElementById('start-quiz-fab').classList.remove('hidden');
 
             document.getElementById('poem-title-text').textContent = chapterData.name;
-            document.getElementById('poem-content').textContent = chapterData.poem;
-        };
+            
+            // Format poem with line breaks and proper HTML
+            const poemLines = chapterData.poem.split('\n').map(line => 
+                `<div class="poem-line">${line.trim()}</div>`
+            ).join('');
+            document.getElementById('poem-content').innerHTML = poemLines;
+        }
 
-        // --- Start Quiz (navigate to quiz.html) ---
-        window.startQuiz = () => {
-            if (!currentPoemData) {
-                alert("ਪਹਿਲਾਂ ਪਾਠ ਚੁਣੋ (Select a chapter first).");
+        window.startQuiz = (e) => {
+            createRipple(e);
+            if (!currentPoemData || !currentPoemData.questions || currentPoemData.questions.length === 0) {
+                alert("No questions found for this chapter!");
                 return;
             }
-            if (!currentPoemData.questions || currentPoemData.questions.length === 0) {
-                alert("No questions found!");
-                return;
-            }
-
-            // Store student and chapter data in sessionStorage
-            sessionStorage.setItem('studentName', studentName);
-            sessionStorage.setItem('studentRoll', studentRoll);
             sessionStorage.setItem('selectedClassId', selectedClassId);
             sessionStorage.setItem('currentChapterData', JSON.stringify(currentPoemData));
-
-            // Redirect to quiz.html
+            sessionStorage.removeItem('studentName');
+            sessionStorage.removeItem('studentRoll');
             window.location.href = 'quiz.html';
         };
 
-        // --- Admin Logic (Server-based) ---
-        window.toggleAdmin = () => {
-            showPage('adminLogin');
-            document.getElementById('admin-userid').value = '';
-            document.getElementById('admin-password').value = '';
-            document.getElementById('login-error').classList.add('hidden');
-        };
 
-        window.checkAdminLogin = () => {
-            const u = document.getElementById('admin-userid').value.trim();
-            const p = document.getElementById('admin-password').value.trim();
-            if (u === 'manan' && p === 'icecream') {
-                showPage('admin');
-                renderAdminResults();
-            } else {
-                document.getElementById('login-error').classList.remove('hidden');
-            }
-        };
-
-        window.logoutAdmin = () => showPage('chapterSelection');
-
-        function getClassNameFromId(classId) {
-            if (CLASSES[classId]) return CLASSES[classId].name;
-            if (classId === "class_6") return "6ਵੀਂ ਜਮਾਤ";
-            if (classId === "class_7") return "7ਵੀਂ ਜਮਾਤ";
-            return classId || "-";
-        }
-
-        window.renderAdminResults = () => {
-            const tbody = document.getElementById('results-table-body');
-            const statusEl = document.getElementById('results-status');
-            tbody.innerHTML = '';
-            statusEl.textContent = "Loading results from server...";
-
-            fetch('/api/results')
-                .then(res => {
-                    if (!res.ok) throw new Error('Failed to load results');
-                    return res.json();
-                })
-                .then(rawResults => {
-                    if (!rawResults || rawResults.length === 0) {
-                        statusEl.textContent = "No results found on server yet.";
-                        return;
-                    }
-
-                    const students = {};
-                    rawResults.forEach(r => {
-                        const key = `${r.studentRoll}_${r.studentName}_${r.classId || ""}`;
-                        if (!students[key]) {
-                            students[key] = { 
-                                name: r.studentName, 
-                                roll: r.studentRoll,
-                                classId: r.classId || ""
-                            };
-                            students[key].chapters = [];
-                        }
-                        students[key].chapters.push({
-                            name: r.chapterName,
-                            score: r.score,
-                            total: r.totalQuestions
-                        });
-                    });
-
-                    Object.values(students).forEach(s => {
-                        const tr = document.createElement('tr');
-                        const chapterBadges = s.chapters.map(ch => {
-                            const chNum = ch.name.match(/\d+/)?.[0] || "?";
-                            return `<span class="inline-block bg-blue-100 text-blue-800 text-xs font-semibold mr-2 px-2.5 py-0.5 rounded border border-blue-200 mb-1">Ch ${chNum}: ${ch.score}/${ch.total}</span>`;
-                        }).join('');
-
-                        tr.innerHTML = `
-                            <td class="py-3 px-4 border-b font-medium text-gray-900">${s.name}</td>
-                            <td class="py-3 px-4 border-b text-gray-600">${s.roll}</td>
-                            <td class="py-3 px-4 border-b text-gray-600 text-xs">${getClassNameFromId(s.classId)}</td>
-                            <td class="py-3 px-4 border-b">${chapterBadges}</td>
-                        `;
-                        tbody.appendChild(tr);
-                    });
-
-                    statusEl.textContent = "";
-                })
-                .catch(err => {
-                    console.error(err);
-                    statusEl.textContent = "Failed to load results from server.";
-                });
-        };
-
-        window.clearLocalData = () => {
-            alert("To clear all server data, delete/empty results.json on the server machine.");
-        };
     </script>
 </body>
 </html>
