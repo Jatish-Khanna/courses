@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ਪੰਜਾਬੀ ਕਵਿਤਾ ਕੁਇਜ਼ (Offline)</title>
+    <script src="data.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         body { font-family: 'Inter', sans-serif; }
@@ -50,64 +51,11 @@
             </div>
         </header>
 
-        <!-- Student Login -->
-        <div id="page-student-login" class="page active">
-            <div class="bg-white p-8 rounded-2xl shadow-xl max-w-md mx-auto border-t-4 border-blue-600 relative overflow-hidden">
-                <div class="absolute -right-6 -top-6 w-24 h-24 bg-blue-50 rounded-full opacity-70"></div>
-                <div class="absolute -left-10 bottom-0 w-24 h-24 bg-yellow-50 rounded-full opacity-70"></div>
-
-                <div class="relative">
-                    <div class="flex items-center justify-center gap-2 mb-4">
-                        <span class="text-3xl">🎒</span>
-                        <h2 class="text-2xl font-bold text-center text-gray-800">
-                            ਵਿਦਿਆਰਥੀ ਵੇਰਵੇ (Student Login)
-                        </h2>
-                        <span class="text-3xl">🎓</span>
-                    </div>
-                    <p class="text-sm text-gray-500 text-center mb-5">
-                        ਆਪਣਾ ਨਾਮ, ਰੋਲ ਨੰਬਰ ਅਤੇ ਜਮਾਤ ਚੁਣੋ, ਫਿਰ ਮਜ਼ੇਦਾਰ ਕੁਇਜ਼ ਸ਼ੁਰੂ ਕਰੋ!
-                    </p>
-
-                    <div class="space-y-4">
-                        <div>
-                            <label class="block text-gray-700 text-sm font-bold mb-2">ਨਾਮ (Name)</label>
-                            <input type="text" id="student-name" class="w-full p-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none" placeholder="ਆਪਣਾ ਨਾਮ ਲਿਖੋ">
-                        </div>
-                        <div>
-                            <label class="block text-gray-700 text-sm font-bold mb-2">ਰੋਲ ਨੰਬਰ (Roll No)</label>
-                            <input type="number" id="student-roll" class="w-full p-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none" placeholder="123">
-                        </div>
-                        <div>
-                            <label class="block text-gray-700 text-sm font-bold mb-2">ਜਮਾਤ (Class)</label>
-                            <select id="student-class-select" class="w-full p-3 border border-gray-300 rounded-xl bg-white focus:ring-2 focus:ring-blue-500 outline-none">
-                                <!-- filled by JS -->
-                            </select>
-                        </div>
-                        <button onclick="submitStudentDetails()" class="w-full bg-blue-600 text-white font-bold py-3 px-4 rounded-xl hover:bg-blue-700 transition mt-2 shadow-md flex items-center justify-center gap-2">
-                            <span>ਅੱਗੇ ਵਧੋ (Start)</span> <span>➡️</span>
-                        </button>
-                    </div>
-                    <div class="mt-8 pt-4 border-t border-gray-100 text-center">
-                        <button onclick="toggleAdmin()" class="text-xs text-gray-400 hover:text-gray-600 underline">
-                            🧑‍🏫 Admin Panel (For Teachers)
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </div>
 
         <!-- Main View: Sidebar + Poem (Class & Chapter selection here) -->
         <div id="page-chapter-selection" class="page">
             <div class="flex justify-between items-center mb-4 bg-white p-4 rounded-2xl shadow-sm">
-                <div class="flex items-center gap-3">
-                    <button onclick="logoutStudent()" class="text-blue-600 hover:text-blue-800 font-medium flex items-center gap-1">
-                        <span>⬅️</span> <span>ਵਾਪਸ (Logout)</span>
-                    </button>
-                    <div class="hidden sm:block text-xs text-gray-400">
-                        Login ਬਦਲਣ ਲਈ ਵਾਪਸ ਜਾਓ
-                    </div>
-                </div>
-                <div class="text-right">
+                <div id="student-info" class="text-right">
                     <div id="display-student-name" class="font-bold text-lg leading-tight"></div>
                     <div id="display-student-class" class="text-xs text-gray-500"></div>
                 </div>
@@ -155,96 +103,6 @@
                         <button onclick="startQuiz()" class="mt-6 w-full bg-green-600 text-white py-3 md:py-4 px-6 rounded-xl text-lg font-bold hover:bg-green-700 shadow-lg transition transform hover:scale-[1.02] flex items-center justify-center gap-2">
                             <span>ਟੈਸਟ ਸ਼ੁਰੂ ਕਰੋ (Start Quiz)</span> <span>🚀</span>
                         </button>
-                    </div>
-                </section>
-            </div>
-        </div>
-
-        <!-- Quiz View -->
-        <div id="page-quiz-view" class="page">
-            <div class="bg-white p-6 rounded-2xl shadow-md">
-                <!-- Header -->
-                <div class="flex justify-between items-center mb-6 bg-gray-50 p-3 rounded-lg">
-                    <div class="text-lg font-bold text-gray-700 flex items-center gap-2">
-                        <span>❓</span>
-                        <span>ਸਵਾਲ <span id="question-number" class="text-blue-600 text-xl">1</span> / <span id="total-questions">0</span></span>
-                    </div>
-                    <div class="text-lg font-bold text-red-500 flex items-center">
-                        ⏱ <span id="question-timer" class="ml-1 w-8 text-center">0</span>s
-                    </div>
-                </div>
-                
-                <!-- Progress Bar -->
-                <div class="w-full bg-gray-200 rounded-full h-2 mb-6">
-                    <div id="progress-bar" class="bg-blue-600 h-2 rounded-full transition-all duration-300" style="width: 0%"></div>
-                </div>
-
-                <!-- Question -->
-                <h2 id="question-text" class="text-2xl font-semibold mb-8 text-gray-800 min-h-[80px]"></h2>
-
-                <!-- Options -->
-                <div id="options-container" class="space-y-4 mb-8"></div>
-                
-                <!-- Navigation Buttons -->
-                <div class="flex justify-between items-center pt-4 border-t border-gray-100">
-                    <button onclick="prevQuestion()" id="btn-prev" class="bg-gray-200 text-gray-700 py-2 px-6 rounded-lg hover:bg-gray-300 font-medium disabled:opacity-50 disabled:cursor-not-allowed transition">
-                        &larr; ਪਿੱਛੇ (Prev)
-                    </button>
-                    
-                    <button onclick="clearSelection()" class="text-red-500 text-sm hover:text-red-700 font-medium px-4">
-                        Clear Selection
-                    </button>
-                    
-                    <button onclick="nextQuestion()" id="btn-next" class="bg-blue-600 text-white py-2 px-8 rounded-lg hover:bg-blue-700 font-bold shadow-md transition">
-                        ਅੱਗੇ (Next) &rarr;
-                    </button>
-                </div>
-            </div>
-        </div>
-
-        <!-- Results View -->
-        <div id="page-results-view" class="page">
-            <div class="bg-white p-10 rounded-2xl shadow-2xl text-center max-w-lg mx-auto border-4 border-double border-blue-100 relative overflow-hidden">
-                <div class="absolute -left-10 -top-10 w-28 h-28 bg-sky-50 rounded-full"></div>
-                <div class="absolute -right-16 bottom-0 w-36 h-36 bg-emerald-50 rounded-full"></div>
-
-                <div class="relative">
-                    <div class="mb-4 text-green-500 no-print">
-                        <div class="w-20 h-20 mx-auto rounded-full bg-green-50 flex items-center justify-center text-4xl border border-green-200">
-                            🏆
-                        </div>
-                    </div>
-                    <h2 class="text-3xl font-bold mb-2 text-gray-800">ਨਤੀਜਾ ਕਾਰਡ (Result Card)</h2>
-                    <p class="text-gray-500 mb-6">ਵਿਦਿਆਰਥੀ ਮੁਲਾਂਕਣ ਸਿਸਟਮ</p>
-                    
-                    <div class="bg-blue-50 p-6 rounded-lg mb-8 border border-blue-100 text-left relative">
-                        <div class="absolute -right-3 -top-3 w-10 h-10 rounded-full bg-yellow-100 flex items-center justify-center text-2xl border border-yellow-200">
-                            ⭐
-                        </div>
-                        <p class="mb-2"><strong>ਨਾਮ:</strong> <span id="result-student-name"></span></p>
-                        <p class="mb-2"><strong>ਰੋਲ ਨੰਬਰ:</strong> <span id="result-student-roll"></span></p>
-                        <p class="mb-2"><strong>ਜਮਾਤ:</strong> <span id="result-class-name"></span></p>
-                        <p class="mb-2"><strong>ਪਾਠ:</strong> <span id="result-chapter-name"></span></p>
-                        <div class="border-t border-blue-200 my-3 pt-3 flex justify-between items-center">
-                            <span class="text-lg font-bold text-blue-800 flex items-center gap-1">ਸਕੋਰ:</span>
-                            <span class="text-3xl font-extrabold text-blue-700">
-                                <span id="final-score">0</span>/<span id="total-score">0</span>
-                            </span>
-                        </div>
-                        <p class="text-xs text-gray-500 mt-2">ਸਮਾਂ ਲਿਆ: <span id="total-time-taken"></span> ਸਕਿੰਟ</p>
-                    </div>
-
-                    <div class="no-print space-y-3">
-                        <button onclick="window.print()" class="w-full bg-gray-700 text-white py-3 px-6 rounded-lg font-semibold hover:bg-gray-800 transition">
-                            🖨 ਨਤੀਜਾ ਡਾਊਨਲੋਡ ਕਰੋ (Print/Save PDF)
-                        </button>
-                        <button onclick="restartApp()" class="w-full bg-blue-600 text-white py-3 px-6 rounded-lg text-lg font-semibold hover:bg-blue-700 transition shadow-lg">
-                            🔁 ਨਵਾਂ ਟੈਸਟ ਲਓ (New Test)
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </div>
 
         <!-- Admin Login -->
         <div id="page-admin-login" class="page">
@@ -305,9 +163,6 @@
         </div>
     </div>
 
-    <!-- load data first -->
-    <script src="data.js"></script>
-
     <!-- main app logic -->
     <script>
         // --- Application Logic ---
@@ -316,30 +171,14 @@
         let selectedClassId = null;
         let currentClassData = null;
 
-        let currentChapterId, currentPoemData, currentQuestions;
+        let currentChapterId, currentPoemData;
         let currentQuestionIndex = 0;
         let userAnswers = [];
         let questionStartTime, quizStartTime;
         let questionTimerInterval;
 
-        // Build CLASSES map from data.js
-        const CLASSES = {};
-        if (typeof CLASS_6_DATA !== "undefined") {
-            CLASSES[CLASS_6_DATA.id || "class_6"] = CLASS_6_DATA;
-        }
-        if (typeof CLASS_7_DATA !== "undefined") {
-            CLASSES[CLASS_7_DATA.id || "class_7"] = CLASS_7_DATA;
-        }
-
-        const pages = {
-            loading: document.getElementById('loading'),
-            studentLogin: document.getElementById('page-student-login'),
-            chapterSelection: document.getElementById('page-chapter-selection'),
-            quizView: document.getElementById('page-quiz-view'),
-            resultsView: document.getElementById('page-results-view'),
-            adminLogin: document.getElementById('page-admin-login'),
-            admin: document.getElementById('page-admin'),
-        };
+        // Pages object will be initialized in onload
+        let pages = {};
 
         function showPage(pageName) {
             Object.values(pages).forEach(page => {
@@ -378,8 +217,9 @@
             if (!container) return;
             container.innerHTML = "";
 
-            const classEntries = Object.values(CLASSES);
-            classEntries.forEach(cls => {
+            // Create buttons for each class in CLASSES object
+            Object.keys(CLASSES).forEach(classKey => {
+                const cls = CLASSES[classKey];
                 const btn = document.createElement('button');
                 const emoji = cls.id === "class_6" ? "🐣" : "🦉";
                 btn.className = "px-3 py-2 rounded-full text-xs md:text-sm border flex items-center gap-2 hover:bg-blue-50 transition";
@@ -408,9 +248,18 @@
         }
 
         function switchClassFromSidebar(classId) {
-            if (!CLASSES[classId]) return;
+            // Find the CLASSES key for this class id
+            let classKey = null;
+            for (let key in CLASSES) {
+                if (CLASSES[key].id === classId) {
+                    classKey = key;
+                    break;
+                }
+            }
+            if (!classKey) return;
+            
             selectedClassId = classId;
-            currentClassData = CLASSES[classId];
+            currentClassData = CLASSES[classKey];
             document.getElementById('display-student-class').textContent = currentClassData.name || "";
             highlightActiveSidebarClass();
             clearPoemPanel();
@@ -426,9 +275,34 @@
 
         // --- Initialization ---
         window.onload = function() {
-            populateClassSelect();
+            // Initialize pages object now that DOM is loaded
+            pages = {
+                chapterSelection: document.getElementById('page-chapter-selection'),
+                quizView: document.getElementById('page-quiz-view'),
+                resultsView: document.getElementById('page-results-view'),
+                adminLogin: document.getElementById('page-admin-login'),
+                admin: document.getElementById('page-admin'),
+            };
+            
+            // Get student data from sessionStorage
+            studentName = sessionStorage.getItem('studentName') || "";
+            studentRoll = sessionStorage.getItem('studentRoll') || "";
+            selectedClassId = sessionStorage.getItem('selectedClassId') || null;
+
+            if (selectedClassId && CLASSES[selectedClassId]) {
+                currentClassData = CLASSES[selectedClassId];
+                // Display student info
+                document.getElementById('display-student-name').textContent = studentName;
+                document.getElementById('display-student-class').textContent = currentClassData.name || "";
+            } else {
+                // No student logged in - use default class
+                selectedClassId = 'class_6';
+                currentClassData = CLASSES.CLASS_6;
+            }
+            
             populateSidebarClassButtons();
-            showPage('studentLogin');
+            loadChapters(false);
+            showPage('chapterSelection');
         };
 
         // --- Student Flow ---
@@ -458,12 +332,6 @@
 
             populateSidebarClassButtons();
             loadChapters(true);
-        };
-
-        window.logoutStudent = () => {
-            document.getElementById('student-name').value = ''; 
-            document.getElementById('student-roll').value = '';
-            showPage('studentLogin');
         };
 
         window.loadChapters = (goToPage = true) => {
@@ -525,164 +393,25 @@
             document.getElementById('poem-content').textContent = chapterData.poem;
         };
 
-        // --- Quiz Logic ---
+        // --- Start Quiz (navigate to quiz.html) ---
         window.startQuiz = () => {
             if (!currentPoemData) {
                 alert("ਪਹਿਲਾਂ ਪਾਠ ਚੁਣੋ (Select a chapter first).");
                 return;
             }
-            currentQuestions = currentPoemData.questions;
-            if (!currentQuestions || currentQuestions.length === 0) {
+            if (!currentPoemData.questions || currentPoemData.questions.length === 0) {
                 alert("No questions found!");
                 return;
             }
 
-            currentQuestionIndex = 0;
-            userAnswers = new Array(currentQuestions.length).fill(null);
-            document.getElementById('total-questions').textContent = currentQuestions.length;
-            quizStartTime = Date.now();
-            
-            showPage('quizView');
-            loadQuestion();
-        };
+            // Store student and chapter data in sessionStorage
+            sessionStorage.setItem('studentName', studentName);
+            sessionStorage.setItem('studentRoll', studentRoll);
+            sessionStorage.setItem('selectedClassId', selectedClassId);
+            sessionStorage.setItem('currentChapterData', JSON.stringify(currentPoemData));
 
-        function loadQuestion() {
-            const q = currentQuestions[currentQuestionIndex];
-            document.getElementById('question-number').textContent = currentQuestionIndex + 1;
-            document.getElementById('question-text').textContent = q.t;
-            
-            document.getElementById('btn-prev').disabled = currentQuestionIndex === 0;
-            const nextBtn = document.getElementById('btn-next');
-            nextBtn.textContent = currentQuestionIndex === currentQuestions.length - 1 ? "ਮੁਕੰਮਲ ਕਰੋ (Finish)" : "ਅੱਗੇ (Next) →";
-
-            const container = document.getElementById('options-container');
-            container.innerHTML = '';
-            
-            const savedAnswer = userAnswers[currentQuestionIndex];
-
-            q.o.forEach((opt, idx) => {
-                const btn = document.createElement('button');
-                const isSelected = savedAnswer && savedAnswer.selected === idx;
-                btn.className = `w-full block p-4 rounded-lg text-lg border-2 text-left transition option-btn ${isSelected ? 'selected' : 'bg-gray-100 border-transparent hover:bg-blue-50'}`;
-                btn.textContent = opt;
-                btn.onclick = () => selectAnswerUI(idx, btn);
-                container.appendChild(btn);
-            });
-            
-            document.getElementById('progress-bar').style.width = `${((currentQuestionIndex + 1) / currentQuestions.length) * 100}%`;
-            questionStartTime = Date.now();
-            startQuestionTimer();
-        }
-
-        function startQuestionTimer() {
-            clearInterval(questionTimerInterval);
-            const timerEl = document.getElementById('question-timer');
-            timerEl.textContent = '0';
-            let s = 0;
-            questionTimerInterval = setInterval(() => {
-                s++;
-                timerEl.textContent = s;
-            }, 1000);
-        }
-
-        window.selectAnswerUI = (idx, btnEl) => {
-            document.querySelectorAll('.option-btn').forEach(b => {
-                b.classList.remove('selected');
-                b.classList.add('bg-gray-100', 'border-transparent');
-            });
-            btnEl.classList.remove('bg-gray-100', 'border-transparent');
-            btnEl.classList.add('selected');
-
-            const timeTaken = (Date.now() - questionStartTime) / 1000;
-            userAnswers[currentQuestionIndex] = {
-                selected: idx,
-                correct: currentQuestions[currentQuestionIndex].c,
-                timeTaken: timeTaken
-            };
-        };
-
-        window.prevQuestion = () => {
-            if (currentQuestionIndex > 0) {
-                currentQuestionIndex--;
-                loadQuestion();
-            }
-        };
-
-        window.nextQuestion = () => {
-            if (currentQuestionIndex < currentQuestions.length - 1) {
-                currentQuestionIndex++;
-                loadQuestion();
-            } else {
-                finishQuiz();
-            }
-        };
-
-        window.clearSelection = () => {
-            userAnswers[currentQuestionIndex] = null;
-            loadQuestion();
-        };
-
-        function finishQuiz() {
-            clearInterval(questionTimerInterval);
-            const totalTime = (Date.now() - quizStartTime) / 1000;
-            let score = 0;
-            userAnswers.forEach(ans => {
-                if (ans && ans.selected === ans.correct) score++;
-            });
-
-            // Update UI
-            document.getElementById('final-score').textContent = score;
-            document.getElementById('total-score').textContent = currentQuestions.length;
-            document.getElementById('total-time-taken').textContent = totalTime.toFixed(1);
-            document.getElementById('result-student-name').textContent = studentName;
-            document.getElementById('result-student-roll').textContent = studentRoll;
-            document.getElementById('result-chapter-name').textContent = currentPoemData.name;
-            document.getElementById('result-class-name').textContent = currentClassData ? currentClassData.name : "";
-            
-            showPage('resultsView');
-
-            // Build result object and send to server
-            const resultObj = {
-                studentName: studentName,
-                studentRoll: studentRoll,
-                classId: selectedClassId,
-                chapterId: currentChapterId,
-                chapterName: currentPoemData.name,
-                score: score,
-                totalQuestions: currentQuestions.length,
-                totalTimeSeconds: Number(totalTime.toFixed(1))
-            };
-
-            saveResultToServer(resultObj);
-        }
-
-        function saveResultToServer(resultObj) {
-            fetch('/api/save-result', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(resultObj)
-            })
-            .then(res => {
-                if (!res.ok) {
-                    console.error('Failed to save result to server');
-                }
-                return res.json().catch(() => ({}));
-            })
-            .then(data => {
-                console.log('Server save response:', data);
-            })
-            .catch(err => {
-                console.error('Error calling /api/save-result:', err);
-            });
-        }
-
-        window.restartApp = () => {
-            currentQuestionIndex = 0;
-            userAnswers = [];
-            clearPoemPanel();
-            loadChapters(true);
+            // Redirect to quiz.html
+            window.location.href = 'quiz.html';
         };
 
         // --- Admin Logic (Server-based) ---
@@ -704,7 +433,7 @@
             }
         };
 
-        window.logoutAdmin = () => showPage('studentLogin');
+        window.logoutAdmin = () => showPage('chapterSelection');
 
         function getClassNameFromId(classId) {
             if (CLASSES[classId]) return CLASSES[classId].name;
