@@ -420,9 +420,6 @@
     <!-- Password gate logic -->
     <script>
       (function () {
-        // 🔑 Change this password as you like
-        const TEACHER_PASSWORD = "teacher123";
-
         const loginView = document.getElementById("teacher-login");
         const contentView = document.getElementById("teacher-content");
         const form = document.getElementById("teacher-login-form");
@@ -435,14 +432,35 @@
           contentView.classList.remove("hidden");
         }
 
-        function handleSubmit(e) {
+        async function handleSubmit(e) {
           e.preventDefault();
           const val = (input.value || "").trim();
-          if (val === TEACHER_PASSWORD) {
-            sessionStorage.setItem("teacherAuth", "ok");
-            errorEl.classList.add("hidden");
-            unlock();
-          } else {
+          if (!val) {
+            errorEl.textContent = "❌ ਕਿਰਪਾ ਕਰਕੇ ਪਾਸਵਰਡ ਭਰੋ।";
+            errorEl.classList.remove("hidden");
+            return;
+          }
+
+          try {
+            const resp = await fetch("/api/auth/check", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ password: val }),
+            });
+            const data = await resp.json();
+
+            if (data.ok) {
+              sessionStorage.setItem("teacherAuth", "ok");
+              errorEl.classList.add("hidden");
+              unlock();
+            } else {
+              errorEl.textContent = "❌ ਗਲਤ ਪਾਸਵਰਡ। ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ।";
+              errorEl.classList.remove("hidden");
+            }
+          } catch (err) {
+            console.error("Auth error", err);
+            errorEl.textContent =
+              "⚠️ ਸਰਵਰ ਨਾਲ ਕਨੈਕਸ਼ਨ ਨਹੀਂ ਬਣੀ। ਬਾਅਦ ਵਿੱਚ ਫਿਰ ਕੋਸ਼ਿਸ਼ ਕਰੋ।";
             errorEl.classList.remove("hidden");
           }
         }
@@ -455,8 +473,8 @@
           const already = sessionStorage.getItem("teacherAuth") === "ok";
           if (already) {
             unlock();
-          } else {
-            if (loginView) loginView.classList.remove("hidden");
+          } else if (loginView) {
+            loginView.classList.remove("hidden");
           }
         });
       })();

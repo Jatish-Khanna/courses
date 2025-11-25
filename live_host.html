@@ -593,11 +593,8 @@
         setInterval(pollStateOnce, 1500);
       }
 
-      // Password gate logic
+            // Password gate logic
       (function () {
-        // 🔑 Change this password as you like
-        const HOST_PASSWORD = "teacher123";
-
         const loginView = document.getElementById("host-login");
         const mainView = document.getElementById("host-main");
         const form = document.getElementById("host-login-form");
@@ -612,14 +609,35 @@
           initClassAndChapters();
         }
 
-        function handleSubmit(e) {
+        async function handleSubmit(e) {
           e.preventDefault();
           const val = (input.value || "").trim();
-          if (val === HOST_PASSWORD) {
-            sessionStorage.setItem("liveQuizHostAuth", "ok");
-            errorEl.classList.add("hidden");
-            unlock();
-          } else {
+          if (!val) {
+            errorEl.textContent = "❌ ਕਿਰਪਾ ਕਰਕੇ ਪਾਸਵਰਡ ਭਰੋ।";
+            errorEl.classList.remove("hidden");
+            return;
+          }
+
+          try {
+            const resp = await fetch("/api/auth/check", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ password: val }),
+            });
+            const data = await resp.json();
+
+            if (data.ok) {
+              sessionStorage.setItem("liveQuizHostAuth", "ok");
+              errorEl.classList.add("hidden");
+              unlock();
+            } else {
+              errorEl.textContent = "❌ ਗਲਤ ਪਾਸਵਰਡ। ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ।";
+              errorEl.classList.remove("hidden");
+            }
+          } catch (err) {
+            console.error("Host auth error", err);
+            errorEl.textContent =
+              "⚠️ ਸਰਵਰ ਨਾਲ ਕਨੈਕਸ਼ਨ ਨਹੀਂ ਬਣੀ। ਬਾਅਦ ਵਿੱਚ ਫਿਰ ਕੋਸ਼ਿਸ਼ ਕਰੋ।";
             errorEl.classList.remove("hidden");
           }
         }
@@ -632,8 +650,8 @@
           const already = sessionStorage.getItem("liveQuizHostAuth") === "ok";
           if (already) {
             unlock();
-          } else {
-            if (loginView) loginView.classList.remove("hidden");
+          } else if (loginView) {
+            loginView.classList.remove("hidden");
           }
         });
 

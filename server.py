@@ -15,6 +15,11 @@ app = Flask(
 
 RESULTS_FILE = os.path.join(BASE_DIR, 'results.json')
 
+# Simple backend-side admin/teacher password.
+# You can override this by setting the QUIZ_ADMIN_PASSWORD environment variable.
+ADMIN_PASSWORD = os.environ.get("QUIZ_ADMIN_PASSWORD", "teacher123")
+
+
 
 def load_results():
     if not os.path.exists(RESULTS_FILE):
@@ -61,6 +66,27 @@ def save_result():
 def get_results():
     results = load_results()
     return jsonify(results)
+
+
+
+@app.route('/api/auth/check', methods=['POST'])
+def auth_check():
+    """Check teacher/admin password on the server side.
+
+    Expects JSON: { "password": "...." }
+    Returns: { "ok": true } or { "ok": false, "error": "..." }
+    """
+    data = request.get_json(force=True, silent=True) or {}
+    pwd = (data.get('password') or '').strip()
+
+    if not pwd:
+        return jsonify({'ok': False, 'error': 'No password provided'}), 400
+
+    if pwd == ADMIN_PASSWORD:
+        # In a more advanced setup you could return a signed token here.
+        return jsonify({'ok': True})
+
+    return jsonify({'ok': False, 'error': 'Invalid password'}), 401
 
 # =====================
 # Live Quiz (Kahoot-style) in-memory backend
