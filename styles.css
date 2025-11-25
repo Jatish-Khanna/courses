@@ -1,0 +1,346 @@
+/* Base styles using Material Design principles */
+body {
+    font-family: "Roboto", "Noto Sans Devanagari", sans-serif;
+    background-color: #f4f5f7;
+    /* Material Grey 100 */
+}
+
+.material-symbols-outlined {
+    font-variation-settings: "FILL" 0, "wght" 400, "GRAD" 0, "opsz" 24;
+    vertical-align: middle;
+}
+
+.page {
+    display: none;
+}
+
+.page.active {
+    display: block;
+    animation: fadeIn 0.4s ease-in-out;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Ripple effect */
+.ripple-surface {
+    position: relative;
+    overflow: hidden;
+    -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+}
+
+.ripple {
+    position: absolute;
+    border-radius: 50%;
+    background-color: rgba(0, 0, 0, 0.1);
+    transform: scale(0);
+    animation: ripple-animation 0.6s linear;
+}
+
+@keyframes ripple-animation {
+    to {
+        transform: scale(4);
+        opacity: 0;
+    }
+}
+
+/* Custom component styles */
+.top-app-bar {
+    background-color: #3f51b5;
+    /* Material Indigo 500 */
+}
+
+.chip {
+    transition: all 0.2s ease-in-out;
+}
+
+.chip.active {
+    background-color: #e8eaf6;
+    /* Indigo 50 */
+    color: #3f51b5;
+    /* Indigo 500 */
+    border-color: #3f51b5;
+    /* Indigo 500 */
+}
+
+.fab {
+    background-color: #e91e63;
+    /* Material Pink 500 */
+    transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.fab:hover {
+    transform: scale(1.05);
+}
+
+/* Collapsible class list hover effect */
+#class-list-panel button:hover {
+    background-color: #eef2ff;
+}
+
+#class-toggle-btn {
+    font-size: 1.125rem;
+    /* 18px */
+}
+
+/* Bigger font for class list items */
+#class-list-panel button {
+    font-size: 1rem;
+    /* 16px */
+    padding: 0.75rem 1rem;
+    /* slightly bigger padding */
+}
+
+/* Poem styles */
+.font-laila {
+    font-family: "Laila", "Noto Sans Devanagari", serif;
+}
+
+#poem-panel {
+    background: linear-gradient(135deg, #ffffff 0%, #f7f8fa 100%);
+    border-radius: 1.5rem;
+    padding: 2rem;
+    transition: all 0.3s ease-in-out;
+}
+
+#poem-title {
+    color: #4a5568;
+    border-color: #e2e8f0;
+    padding-bottom: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+#poem-content {
+    background: linear-gradient(135deg, #fafbfc 0%, #f0f4f8 100%);
+    padding: 2.5rem 2rem;
+    border-radius: 1.5rem;
+    position: relative;
+    overflow-y: auto;
+    max-height: 60vh;
+}
+
+#poem-content .poem-line {
+    line-height: 2.8;
+    font-size: 1.4rem;
+    color: #1a202c;
+    font-weight: 600;
+    text-align: center;
+    letter-spacing: 1px;
+    word-spacing: 4px;
+    margin: 1.5rem 0;
+    padding: 1rem 1.5rem;
+    border-radius: 0.75rem;
+    transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    background: linear-gradient(135deg,
+            rgba(99, 102, 241, 0.05),
+            rgba(168, 85, 247, 0.05));
+    position: relative;
+    overflow: hidden;
+    cursor: pointer;
+    padding: 2px 0;
+    transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+#poem-content .poem-line::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg,
+            transparent,
+            rgba(255, 255, 255, 0.4),
+            transparent);
+    transition: left 0.5s ease;
+    animation: autoSlide 2s ease-in-out infinite;
+}
+
+@keyframes autoSlide {
+
+    0%,
+    100% {
+        left: -100%;
+    }
+
+    50% {
+        left: 100%;
+    }
+}
+
+#poem-content .poem-line:hover::before {
+    animation: none;
+    left: 100%;
+}
+
+#poem-content .poem-line:hover {
+    transform: scale(1.02);
+    box-shadow: 0 8px 24px rgba(99, 102, 241, 0.2);
+    background: linear-gradient(135deg,
+            rgba(99, 102, 241, 0.15),
+            rgba(168, 85, 247, 0.15));
+    background-color: rgba(79, 70, 229, 0.06);
+    /* light indigo */
+}
+
+@keyframes slideInFromLeft {
+    from {
+        opacity: 0;
+        transform: translateX(-30px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+#poem-content .poem-line {
+    animation: slideInFromLeft 0.6s ease-out forwards;
+}
+
+#poem-content .poem-line:nth-child(1) {
+    animation-delay: 0.1s;
+}
+
+#poem-content .poem-line:nth-child(2) {
+    animation-delay: 0.2s;
+}
+
+#poem-content .poem-line:nth-child(3) {
+    animation-delay: 0.3s;
+}
+
+#poem-content .poem-line:nth-child(4) {
+    animation-delay: 0.4s;
+}
+
+#poem-content .poem-line:nth-child(5) {
+    animation-delay: 0.5s;
+}
+
+#poem-content .poem-line:nth-child(6) {
+    animation-delay: 0.6s;
+}
+
+#poem-content .poem-line:nth-child(7) {
+    animation-delay: 0.7s;
+}
+
+#poem-content .poem-line:nth-child(n + 8) {
+    animation-delay: 0.8s;
+}
+
+/* Custom scrollbar */
+#poem-content::-webkit-scrollbar {
+    width: 12px;
+}
+
+#poem-content::-webkit-scrollbar-track {
+    background: linear-gradient(180deg, #e0e7ff 0%, #f0f4f8 100%);
+    border-radius: 10px;
+}
+
+#poem-content::-webkit-scrollbar-thumb {
+    background: linear-gradient(180deg, #6366f1 0%, #a855f7 100%);
+    border-radius: 10px;
+    border: 2px solid #f0f4f8;
+}
+
+#poem-content::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(180deg, #4f46e5 0%, #9333ea 100%);
+}
+
+@keyframes bounceSlow {
+
+    0%,
+    100% {
+        transform: translateY(0);
+    }
+
+    50% {
+        transform: translateY(-10px);
+    }
+}
+
+@keyframes spinSlow {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+.animate-bounce-slow {
+    animation: bounceSlow 3s infinite ease-in-out;
+}
+
+.animate-spin-slow {
+    animation: spinSlow 6s linear infinite;
+}
+
+.poem-line.active {
+    background-color: rgba(79, 70, 229, 0.12);
+    color: #1e293b;
+    /* slate-800 */
+}
+
+
+/* Collapsible sidebar animation */
+#sidebar {
+    transition: max-width 0.3s ease-in-out, opacity 0.3s ease-in-out,
+        margin-right 0.3s ease-in-out, transform 0.3s ease-in-out;
+    position: relative;
+    z-index: 20;
+}
+
+/* When collapsed, hide sidebar visually but keep layout smooth */
+#sidebar.sidebar-collapsed {
+    max-width: 0 !important;
+    flex-basis: 0 !important;
+    margin-right: 0 !important;
+    opacity: 0;
+    pointer-events: none;
+    transform: translateX(-10px);
+}
+
+/* Floating ਪਾਠ button animation so it looks clickable */
+@keyframes wiggle {
+
+    0%,
+    100% {
+        transform: translateY(-50%) translateX(0);
+    }
+
+    25% {
+        transform: translateY(-50%) translateX(-3px);
+    }
+
+    50% {
+        transform: translateY(-50%) translateX(3px);
+    }
+
+    75% {
+        transform: translateY(-50%) translateX(-3px);
+    }
+}
+
+.wiggle-button {
+    animation: wiggle 1.4s ease-in-out infinite;
+}
+
+/* Make the floating ਪਾਠ button appear above content */
+#sidebar-collapsed-toggle {
+    z-index: 50;
+}
