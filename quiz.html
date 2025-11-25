@@ -727,21 +727,33 @@
       };
 
       function saveResultToServer(resultObj) {
-        fetch("/api/save-result", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(resultObj),
-        })
-          .then((response) => response.json())
-          .then((data) => {
-            console.log("Result saved:", data);
-          })
-          .catch((error) => {
-            console.error("Error saving result:", error);
-          });
-      }
+  // ✅ NEW: save locally for teacher dashboard
+  try {
+    const key = "quizResults";
+    const existing = JSON.parse(localStorage.getItem(key) || "[]");
+    existing.push(resultObj);
+    localStorage.setItem(key, JSON.stringify(existing));
+  } catch (e) {
+    console.error("Error saving to localStorage", e);
+  }
+
+  // Existing backend call (keep if you have a server)
+  fetch("/api/save-result", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(resultObj),
+  })
+    .then((response) => response.json())
+    .then((data) => {
+      console.log("Result saved:", data);
+    })
+    .catch((error) => {
+      console.error("Error saving result:", error);
+    });
+}
+
 
       // --- On page load ---
       window.onload = function () {
