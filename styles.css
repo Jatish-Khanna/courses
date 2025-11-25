@@ -344,3 +344,144 @@ body {
 #sidebar-collapsed-toggle {
     z-index: 50;
 }
+
+/* Flashcard styles inside poem-content (used when no chapter is selected) */
+#poem-content .flashcard {
+    background: linear-gradient(135deg, #eef2ff 0%, #e0f2fe 100%);
+    border-radius: 1.25rem;
+    padding: 1.5rem 1.75rem;
+    box-shadow: 0 10px 25px rgba(15, 23, 42, 0.08);
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    align-items: flex-start;
+    justify-content: center;
+    min-height: 220px;
+}
+
+#poem-content .flashcard-class {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: #4338ca;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+}
+
+#poem-content .flashcard-question {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: #111827;
+}
+
+#poem-content .flashcard-answer-label {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #047857;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+}
+
+#poem-content .flashcard-answer {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #065f46;
+}
+
+#poem-content .flashcard-meta {
+    font-size: 0.8rem;
+    color: #4b5563;
+    margin-top: 0.25rem;
+}
+
+
+/* Enhanced flashcard UX */
+#poem-content .flashcard {
+    position: relative;
+    overflow: hidden;
+    transform-origin: center;
+    animation: flashcardIn 0.35s ease-out forwards;
+}
+
+#poem-content .flashcard-instruction {
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: #6b7280;
+}
+
+#poem-content .flashcard-timer {
+    position: relative;
+    width: 100%;
+    height: 4px;
+    border-radius: 9999px;
+    background-color: rgba(148, 163, 184, 0.35);
+    margin-top: 0.75rem;
+    overflow: hidden;
+}
+
+#poem-content .flashcard-timer-inner {
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 100%;
+    transform-origin: left;
+    animation: flashcardTimer 7s linear forwards;
+}
+
+@keyframes flashcardIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px) scale(0.98);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+@keyframes flashcardTimer {
+    from {
+        transform: scaleX(1);
+    }
+    to {
+        transform: scaleX(0);
+    }
+}
+
+
+#poem-content .flashcard-label {
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: #0f766e;
+    margin-bottom: 0.25rem;
+}
+
+/* Make poem title bar sticky on scroll */
+#poem-panel > div:first-child {
+    position: sticky;
+    top: 0;
+    background: white;
+    z-index: 10;
+    padding-top: 0.5rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+
+/* Live Quiz dropdown - match class dropdown size */
+#live-quiz-toggle {
+    font-size: 1.125rem; /* Same as class-toggle-btn */
+}
+
+#live-quiz-panel a,
+#live-quiz-panel button {
+    font-size: 1rem;      /* Make menu items bigger */
+    padding: 0.75rem 1rem; /* Same padding as class menu items */
+}
+
+#live-quiz-panel a:hover,
+#live-quiz-panel button:hover {
+    background-color: #eef2ff; /* Same hover color */
+}

@@ -11,6 +11,313 @@ function initializeCompletionTracking() {
     completedChapters = stored ? JSON.parse(stored) : {};
 }
 
+
+
+// ======== Flashcards from class questions (shown when no chapter is selected) ========
+const FLASHCARD_DURATION_MS = 7000; // 7 seconds per card
+let flashcardsByClass = {};
+let flashcardTimerId = null;
+let currentFlashcardIndex = 0;
+let currentFlashcardClassId = null;
+let isFlashcardMode = false;
+
+// Custom flashcard content created manually (knowledge bytes per class)
+const CUSTOM_FLASHCARDS = {
+    class_6: [
+        {
+            chapterName: "ਪਾਠ 1: ਆਪਣੀਆਂ ਸੰਖਿਆਵਾਂ ਨੂੰ ਜਾਣਨਾ (Knowing Our Numbers)",
+            text: "ਯਾਦ ਰੱਖੋ: ਸਥਾਨਮਾਨ (place value) ਵਿੱਚ ਜਿੰਨਾ ਖੱਬੇ ਵੱਲ ਜਾਈਏ, ਅੰਕ ਦਾ ਮੁੱਲ ਦਸ ਗੁਣਾ ਵੱਧਦਾ ਜਾਂਦਾ ਹੈ।"
+        },
+        {
+            chapterName: "ਪਾਠ 2: ਪੂਰਨ ਸੰਖਿਆਵਾਂ (Whole Numbers)",
+            text: "ਯਾਦ ਰੱਖੋ: ਪੂਰਨ ਸੰਖਿਆਵਾਂ ਵਿੱਚ 0 ਅਤੇ ਸਾਰੀਆਂ ਕੁਦਰਤੀ ਸੰਖਿਆਵਾਂ 1, 2, 3, ... ਸ਼ਾਮਲ ਹੁੰਦੀਆਂ ਹਨ।"
+        },
+        {
+            chapterName: "ਪਾਠ 3: ਸੰਖਿਆਵਾਂ ਨਾਲ ਖੇਡ (Playing with Numbers)",
+            text: "ਯਾਦ ਰੱਖੋ: ਜੇ ਕੋਈ ਸੰਖਿਆ 2 ਅਤੇ 3 ਦੋਵਾਂ ਨਾਲ ਭਾਗ ਖਾਂਦੀ ਹੈ, ਤਾਂ ਉਹ 6 ਨਾਲ ਵੀ ਭਾਗ ਖਾਂਦੀ ਹੈ।"
+        },
+        {
+            chapterName: "ਪਾਠ 4: ਭਿੰਨ (Fractions)",
+            text: "ਯਾਦ ਰੱਖੋ: ਜਦੋਂ ਦੋ ਭਿੰਨਾਂ ਦਾ denominator ਇੱਕੋ ਜਿਹਾ ਹੋਵੇ, ਤਾਂ ਵੱਡੀ ਭਿੰਨ ਉਹ ਹੈ ਜਿਸਦਾ numerator ਵੱਡਾ ਹੈ।"
+        },
+        {
+            chapterName: "ਪਾਠ 5: ਦਸ਼ਮਲਵ (Decimals)",
+            text: "ਯਾਦ ਰੱਖੋ: ਦਸ਼ਮਲਵ ਵਿੱਚ ਖੱਬੇ ਤੋਂ ਸੱਜੇ ਵਲ ਜਾ ਕੇ tenths, hundredths, thousandths ਦੇ ਸਥਾਨ ਆਉਂਦੇ ਹਨ।"
+        },
+        {
+            chapterName: "ਪਾਠ 6: ਬੁਨਿਆਦੀ ਜਿਆਮਿਤੀ ਵਿਚਾਰ (Basic Geometrical Ideas)",
+            text: "ਯਾਦ ਰੱਖੋ: ਰੇਖਖੰਡ (line segment) ਦੇ ਦੋ end points ਹੁੰਦੇ ਹਨ, ਜਦਕਿ ਰੇ (ray) ਦਾ ਕੇਵਲ ਇੱਕ ਸ਼ੁਰੂਆਤੀ ਬਿੰਦੂ ਹੁੰਦਾ ਹੈ।"
+        },
+        {
+            chapterName: "ਪਾਠ 7: ਆਕਾਰਾਂ ਦੀ ਸਮਝ (Understanding Elementary Shapes)",
+            text: "ਯਾਦ ਰੱਖੋ: ਵਰਗ ਦੇ ਚਾਰੋ ਕੋਣ 90° ਦੇ ਹੁੰਦੇ ਹਨ ਅਤੇ ਸਾਰੇ ਪਾਸੇ ਬਰਾਬਰ ਹੁੰਦੇ ਹਨ।"
+        },
+        {
+            chapterName: "ਪਾਠ 8: ਪਰੀਮੀਟਰ ਅਤੇ ਖੇਤਰਫਲ (Perimeter and Area)",
+            text: "ਯਾਦ ਰੱਖੋ: ਆਯਤ (rectangle) ਦਾ ਪਰਿਮਾਪ = 2 (ਲੰਬਾਈ + ਚੌੜਾਈ) ਹੋਂਦਾ ਹੈ।"
+        },
+        {
+            chapterName: "ਪਾਠ 9: ਪੇਸ਼ਕਾਰੀ ਡਾਟਾ (Data Handling)",
+            text: "ਯਾਦ ਰੱਖੋ: pictograph ਵਿੱਚ ਹਰ ਚਿੰਨ੍ਹ ਕਿਸੇ ਨਿਰਧਾਰਿਤ ਗਿਣਤੀ ਨੂੰ ਦਰਸਾਉਂਦਾ ਹੈ, ਇਸ ਲਈ key ਨੂੰ ਧਿਆਨ ਨਾਲ ਪੜ੍ਹਨਾ ਚਾਹੀਦਾ ਹੈ।"
+        },
+        {
+            chapterName: "ਪਾਠ 10: ਪੂਰਨ ਸੰਖਿਆਵਾਂ ਦਾ ਦੁਹਰਾਵਾ",
+            text: "ਯਾਦ ਰੱਖੋ: ਕਿਸੇ ਵੀ ਪੂਰਨ ਸੰਖਿਆ ਨੂੰ number line ’ਤੇ ਸੱਜੇ ਵੱਲ ਜਾ ਕੇ ਵਧਾਇਆ ਅਤੇ ਖੱਬੇ ਵੱਲ ਜਾ ਕੇ ਘਟਾਇਆ ਜਾਂਦਾ ਹੈ।"
+        }
+    ],
+    class_7: [
+        {
+            chapterName: "ਪਾਠ 1: ਸੰਪੂਰਨ ਸੰਖਿਆਵਾਂ (Integers)",
+            text: "ਯਾਦ ਰੱਖੋ: ਸੰਪੂਰਨ ਸੰਖਿਆਵਾਂ ਵਿੱਚ ਰਣਾਤਮਕ ਨੰਬਰ, ਧਨਾਤਮਕ ਨੰਬਰ ਅਤੇ 0 — ਤਿੰਨੇ ਸ਼ਾਮਲ ਹੁੰਦੇ ਹਨ।"
+        },
+        {
+            chapterName: "ਪਾਠ 1: ਸੰਪੂਰਨ ਸੰਖਿਆਵਾਂ (Integers)",
+            text: "ਯਾਦ ਰੱਖੋ: ਇੱਕੋ ਜਿਹੇ ਨਿਸ਼ਾਨ ਵਾਲੀਆਂ ਸੰਖਿਆਵਾਂ ਨੂੰ ਜੋੜਦੇ ਸਮੇਂ ਅੰਕ ਜੋੜ ਕੇ ਨਿਸ਼ਾਨ ਉਹੀ ਰੱਖਦੇ ਹਾਂ।"
+        },
+        {
+            chapterName: "ਪਾਠ 2: ਭਿੰਨਾਂ ਅਤੇ ਦਸ਼ਮਲਵ (Fractions & Decimals)",
+            text: "ਯਾਦ ਰੱਖੋ: ਕਿਸੇ ਭਿੰਨ ਨੂੰ ਦਸ਼ਮਲਵ ਵਿੱਚ ਲਿਖਣ ਲਈ ਅੰਸ਼ ਨੂੰ every denominator ਨਾਲ ਭਾਗ ਕਰਦੇ ਹਾਂ।"
+        },
+        {
+            chapterName: "ਪਾਠ 2: ਭਿੰਨਾਂ ਅਤੇ ਦਸ਼ਮਲਵ (Fractions & Decimals)",
+            text: "ਯਾਦ ਰੱਖੋ: ਇੱਕੋ ਜਿਹੇ numerator ਵਾਲੀਆਂ unit ਭਿੰਨਾਂ ਵਿੱਚ ਜਿੰਨਾ ਵੱਡਾ denominator, ਭਿੰਨ ਉਨ੍ਹਾ ਛੋਟੀ ਹੋਵੇਗੀ।"
+        },
+        {
+            chapterName: "ਪਾਠ 8: ਰੈਸ਼ਨਲ ਨੰਬਰ (Rational Numbers)",
+            text: "ਯਾਦ ਰੱਖੋ: ਹਰ ਰੈਸ਼ਨਲ ਨੰਬਰ ਨੂੰ a/b ਦੇ ਰੂਪ ਵਿੱਚ ਲਿਖਿਆ ਜਾ ਸਕਦਾ ਹੈ, ਜਿੱਥੇ a ਅਤੇ b ਸੰਪੂਰਨ ਹਨ ਤੇ b ≠ 0।"
+        },
+        {
+            chapterName: "ਪਾਠ 3: ਡਾਟਾ ਹੈਂਡਲਿੰਗ",
+            text: "ਯਾਦ ਰੱਖੋ: Mean = ਸਭ ਮੁੱਲਾਂ ਦਾ ਜੋੜ ÷ ਮੁੱਲਾਂ ਦੀ ਕੁੱਲ ਗਿਣਤੀ।"
+        },
+        {
+            chapterName: "ਪਾਠ 4: ਸਰਲ ਸਮੀਕਰਨ (Simple Equations)",
+            text: "ਯਾਦ ਰੱਖੋ: x + a = b ਹੋਵੇ ਤਾਂ x = b − a ਲਿਖ ਕੇ ਹੱਲ ਕਰ ਸਕਦੇ ਹਾਂ।"
+        },
+        {
+            chapterName: "ਪਾਠ 6: ਤ੍ਰਿਭੁਜ ਅਤੇ ਇਸ ਦੇ ਗੁਣ (Triangles)",
+            text: "ਯਾਦ ਰੱਖੋ: ਕਿਸੇ ਵੀ ਤ੍ਰਿਭੁਜ ਦੇ ਅੰਦਰਲੇ ਤਿੰਨ ਕੋਣਾਂ ਦਾ ਜੋੜ ਹਮੇਸ਼ਾ 180° ਹੁੰਦਾ ਹੈ।"
+        },
+        {
+            chapterName: "ਪਾਠ 9: ਪਰਿਮਾਪ ਅਤੇ ਖੇਤਰਫਲ (Perimeter & Area)",
+            text: "ਯਾਦ ਰੱਖੋ: ਵਰਗ ਦਾ ਖੇਤਰਫਲ = s² ਅਤੇ ਪਰਿਮਾਪ = 4s ਹੁੰਦਾ ਹੈ, ਜਿਥੇ s ਪਾਸੇ ਦੀ ਲੰਬਾਈ ਹੈ।"
+        },
+        {
+            chapterName: "ਪਾਠ 10: ਬੀਜਗਣੀਤਿਕ ਵਯੰਜਕ (Algebraic Expressions)",
+            text: "ਯਾਦ ਰੱਖੋ: ਕਿਸੇ ਵਯੰਜਕ ਵਿੱਚ ਵੈਰੀਏਬਲ ਦੇ ਸਾਹਮਣੇ ਆਇਆ ਅੰਕ ਉਸ ਦਾ coefficient ਕਿਹਾ ਜਾਂਦਾ ਹੈ।"
+        }
+    ],
+    class_8: [
+        {
+            chapterName: "Chapter 1: Rational Numbers",
+            text: "Remember: A rational number can always be written as p/q, where p and q are integers and q ≠ 0."
+        },
+        {
+            chapterName: "Chapter 1: Rational Numbers",
+            text: "Remember: The product of two rational numbers with the same sign is positive, with different signs is negative."
+        },
+        {
+            chapterName: "Chapter 2: Linear Equations in One Variable",
+            text: "Remember: To solve ax + b = c, first subtract b from both sides, then divide by a."
+        },
+        {
+            chapterName: "Chapter 3: Understanding Quadrilaterals",
+            text: "Remember: The sum of the interior angles of any quadrilateral is 360°."
+        },
+        {
+            chapterName: "Chapter 5: Data Handling",
+            text: "Remember: Mode is the value that occurs most frequently in a data set."
+        },
+        {
+            chapterName: "Chapter 6: Squares and Square Roots",
+            text: "Remember: A number ending in 2, 3, 7, or 8 cannot be a perfect square."
+        },
+        {
+            chapterName: "Chapter 7: Cubes and Cube Roots",
+            text: "Remember: The cube of any integer can be written as n × n × n = n³."
+        },
+        {
+            chapterName: "Chapter 8: Comparing Quantities",
+            text: "Remember: Percentage = (part ÷ whole) × 100."
+        },
+        {
+            chapterName: "Chapter 9: Algebraic Expressions and Identities",
+            text: "Remember: (a + b)² = a² + 2ab + b² is a very useful identity in algebra."
+        },
+        {
+            chapterName: "Chapter 11: Mensuration",
+            text: "Remember: The area of a parallelogram is base × height, just like a rectangle."
+        }
+    ]
+};
+
+function buildFlashcardsFromData() {
+    const map = {};
+    if (typeof CLASSES !== "undefined") {
+        Object.keys(CLASSES).forEach((key) => {
+            const cls = CLASSES[key];
+            if (!cls) return;
+
+            const custom = CUSTOM_FLASHCARDS[cls.id];
+            if (custom && custom.length) {
+                map[cls.id] = custom.slice(0, 10).map((card) => ({
+                    classId: cls.id,
+                    className: cls.name,
+                    chapterId: card.chapterId || null,
+                    chapterName: card.chapterName || "",
+                    text: card.text,
+                }));
+            } else {
+                map[cls.id] = [];
+            }
+        });
+    }
+    flashcardsByClass = map;
+}
+
+function renderCurrentFlashcard() {
+    const container = document.getElementById("poem-content");
+    if (!container || !isFlashcardMode || !currentFlashcardClassId) return;
+
+    const cards = flashcardsByClass[currentFlashcardClassId] || [];
+    if (!cards.length) return;
+
+    const idx = currentFlashcardIndex % cards.length;
+    const card = cards[idx];
+
+    // Prefer custom text-based knowledge bytes if present
+    if (card.text) {
+        container.innerHTML = `
+            <div class="flashcard flashcard-enter">
+                <div class="flashcard-label">Knowledge byte</div>
+                <div class="flashcard-class">${card.className}</div>
+                <div class="flashcard-question">“${card.text}”</div>
+                <div class="flashcard-answer-label">ਮਹੱਤਵਪੂਰਣ ਵਿਚਾਰ</div>
+                <div class="flashcard-meta">${card.chapterName} • ਫਲੈਸ਼ਕਾਰਡ ${idx + 1} / ${cards.length}</div>
+                <div class="flashcard-timer">
+                    <div class="flashcard-timer-inner"></div>
+                </div>
+            </div>
+        `;
+        return;
+    }
+
+    // Fallback: Turn (question, answer) into a modified knowledge byte
+    const qRaw = (card.question || "").trim();
+    const ans = (card.answer || "").trim();
+
+    let knowledgeLine = ans;
+
+    if (qRaw) {
+        let base = qRaw;
+
+        // Remove trailing question mark if present
+        if (base.endsWith("?")) {
+            base = base.slice(0, -1).trim();
+        }
+
+        // If it's a definition-style question: "... ਕੀ ਹੁੰਦਾ ਹੈ?" or "... ਕੀ ਹੈ?"
+        if (/ਕੀ ਹੁੰਦਾ ਹੈ\??$/.test(qRaw) || /ਕੀ ਹੈ\??$/.test(qRaw)) {
+            let concept = qRaw
+                .replace(/ਕੀ ਹੁੰਦਾ ਹੈ\??$/, "")
+                .replace(/ਕੀ ਹੈ\??$/, "")
+                .trim();
+            knowledgeLine = `ਯਾਦ ਰੱਖੋ: ${concept} = ${ans}`;
+        } else if (base.includes("=")) {
+            // If it's a numeric/formula style: "... = ?"
+            let line = base;
+            line = line.replace("= ?", `= ${ans}`);
+            line = line.replace(" =?", `= ${ans}`);
+            if (line.endsWith("=")) {
+                line = line + " " + ans;
+            }
+            knowledgeLine = `ਯਾਦ ਰੱਖੋ: ${line}`;
+        } else {
+            // Generic fallback: turn question into a tip-style statement
+            knowledgeLine = `ਯਾਦ ਰੱਖੋ: ${ans} ← ${base}`;
+        }
+    }
+
+    container.innerHTML = `
+        <div class="flashcard flashcard-enter">
+            <div class="flashcard-label">Knowledge byte</div>
+            <div class="flashcard-class">${card.className}</div>
+            <div class="flashcard-question">“${knowledgeLine}”</div>
+            <div class="flashcard-answer-label">ਮਹੱਤਵਪੂਰਣ ਵਿਚਾਰ</div>
+            <div class="flashcard-meta">${card.chapterName} • ਫਲੈਸ਼ਕਾਰਡ ${idx + 1} / ${cards.length}</div>
+            <div class="flashcard-timer">
+                <div class="flashcard-timer-inner"></div>
+            </div>
+        </div>
+    `;
+}
+function showNextFlashcard() {
+    const cards = flashcardsByClass[currentFlashcardClassId] || [];
+    if (!cards.length) return;
+    currentFlashcardIndex = (currentFlashcardIndex + 1) % cards.length;
+    renderCurrentFlashcard();
+}
+
+function stopFlashcards() {
+    isFlashcardMode = false;
+    currentFlashcardClassId = null;
+    if (flashcardTimerId !== null) {
+        clearInterval(flashcardTimerId);
+        flashcardTimerId = null;
+    }
+}
+
+function startFlashcardsForClass(classId) {
+    if (!flashcardsByClass || !Object.keys(flashcardsByClass).length) return;
+
+    const targetClassId = classId || selectedClassId;
+    const cards = flashcardsByClass[targetClassId];
+    if (!cards || !cards.length) return;
+
+    // Make sure any existing timer is cleared
+    stopFlashcards();
+    isFlashcardMode = true;
+    currentFlashcardClassId = targetClassId;
+    currentFlashcardIndex = 0;
+
+    const emptyState = document.getElementById("poem-empty-state");
+    const poemPanel = document.getElementById("poem-panel");
+    const quizFab = document.getElementById("start-quiz-fab");
+
+    if (emptyState) emptyState.classList.add("hidden");
+    if (poemPanel) poemPanel.classList.remove("hidden");
+    if (quizFab) quizFab.classList.add("hidden");
+
+    // When flashcards are visible, there is no active chapter loaded
+    currentChapterId = null;
+    currentPoemData = null;
+
+    const titleEl = document.getElementById("poem-title-text");
+    if (titleEl) {
+        // Show current class name as heading while in flashcard mode
+        titleEl.textContent = currentClassData ? currentClassData.name : "";
+    }
+
+    // Disable prev/next chapter buttons while in flashcard mode
+    const prevBtn = document.getElementById("prev-chapter-btn");
+    const nextBtn = document.getElementById("next-chapter-btn");
+    if (typeof setNavButtonState === "function") {
+        setNavButtonState(prevBtn, false);
+        setNavButtonState(nextBtn, false);
+    }
+
+    renderCurrentFlashcard();
+
+    flashcardTimerId = setInterval(() => {
+        // If a poem gets loaded in between, stop rotating flashcards
+        if (!isFlashcardMode || currentPoemData) {
+            stopFlashcards();
+            return;
+        }
+        showNextFlashcard();
+    }, FLASHCARD_DURATION_MS);
+}
+
 // ======== Sidebar collapse / expand ========
 // ===== Sidebar collapse / expand =====
 let isSidebarCollapsed = false;
@@ -153,12 +460,24 @@ function switchClassFromSidebar(classId) {
     highlightActiveSidebarClass();
     clearPoemPanel();
     loadChapters();
+
+    // When a new class is chosen and no chapter is selected yet,
+    // show that class's flashcards in the poem-content area.
+    if (typeof startFlashcardsForClass === "function") {
+        startFlashcardsForClass(classId);
+    }
 }
 
 function clearPoemPanel() {
+    // Hide poem panel and quiz button, show empty state
     document.getElementById("poem-panel").classList.add("hidden");
     document.getElementById("start-quiz-fab").classList.add("hidden");
     document.getElementById("poem-empty-state").classList.remove("hidden");
+
+    // Stop any flashcard carousel when clearing the panel
+    if (typeof stopFlashcards === "function") {
+        stopFlashcards();
+    }
 
     const prevBtn = document.getElementById("prev-chapter-btn");
     const nextBtn = document.getElementById("next-chapter-btn");
@@ -258,6 +577,10 @@ window.onload = function () {
     populateClassDropdown();
     loadChapters();
     showPage("chapterSelection");
+
+    // Build flashcards from data.js and show them when no chapter is selected
+    buildFlashcardsFromData();
+    startFlashcardsForClass(selectedClassId);
 
     // === NEW: sidebar collapse button ===
     const collapseBtn = document.getElementById("collapse-sidebar-btn");
@@ -468,6 +791,11 @@ function loadPoem(chapterData) {
     currentChapterId = chapterData.id;
     currentPoemData = chapterData;
 
+    // Stop flashcards when an actual poem/chapter is opened
+    if (typeof stopFlashcards === "function") {
+        stopFlashcards();
+    }
+
     // Stop any ongoing speech when switching poems
     if ("speechSynthesis" in window) {
         window.speechSynthesis.cancel();
@@ -647,6 +975,9 @@ window.readPoemLine = (el) => {
 
 // Play / stop the entire poem (Punjabi) with auto-scroll line by line
 window.togglePoemReading = () => {
+    // Do not start poem reading while flashcards are being shown
+    if (isFlashcardMode) return;
+
     if (!currentPoemData || !currentPoemData.poem) return;
 
     if (!("speechSynthesis" in window)) {
@@ -718,3 +1049,17 @@ if ("speechSynthesis" in window) {
         updatePoemReadButton();
     };
 }
+
+const liveQuizToggle = document.getElementById('live-quiz-toggle');
+const liveQuizPanel = document.getElementById('live-quiz-panel');
+
+liveQuizToggle.addEventListener('click', () => {
+  liveQuizPanel.classList.toggle('hidden');
+});
+
+// Hide when clicking outside
+document.addEventListener('click', (e) => {
+  if (!liveQuizToggle.contains(e.target) && !liveQuizPanel.contains(e.target)) {
+    liveQuizPanel.classList.add('hidden');
+  }
+});
