@@ -150,23 +150,7 @@
                   />
                 </div>
 
-                <!-- Class Select -->
-                <div>
-                  <label
-                    class="block text-indigo-700 text-sm font-bold mb-2 flex items-center gap-2"
-                  >
-                    <span class="material-symbols-outlined text-lg"
-                      >school</span
-                    >
-                    ਜਮਾਤ (Class)
-                  </label>
-                  <select
-                    id="student-class-select"
-                    class="w-full px-4 py-3 border-2 border-indigo-200 rounded-xl bg-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none text-base font-medium hover:border-indigo-300 transition cursor-pointer"
-                  >
-                    <!-- filled by JS -->
-                  </select>
-                </div>
+                
 
                 <!-- Submit Button -->
                 <button
@@ -448,94 +432,63 @@
         }
       }
 
-      // Populate class select dropdown
-      function populateClassSelect() {
-        const select = document.getElementById("student-class-select");
-        if (!select) return;
+      
+// --- Student Login Functions ---
+window.submitStudentDetails = () => {
+  const name = document.getElementById("student-name").value.trim();
+  const roll = document.getElementById("student-roll").value.trim();
 
-        select.innerHTML = "";
+  if (!name || !roll) {
+    alert("ਕਿਰਪਾ ਕਰਕੇ ਨਾਮ ਅਤੇ ਰੋਲ ਨੰਬਰ ਭਰੋ (Please fill name and roll number).");
+    return;
+  }
 
-        if (
-          typeof CLASSES === "undefined" ||
-          Object.keys(CLASSES).length === 0
-        ) {
-          const opt = document.createElement("option");
-          opt.value = "";
-          opt.textContent = "No classes found in data.js";
-          select.appendChild(opt);
-          return;
-        }
+  const selectedClassId = sessionStorage.getItem("selectedClassId");
+  const chapterId = sessionStorage.getItem("currentChapterId");
 
-        Object.keys(CLASSES).forEach((classKey) => {
-          const cls = CLASSES[classKey];
-          const opt = document.createElement("option");
-          opt.value = classKey; // store key like "CLASS_8"
-          opt.textContent = cls.name;
-          if (selectedClassKey && selectedClassKey === classKey) {
-            opt.selected = true;
-          }
-          select.appendChild(opt);
-        });
-      }
+  if (!selectedClassId || !chapterId) {
+    alert("Class/chapter information missing. Please go back and select again.");
+    window.location.href = "index.html";
+    return;
+  }
 
-      // --- Student Login Functions ---
-      window.submitStudentDetails = () => {
-        const name = document.getElementById("student-name").value.trim();
-        const roll = document.getElementById("student-roll").value.trim();
-        const classSelect = document.getElementById("student-class-select");
-        const classKey = classSelect.value; // key like "CLASS_8"
+  if (typeof CLASSES === "undefined") {
+    alert("Class data (CLASSES) not found.");
+    return;
+  }
 
-        if (!name || !roll || !classKey) {
-          alert(
-            "ਕਿਰਪਾ ਕਰਕੇ ਸਾਰੇ ਵੇਰਵੇ ਭਰੋ ਅਤੇ ਜਮਾਤ ਚੁਣੋ (Please fill all details and select class)."
-          );
-          return;
-        }
+  let currentClassData = null;
+  const classKey = Object.keys(CLASSES).find(
+    (key) => CLASSES[key].id === selectedClassId
+  );
+  if (classKey) {
+    currentClassData = CLASSES[classKey];
+  }
 
-        if (typeof CLASSES === "undefined" || !CLASSES[classKey]) {
-          alert("Selected class not found in data.js");
-          return;
-        }
+  if (!currentClassData || !Array.isArray(currentClassData.chapters)) {
+    alert("Selected class has no chapters configured.");
+    return;
+  }
 
-        // Store student details
-        studentName = name;
-        studentRoll = roll;
-        selectedClassKey = classKey;
-        currentClassData = CLASSES[classKey];
-        selectedClassId = currentClassData.id;
+  studentName = name;
+  studentRoll = roll;
+  sessionStorage.setItem("studentName", studentName);
+  sessionStorage.setItem("studentRoll", studentRoll);
 
-        // Save to sessionStorage
-        sessionStorage.setItem("studentName", studentName);
-        sessionStorage.setItem("studentRoll", studentRoll);
-        sessionStorage.setItem("selectedClassKey", selectedClassKey);
-        sessionStorage.setItem("selectedClassId", selectedClassId);
+  const foundChapter = currentClassData.chapters.find(
+    (ch) => ch.id === chapterId
+  );
+  if (foundChapter) {
+    currentPoemData = foundChapter;
+    showPage("quizView");
+    startQuiz(currentPoemData);
+  } else {
+    console.error("Chapter not found for id:", chapterId);
+    alert("Error loading quiz data. Please go back and re-select the chapter.");
+    window.location.href = "index.html";
+  }
+};
 
-        // Check if chapter/chapterId exists and start quiz
-        const chapterId = sessionStorage.getItem("currentChapterId");
-        if (
-          chapterId &&
-          currentClassData &&
-          Array.isArray(currentClassData.chapters)
-        ) {
-          const foundChapter = currentClassData.chapters.find(
-            (ch) => ch.id === chapterId
-          );
-          if (foundChapter) {
-            currentPoemData = foundChapter;
-            showPage("quizView");
-            startQuiz(currentPoemData);
-          } else {
-            console.error("Chapter not found for id:", chapterId);
-            alert(
-              "Error loading quiz data. Please go back and re-select the chapter."
-            );
-            showPage("studentLogin");
-          }
-        } else {
-          alert("No chapter selected. Please go back and choose a chapter.");
-          showPage("studentLogin");
-        }
-      };
 
       // Start quiz
       function startQuiz(poemData) {
@@ -758,8 +711,6 @@
 
       // --- On page load ---
       function initQuizPage() {
-  populateClassSelect();
-
   // Check if we have student details already and a selected chapter
   if (
     studentName &&

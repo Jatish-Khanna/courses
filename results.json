@@ -86,5 +86,16 @@
     "totalQuestions": 25,
     "totalTimeSeconds": 35.8,
     "timestamp": "2025-11-26T04:27:49.257441Z"
+  },
+  {
+    "studentName": "1",
+    "studentRoll": "1",
+    "classId": "CLASS_7",
+    "chapterId": "ch_01_integers",
+    "chapterName": "ਪਾਠ 1: ਸੰਪੂਰਨ ਸੰਖਿਆਵਾਂ (Integers)",
+    "score": 2,
+    "totalQuestions": 25,
+    "totalTimeSeconds": 55.4,
+    "timestamp": "2025-11-26T05:27:26.477498Z"
   }
 ]
