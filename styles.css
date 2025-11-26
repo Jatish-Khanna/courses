@@ -485,3 +485,44 @@ body {
 #live-quiz-panel button:hover {
     background-color: #eef2ff; /* Same hover color */
 }
+
+
+/* App-level sidebar (left) collapse behaviour */
+#app-sidebar.app-sidebar-collapsed {
+    width: 4.5rem; /* icon-only */
+    padding-left: 0.75rem;
+    padding-right: 0.75rem;
+}
+
+/* Hide labels & collapse-only text */
+#app-sidebar.app-sidebar-collapsed .sidebar-label,
+#app-sidebar.app-sidebar-collapsed .avatar-ring + div p,
+#app-sidebar.app-sidebar-collapsed .sidebar-submenu {
+    display: none !important;
+}
+
+/* Center icons when collapsed */
+#app-sidebar.app-sidebar-collapsed .sidebar-icon {
+    margin: 0 auto;
+}
+
+#app-sidebar.app-sidebar-collapsed ul {
+    align-items: center;
+}
+
+/* Sidebar submenu vertical line style like project list */
+.sidebar-submenu {
+    border-left-width: 2px;
+    border-left-style: solid;
+    border-left-color: rgba(148, 163, 184, 0.3); /* slate-300 */
+}
+
+/* Ensure nav buttons don't stretch weirdly */
+#app-sidebar nav button {
+    text-align: left;
+}
+
+/* When collapsed, also shrink toggle button text */
+#app-sidebar.app-sidebar-collapsed #app-sidebar-toggle {
+    align-self: center;
+}

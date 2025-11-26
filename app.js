@@ -554,6 +554,7 @@ function goToSiblingChapter(offset) {
 
 
 window.onload = function () {
+  const init = function () {
     pages = {
         chapterSelection: document.getElementById("page-chapter-selection"),
     };
@@ -642,108 +643,165 @@ window.onload = function () {
             });
         }
     
+
+  };
+
+  if (window.CONTENT_READY && typeof window.CONTENT_READY.then === "function") {
+    window.CONTENT_READY.then(init);
+  } else {
+    init();
+  }
 };
-
-
-
 function loadChapters() {
     const chapterList = document.getElementById("chapter-list");
-    chapterList.innerHTML =
-        '<p class="text-sm text-gray-400">Loading chapters...</p>';
-
-    if (!currentClassData) return;
-
-    const sortedChapters = [...currentClassData.chapters].sort(
-        (a, b) =>
-            (a.name.match(/\d+/)?.[0] || 0) -
-            (b.name.match(/\d+/)?.[0] || 0)
-    );
+    const floatingSymbols = document.getElementById("floating-symbols");
+  
+    if (!chapterList) return;
+  
     chapterList.innerHTML = "";
-
-    sortedChapters.forEach((chapter, index) => {
-        const item = document.createElement("div");
-        const isCompleted = isChapterCompleted(selectedClassId, chapter.id);
-        const hasQuestions =
-            chapter.questions && chapter.questions.length > 0;
-
-        // Determine styling based on state
-        let bgClass, borderClass, hoverClass, statusIcon, textClass;
-
-        if (isCompleted) {
-            // Completed: Vibrant Green
-            bgClass = "bg-green-100";
-            borderClass = "border-green-600";
-            hoverClass = "hover:bg-green-150 hover:shadow-lg";
-            statusIcon = "✅";
-            textClass = "text-green-900";
-        } else if (!hasQuestions) {
-            // Coming soon: Light Gray
-            bgClass = "bg-gray-100";
-            borderClass = "border-gray-500";
-            hoverClass = "";
-            statusIcon = "🔒";
-            textClass = "text-gray-600";
-        } else {
-            // Pending/Active: Vibrant Blue
-            bgClass = "bg-blue-100";
-            borderClass = "border-blue-600";
-            hoverClass = "hover:bg-blue-150 hover:shadow-lg";
-            statusIcon = "";
-            textClass = "text-blue-900";
-        }
-
-        item.className = `w-full text-left p-3 mb-2 rounded-lg flex items-center justify-between ${bgClass} border-l-4 ${borderClass} ${hoverClass} shadow-sm transition-all duration-200`;
-
-        item.innerHTML = `
-            <div class="flex-1">
-                <div class="font-bold text-base ${textClass}">${chapter.name}</div>
-                <div class="text-xs ${textClass} opacity-75">${
-            chapter.questions?.length || 0
-        } ਸਵਾਲ</div>
-            </div>
-            <span class="text-xl">${statusIcon}</span>
-        `;
-
-        if (!hasQuestions) {
-            item.classList.add("opacity-60", "cursor-not-allowed");
-            item.title = "Coming Soon";
-        } else {
-            item.classList.add("cursor-pointer", "ripple-surface");
-            item.onclick = (e) => {
-                createRipple(e);
-                loadPoem(chapter);
-            };
-        }
-        chapterList.appendChild(item);
-    });
-
-    // Show class completion progress at the top
+    if (floatingSymbols) floatingSymbols.innerHTML = "";
+  
+    if (!currentClassData) return;
+  
+    const sortedChapters = [...currentClassData.chapters].sort(
+      (a, b) =>
+        (a.name.match(/\d+/)?.[0] || 0) -
+        (b.name.match(/\d+/)?.[0] || 0)
+    );
+  
+    // Progress at top
     showClassProgress();
+  
+    sortedChapters.forEach((chapter, index) => {
+      const item = document.createElement("button");
+      item.type = "button";
+  
+      const isCompleted = isChapterCompleted(selectedClassId, chapter.id);
+      const hasQuestions = chapter.questions && chapter.questions.length > 0;
+      const questionCount = chapter.questions?.length || 0;
+      const chapterNumber = String(index + 1).padStart(2, "0");
+  
+      let stateLabel, stateClasses;
+      if (isCompleted) {
+        stateLabel = "ਮੁਕੰਮਲ";
+        stateClasses =
+          "bg-emerald-50 text-emerald-700 border-emerald-100";
+      } else if (!hasQuestions) {
+        stateLabel = "ਜਲਦੀ";
+        stateClasses =
+          "bg-slate-50 text-slate-500 border-slate-100";
+      } else {
+        stateLabel = "ਤਿਆਰ";
+        stateClasses =
+          "bg-indigo-50 text-indigo-700 border-indigo-100";
+      }
+  
+      item.className =
+        "chapter-card group w-full text-left rounded-2xl bg-white " +
+        "border border-slate-100 px-3.5 py-3 shadow-sm " +
+        (hasQuestions
+          ? "hover:shadow-md hover:-translate-y-[1px] cursor-pointer transition"
+          : "opacity-60 cursor-not-allowed");
+  
+      item.setAttribute("data-chapter-id", chapter.id);
+  
+      if (hasQuestions) {
+        item.onclick = (e) => {
+          if (typeof createRipple === "function") {
+            createRipple(e);
+          }
+          loadPoem(chapter);
+        };
+      } else {
+        item.title = "Coming Soon";
+      }
+  
+      item.innerHTML = `
+        <div class="flex gap-3">
+          <!-- Icon / thumbnail -->
+          <div class="mt-1">
+            <div class="w-10 h-10 rounded-2xl bg-slate-50 flex items-center justify-center border border-slate-100">
+              <span class="text-[11px] font-semibold text-slate-600">
+                #${chapterNumber}
+              </span>
+            </div>
+          </div>
+  
+          <!-- Main text -->
+          <div class="flex-1 min-w-0">
+            <div class="flex items-start justify-between gap-2">
+              <h4 class="text-sm font-semibold text-slate-900 leading-snug line-clamp-2">
+                ${chapter.name}
+              </h4>
+              <span
+                class="inline-flex items-center px-2 py-[2px] rounded-full text-[11px] font-medium border ${stateClasses}"
+              >
+                ${stateLabel}
+              </span>
+            </div>
+  
+            <div class="mt-1 flex items-center justify-between text-[11px] text-slate-500">
+              <span>${questionCount} ਸਵਾਲ</span>
+              ${
+                isCompleted
+                  ? `<span class="inline-flex items-center gap-1 text-emerald-600">
+                       <span class="material-symbols-outlined text-[14px]">check_circle</span>
+                       <span>Done</span>
+                     </span>`
+                  : ""
+              }
+            </div>
+          </div>
+        </div>
+      `;
+  
+      chapterList.appendChild(item);
+    });
+  
+    highlightSelectedChapterCard();
+  }
+  
+function showClassProgress() {
+    const chapterList = document.getElementById("chapter-list");
+    if (!chapterList) return;
+
+    const status = getClassCompletionStatus(selectedClassId);
+    if (!status || status.total <= 0) return;
+
+    const progressBar = document.createElement("div");
+    progressBar.className =
+        "mb-3 p-3 rounded-2xl border border-indigo-200 bg-gradient-to-r from-indigo-50 via-sky-50 to-violet-50 shadow-sm";
+
+    progressBar.innerHTML = `
+        <div class="flex justify-between items-center mb-2">
+            <span class="text-xs font-semibold text-slate-800">
+                ਪਾਠ ਤਰੱਕੀ
+            </span>
+            <span class="text-xs font-semibold text-slate-700">
+                ${status.completed}/${status.total}
+            </span>
+        </div>
+        <div class="w-full bg-indigo-100 h-2 rounded-full overflow-hidden">
+            <div
+                class="h-2 rounded-full bg-gradient-to-r from-indigo-500 via-violet-500 to-fuchsia-500 transition-all duration-500"
+                style="width: ${status.percentage}%;"
+            ></div>
+        </div>
+    `;
+
+    chapterList.appendChild(progressBar);
 }
 
-function showClassProgress() {
-    const status = getClassCompletionStatus(selectedClassId);
-    const progressContainer = document.getElementById("chapter-list");
-
-    if (status.total > 0) {
-        const progressBar = document.createElement("div");
-        progressBar.className =
-            "mb-4 p-3 bg-gradient-to-r from-indigo-50 to-blue-50 rounded-lg border border-indigo-200";
-        progressBar.innerHTML = `
-            <div class="flex justify-between items-center mb-2">
-                <span class="text-sm font-bold text-indigo-700">ਪਾਠ ਤਰੱਕੀ (Chapter Progress)</span>
-                <span class="text-sm font-bold text-indigo-600">${status.completed}/${status.total}</span>
-            </div>
-            <div class="w-full bg-gray-300 rounded-full h-2">
-                <div class="bg-gradient-to-r from-indigo-500 to-blue-500 h-2 rounded-full transition-all duration-300" style="width: ${status.percentage}%"></div>
-            </div>
-            <div class="text-xs text-indigo-600 mt-2 font-semibold">${status.percentage}% ✨</div>
-        `;
-        progressContainer.insertBefore(
-            progressBar,
-            progressContainer.firstChild
-        );
-    }
+function highlightSelectedChapterCard() {
+    const cards = document.querySelectorAll("#chapter-list .chapter-card");
+    cards.forEach((card) => {
+        const id = card.getAttribute("data-chapter-id");
+        if (id === currentChapterId) {
+            card.classList.add("chapter-selected");
+        } else {
+            card.classList.remove("chapter-selected");
+        }
+    });
 }
 
 function populateClassDropdown() {
@@ -821,6 +879,11 @@ document.getElementById("poem-content").innerHTML = poemLines;
 
 // Update next/prev button state based on this chapter
 updateChapterNavButtons();
+
+ // Highlight the selected card in sidebar
+ if (typeof highlightSelectedChapterCard === "function") {
+    highlightSelectedChapterCard();
+}
 }
 
 window.startQuiz = (e) => {
@@ -1050,16 +1113,63 @@ if ("speechSynthesis" in window) {
     };
 }
 
-const liveQuizToggle = document.getElementById('live-quiz-toggle');
-const liveQuizPanel = document.getElementById('live-quiz-panel');
+const teacherAdminToggle = document.getElementById('teacher-admin-toggle');
+const teacherAdminPanel = document.getElementById('teacher-admin-panel');
 
-liveQuizToggle.addEventListener('click', () => {
-  liveQuizPanel.classList.toggle('hidden');
-});
 
-// Hide when clicking outside
+if (teacherAdminToggle && teacherAdminPanel) {
+  teacherAdminToggle.addEventListener('click', () => {
+    teacherAdminPanel.classList.toggle('hidden');
+  });
+}
+
+// Hide when clicking outside (extended)
 document.addEventListener('click', (e) => {
   if (!liveQuizToggle.contains(e.target) && !liveQuizPanel.contains(e.target)) {
     liveQuizPanel.classList.add('hidden');
   }
+  if (teacherAdminToggle && teacherAdminPanel &&
+      !teacherAdminToggle.contains(e.target) &&
+      !teacherAdminPanel.contains(e.target)) {
+    teacherAdminPanel.classList.add('hidden');
+  }
 });
+
+// App sidebar collapse (icon-only mode)
+const appSidebar = document.getElementById('app-sidebar');
+const appSidebarToggle = document.getElementById('app-sidebar-toggle');
+
+if (appSidebar && appSidebarToggle) {
+  const appSidebarIcon = appSidebarToggle.querySelector('.material-symbols-outlined');
+  appSidebarToggle.addEventListener('click', () => {
+    const collapsed = appSidebar.classList.toggle('app-sidebar-collapsed');
+    if (appSidebarIcon) {
+      appSidebarIcon.textContent = collapsed ? 'chevron_right' : 'chevron_left';
+    }
+    // Close dropdown panels when collapsed
+    const livePanel = document.getElementById('live-quiz-panel');
+    const classPanel = document.getElementById('class-list-panel');
+    const teacherPanel = document.getElementById('teacher-admin-panel');
+    const classChevron = document.getElementById('chevron-icon');
+    if (livePanel) livePanel.classList.add('hidden');
+    if (classPanel) classPanel.classList.add('hidden');
+    if (teacherPanel) teacherPanel.classList.add('hidden');
+    if (classChevron) classChevron.style.transform = 'rotate(0deg)';
+  });
+}
+
+const liveQuizToggle = document.getElementById('live-quiz-toggle');
+const liveQuizPanel = document.getElementById('live-quiz-panel');
+const liveQuizArrow = liveQuizToggle ? liveQuizToggle.querySelector('.sidebar-arrow') : null;
+
+if (liveQuizToggle && liveQuizPanel) {
+  liveQuizToggle.addEventListener('click', () => {
+    const isHidden = liveQuizPanel.classList.contains('hidden');
+    liveQuizPanel.classList.toggle('hidden');
+    if (liveQuizArrow) {
+      liveQuizArrow.style.transform = isHidden ? 'rotate(180deg)' : 'rotate(0deg)';
+    }
+  });
+}
+
+

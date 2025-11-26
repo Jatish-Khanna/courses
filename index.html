@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="pa">
-
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -8,6 +7,7 @@
 
     <!-- Data for classes/chapters/poems -->
     <script src="data.js"></script>
+    <script src="content_bootstrap.js"></script>
 
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -24,147 +24,236 @@
 
     <!-- Your custom styles -->
     <link rel="stylesheet" href="styles.css" />
+
+    <style>
+      /* App sidebar collapse: icon-only mode */
+      #app-sidebar.app-sidebar-collapsed {
+        width: 4.5rem;
+        padding-left: 0.75rem;
+        padding-right: 0.75rem;
+      }
+
+      #app-sidebar.app-sidebar-collapsed .sidebar-label,
+      #app-sidebar.app-sidebar-collapsed .sidebar-submenu,
+      #app-sidebar.app-sidebar-collapsed .sidebar-brand {
+        display: none !important;
+      }
+
+      /* Shrink logo on collapse */
+      #app-sidebar.app-sidebar-collapsed .avatar-ring > div {
+        width: 2.5rem;
+        height: 2.5rem;
+      }
+
+      #app-sidebar.app-sidebar-collapsed .avatar-ring img {
+        width: 1.5rem;
+        height: 1.5rem;
+      }
+
+      #app-sidebar.app-sidebar-collapsed .avatar-ring {
+        margin-bottom: 0;
+      }
+
+      #app-sidebar.app-sidebar-collapsed ul {
+        align-items: center;
+      }
+
+      #app-sidebar.app-sidebar-collapsed .sidebar-icon {
+        margin: 0 auto;
+      }
+    </style>
 </head>
+<body class="bg-[#e7efff] text-slate-800 font-['Roboto',system-ui,sans-serif]">
 
-<body class="text-slate-800">
-    <!-- Top App Bar -->
-    <header class="top-app-bar text-white shadow-2xl sticky top-0 z-20 py-4 md:py-4">
-        <div class="container mx-auto px-4">
-            <div class="flex items-center justify-between">
-                <!-- Left Section: Logo & Title -->
-                <div class="flex items-center gap-3">
-                    <!-- NEW LOGO -->
-                    <div class="p-1.5 rounded-full shadow-[0_0_8px_rgba(255,255,255,0.35)]">
-                        <img src="/assets/icons/logo.png" class="w-6 h-6 md:w-8 md:h-8 object-contain" />
-                    </div>
-                    <div>
-                        <h1 class="text-xl md:text-2xl font-bold font-laila leading-tight">
-                            ਕਵਿਤਾ ਕੁਇਜ਼
-                        </h1>
-                        <p class="text-xs md:text-sm text-indigo-100 font-medium -mt-1">
-                            ਗਣਿਤ ਤੇ ਕਲਾ
-                        </p>
-                    </div>
-                </div>
+  <div class="min-h-screen flex flex-col lg:flex-row gap-4 p-3 md:p-6">
 
-                <!-- Right Section -->
-                <div class="flex items-center gap-2">
-                <!-- Teacher / Admin link -->
-                <a href="teacher.html"
-                    class="hidden sm:inline-flex items-center gap-1 px-3 py-1.5 rounded-full border border-amber-200 bg-amber-50 text-amber-800 text-xs font-semibold shadow hover:bg-amber-100 transition">
-                    <span class="material-symbols-outlined text-sm">lock</span>
-                    <span>ਅਧਿਆਪਕ / ਐਡਮਿਨ</span>
-                </a>
-<!-- Live Quiz Dropdown -->
-<div class="relative">
-    <button id="live-quiz-toggle"
-      class="flex items-center gap-1 text-white font-semibold hover:text-indigo-200 transition text-sm">
-      <span>Live Quiz</span>
-      <span class="material-symbols-outlined text-lg">expand_more</span>
-    </button>
-  
-    <!-- Dropdown menu -->
-    <div id="live-quiz-panel"
-      class="absolute right-0 mt-1 bg-white shadow-2xl rounded-xl border border-indigo-200 w-48 hidden z-30">
-      <a href="live_host"
-        class="flex items-center gap-2 px-4 py-2 hover:bg-indigo-50 text-indigo-700 text-sm border-b">
-        <span class="material-symbols-outlined text-base">cast_for_education</span>
-        Teacher (Host)
-      </a>
-      <a href="live_join"
-        class="flex items-center gap-2 px-4 py-2 hover:bg-indigo-50 text-indigo-700 text-sm">
-        <span class="material-symbols-outlined text-base">smartphone</span>
-        Student (Join)
-      </a>
-    </div>
-  </div>
-  
+    <!-- LEFT PROFILE / NAV (no personal profile info) -->
+    <aside id="app-sidebar"
+      class="w-full lg:w-64 bg-white rounded-3xl shadow-2xl flex flex-col justify-between p-5 md:p-6 space-y-6 lg:space-y-0 transition-all duration-300 ease-in-out">
 
-
-                    <!-- Collapsible Class Selector -->
-                    <div class="relative">
-                        <button id="class-toggle-btn"
-                            class="flex items-center gap-1 text-white font-semibold hover:text-indigo-200 transition text-sm">
-                            <span id="current-class-label">ਜਮਾਤ</span>
-                            <span id="chevron-icon"
-                                class="material-symbols-outlined text-lg transition-transform duration-200">
-                                expand_more
-                            </span>
-                        </button>
-                        <!-- Hidden Class List -->
-                        <div id="class-list-panel"
-                            class="absolute right-0 mt-1 bg-white shadow-2xl rounded-xl border border-indigo-200 w-43 hidden z-30">
-                            <div id="class-list-items" class="py-2"></div>
-                        </div>
-                    </div>
-                </div>
-
+      <!-- Top: logo + nav -->
+      <div>
+        <!-- App branding instead of personal profile -->
+        <div class="flex flex-col items-center text-center gap-3">
+          <div class="avatar-ring rounded-full">
+            <div
+              class="w-16 h-16 md:w-20 md:h-20 rounded-full bg-slate-100 flex items-center justify-center overflow-hidden">
+              <img src="/assets/icons/logo.png" alt="App Logo" class="w-12 h-12 object-contain" />
             </div>
+          </div>
+          <div>
+            <p class="text-sm font-semibold text-slate-700 sidebar-brand">Punjabi Poem Quiz</p>
+            <p class="text-[11px] text-slate-400 sidebar-brand">Read • Practice • Test</p>
+          </div>
         </div>
-    </header>
 
-    <!-- Hero Section with Background -->
-    <section class="relative h-56 md:h-64 overflow-hidden rounded-2xl shadow-lg"
-        style="background: linear-gradient(135deg, #e0f7fa, #fff9c4, #dcedc8);">
-        <!-- Animated Math Symbols -->
-        <div class="absolute top-4 left-6 text-red-400 text-5xl animate-bounce-slow">➕</div>
-        <div class="absolute top-6 right-10 text-yellow-400 text-6xl animate-spin-slow">➖</div>
-        <div class="absolute bottom-10 left-12 text-green-400 text-6xl animate-bounce-slow">×</div>
-        <div class="absolute bottom-6 right-16 text-blue-400 text-5xl animate-spin-slow">÷</div>
-        <div class="absolute top-20 left-1/3 text-pink-400 text-5xl animate-bounce-slow">π</div>
-        <div class="absolute bottom-20 right-1/3 text-orange-400 text-5xl animate-spin-slow">√</div>
-        <div class="absolute top-1/3 right-1/4 text-indigo-400 text-6xl animate-bounce-slow">⚪</div>
-        <div class="absolute bottom-14 left-1/4 text-teal-400 text-6xl animate-spin-slow">🔺</div>
-        <div class="absolute top-24 right-2/3 text-pink-400 text-5xl animate-bounce-slow">∠</div>
-        <div class="absolute bottom-6 left-1/2 text-cyan-400 text-6xl animate-spin-slow">¾</div>
+        <!-- Sidebar collapse toggle -->
+        <button id="app-sidebar-toggle"
+          class="mt-4 ml-auto flex items-center justify-center w-8 h-8 rounded-full border border-slate-200 hover:bg-slate-50 text-slate-500 text-sm">
+          <span class="material-symbols-outlined text-base">chevron_left</span>
+        </button>
 
-        <!-- Main heading -->
-        <div class="relative h-full flex flex-col items-center justify-center text-center px-4">
-            <h2 class="text-3xl md:text-5xl font-bold font-laila drop-shadow-lg relative z-10 text-blue-800">
-                ਕਵਿਤਾ ਕੁਇਜ਼
-            </h2>
-            <p class="text-sm md:text-lg text-blue-700 drop-shadow-lg font-medium mt-1 relative z-10">
-                ਗਣਿਤ ਤੇ ਕਲਾ
-            </p>
+        <!-- Left nav menu (visual only for now) -->
+        <nav class="mt-8 space-y-1 text-sm font-medium">
+          <ul class="space-y-2">
+            <!-- Live Quiz -->
+            <li class="relative">
+              <button id="live-quiz-toggle"
+                class="w-full flex items-center justify-between gap-2 px-3 py-2 rounded-xl hover:bg-indigo-50 text-slate-700 text-sm font-medium transition">
+                <span class="flex items-center gap-2">
+                  <span class="material-symbols-outlined text-base sidebar-icon">cast_for_education</span>
+                  <span class="sidebar-label">Live Quiz</span>
+                </span>
+                <span class="material-symbols-outlined text-sm sidebar-arrow">expand_more</span>
+              </button>
+              <div id="live-quiz-panel"
+                class="sidebar-submenu mt-1 ml-6 bg-white shadow-2xl rounded-xl border border-indigo-100 w-full hidden z-30">
+                <a href="live_host"
+                  class="flex items-center gap-2 px-3 py-2 hover:bg-indigo-50 text-indigo-700 text-xs border-b rounded-t-xl">
+                  <span class="material-symbols-outlined text-base">cast_for_education</span>
+                  <span>Teacher (Host)</span>
+                </a>
+                <a href="live_join"
+                  class="flex items-center gap-2 px-3 py-2 hover:bg-indigo-50 text-indigo-700 text-xs rounded-b-xl">
+                  <span class="material-symbols-outlined text-base">smartphone</span>
+                  <span>Student (Join)</span>
+                </a>
+              </div>
+            </li>
+
+            <!-- Class selector -->
+            <li class="relative">
+              <button id="class-toggle-btn"
+                class="w-full flex items-center justify-between gap-2 px-3 py-2 rounded-xl hover:bg-indigo-50 text-slate-700 text-sm font-medium transition">
+                <span class="flex items-center gap-2">
+                  <span class="material-symbols-outlined text-base sidebar-icon">school</span>
+                  <span id="current-class-label" class="sidebar-label">ਜਮਾਤ</span>
+                </span>
+                <span id="chevron-icon"
+                  class="material-symbols-outlined text-sm sidebar-arrow transition-transform duration-200">
+                  expand_more
+                </span>
+              </button>
+              <div id="class-list-panel"
+                class="sidebar-submenu mt-1 ml-6 bg-white shadow-2xl rounded-xl border border-indigo-100 w-full hidden z-30 max-h-64 overflow-y-auto">
+                <div id="class-list-items" class="py-1"></div>
+              </div>
+            </li>
+
+            <!-- Teacher / Admin -->
+            <li class="relative">
+              <button id="teacher-admin-toggle"
+                class="w-full flex items-center justify-between gap-2 px-3 py-2 rounded-xl hover:bg-amber-50 text-slate-700 text-sm font-medium transition">
+                <span class="flex items-center gap-2">
+                  <span class="material-symbols-outlined text-base sidebar-icon">admin_panel_settings</span>
+                  <span class="sidebar-label">ਅਧਿਆਪਕ / ਐਡਮਿਨ</span>
+                </span>
+                <span class="material-symbols-outlined text-sm sidebar-arrow">expand_more</span>
+              </button>
+              <div id="teacher-admin-panel"
+                class="sidebar-submenu mt-1 ml-6 bg-white shadow-2xl rounded-xl border border-amber-100 w-full hidden z-30">
+                <a href="teacher.html"
+                  class="flex items-center gap-2 px-3 py-2 hover:bg-amber-50 text-amber-800 text-xs border-b rounded-t-xl">
+                  <span class="material-symbols-outlined text-base">table_view</span>
+                  <span>ਨਤੀਜੇ / ਡੈਸ਼ਬੋਰਡ</span>
+                </a>
+                <a href="content_admin.html"
+                  class="flex items-center gap-2 px-3 py-2 hover:bg-amber-50 text-amber-800 text-xs rounded-b-xl">
+                  <span class="material-symbols-outlined text-base">edit_square</span>
+                  <span>ਕਨਟੈਂਟ ਐਡਮਿਨ</span>
+                </a>
+              </div>
+            </li>
+          </ul>
+        </nav>
+      </div>
+
+          </aside>
+
+    <!-- RIGHT: MAIN DASHBOARD -->
+    <div class="flex-1 flex flex-col gap-4">
+
+      <!-- TOP BAR: title + controls (NO SEARCH / NO PROFILE) -->
+      
+
+
+      <!-- HERO CARD -->
+      <section
+        class="relative h-52 md:h-60 overflow-hidden rounded-3xl shadow-2xl bg-gradient-to-r from-indigo-500 via-indigo-600 to-indigo-500 text-white px-6 py-4 flex flex-col md:flex-row items-center justify-between gap-6">
+
+        <!-- Left: welcome text -->
+        <div class="relative z-10 max-w-md space-y-2">
+          <p class="text-xs uppercase tracking-wide text-indigo-100 font-semibold">
+            Welcome back
+          </p>
+          <h2 class="text-2xl md:text-3xl font-bold font-laila leading-snug">
+            ਸਤ ਸ੍ਰੀ ਅਕਾਲ!<br />
+            ਕਵਿਤਾ ਕੁਇਜ਼ ਵਿੱਚ ਦੁਬਾਰਾ ਸਵਾਗਤ ਹੈ।
+          </h2>
+          <p class="text-sm md:text-base text-indigo-100/90 mt-1">
+            ਆਪਣੀ ਜਮਾਤ ਚੁਣੋ, ਕਵਿਤਾ ਪੜ੍ਹੋ ਅਤੇ ਟੈਸਟ ਦੇ ਨਾਲ ਅੱਗੇ ਵਧੋ।
+          </p>
         </div>
-    </section>
 
-    <main class="container mx-auto p-3 md:p-4 mb-4">
+        <!-- Right: activity circle -->
+        <div class="relative flex-1 flex items-center justify-end h-full">
+          <div
+            class="relative w-28 h-28 md:w-32 md:h-32 rounded-full bg-indigo-400/30 flex items-center justify-center backdrop-blur-sm">
+            <div
+              class="absolute inset-1 rounded-full border-4 border-dashed border-indigo-200 animate-[spin_12s_linear_infinite]">
+            </div>
+            <div class="w-20 h-20 md:w-24 md:h-24 rounded-full bg-white flex flex-col items-center justify-center">
+              <span class="text-xs font-semibold text-slate-500">ਕਵਿਤਾ</span>
+              <span class="text-xl md:text-2xl font-bold text-indigo-600">ਕੁਇਜ਼</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- MAIN CONTENT: reuse your original chapter + poem layout -->
+      <main class="container mx-auto p-3 md:p-4 mb-4">
         <!-- Main View: Chapter Selection -->
         <div id="page-chapter-selection" class="page">
-            <div class="flex flex-col lg:flex-row gap-5 items-start relative">
+            <div class="flex flex-col lg:flex-row gap-5 items-stretch relative min-h-[600px]">
                 <!-- Sidebar -->
                 <!-- Sidebar -->
-                <!-- Sidebar -->
-                <aside id="sidebar" class="w-full lg:w-80 space-y-6">
-                    <div
-                        class="bg-gradient-to-br from-blue-50 to-cyan-50 rounded-2xl shadow-lg border border-blue-100 p-4">
-                        <h3 class="text-xl md:text-2xl font-bold text-blue-700 flex items-center gap-2 mb-3 font-laila">
-                            <span class="material-symbols-outlined text-blue-600 text-3xl">list_alt</span>
-                            <span>ਪਾਠ</span>
+                <aside id="sidebar" class="w-full lg:w-80 transition-all duration-300">
+                    <div class="relative h-full rounded-3xl bg-slate-50
+             border border-slate-100 shadow-sm
+             p-4 pt-5 flex flex-col">
+                        <!-- Header -->
+                        <div class="mb-3 flex items-center justify-between">
+                            <div>
+                                <h3 class="text-sm font-semibold text-slate-900 flex items-center gap-2">
+                                    <span
+                                        class="inline-flex items-center justify-center w-7 h-7 rounded-xl bg-white shadow-sm border border-slate-200">
+                                        <span class="material-symbols-outlined text-[18px] text-indigo-500">
+                                            menu_book
+                                        </span>
+                                    </span>
+                                    <span>ਪਾਠ ਸੂਚੀ</span>
+                                </h3>
+                                <p class="text-[11px] text-slate-500 mt-1">
+                                    ਪਾਠ ਚੁਣੋ ਤੇ ਅੱਗੇ ਵਧੋ
+                                </p>
+                            </div>
+                        </div>
 
-                            <!-- Collapse button (visible when sidebar is open) -->
-                            <button id="collapse-sidebar-btn"
-                                class="ml-auto flex items-center justify-center w-8 h-8 rounded-full border border-blue-200 bg-white text-blue-600 text-base shadow-sm hover:bg-blue-50 transition"
-                                aria-label="ਪਾਠ ਲੁਕਾਓ (shortcut: .)" aria-keyshortcuts="."
-                                title="ਪਾਠ ਲੁਕਾਓ (shortcut: .)">
-                                <span class="material-symbols-outlined text-lg">chevron_left</span>
-                            </button>
-                        </h3>
-                        <div id="chapter-list" class="space-y-1 max-h-[60vh] overflow-y-auto -mr-2 pr-2">
-                            <!-- JS will fill this -->
+                        <!-- Scrollable chapter list -->
+                        <div id="chapter-list"
+                            class="flex-1 overflow-y-auto space-y-2 pr-1 pb-3 max-h-[calc(100vh-220px)]">
+                            <div id="floating-symbols" class="hidden"></div>
                         </div>
                     </div>
                 </aside>
 
-                <!-- Collapsed toggle (shown only when sidebar is collapsed) -->
                 <!-- Collapsed toggle (only visible when sidebar is collapsed) -->
                 <button id="sidebar-collapsed-toggle"
-                    class="hidden items-center justify-center px-3 py-2 rounded-r-full bg-blue-600 text-white font-bold shadow-2xl text-sm absolute top-1/2 -translate-y-1/2 -left-2 wiggle-button"
+                    class="hidden items-center justify-center px-3 py-2 rounded-r-full bg-indigo-600 text-white font-semibold shadow-2xl text-sm absolute top-1/2 -translate-y-1/2 -left-2 wiggle-button"
                     aria-label="ਪਾਠ ਖੋਲ੍ਹੋ (shortcut: .)" aria-keyshortcuts="." title="ਪਾਠ ਖੋਲ੍ਹੋ (shortcut: .)">
+                    <span class="material-symbols-outlined text-base mr-1">menu_book</span>
                     ਪਾਠ
                 </button>
-
 
                 <!-- Main content -->
                 <section
@@ -224,7 +313,6 @@
                             </div>
                         </div>
 
-
                         <div id="poem-content" class="font-laila max-h-[60vh] overflow-y-auto"></div>
                     </div>
 
@@ -238,8 +326,28 @@
         </div>
     </main>
 
-    <!-- Your main JS logic -->
-    <script src="app.js"></script>
+    </div>
+  </div>
+
+  <!-- Your main JS logic -->
+  <script src="app.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      var sidebar = document.getElementById('app-sidebar');
+      var sidebarToggle = document.getElementById('app-sidebar-toggle');
+
+      if (sidebar && sidebarToggle) {
+        var icon = sidebarToggle.querySelector('.material-symbols-outlined');
+        sidebarToggle.addEventListener('click', function () {
+          var collapsed = sidebar.classList.toggle('app-sidebar-collapsed');
+          if (icon) {
+            icon.textContent = collapsed ? 'chevron_right' : 'chevron_left';
+          }
+        });
+      }
+    });
+  </script>
+
 </body>
 
 </html>
