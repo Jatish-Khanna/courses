@@ -99,22 +99,22 @@
             <!-- Live Quiz -->
             <li class="relative">
               <button id="live-quiz-toggle"
-                class="w-full flex items-center justify-between gap-2 px-3 py-2 rounded-xl hover:bg-indigo-50 text-slate-700 text-sm font-medium transition">
+                class="w-full flex items-center justify-between px-3 py-2 rounded-xl text-slate-700 text-sm font-medium hover:bg-slate-100 transition">
                 <span class="flex items-center gap-2">
                   <span class="material-symbols-outlined text-base sidebar-icon">cast_for_education</span>
                   <span class="sidebar-label">Live Quiz</span>
                 </span>
-                <span class="material-symbols-outlined text-sm sidebar-arrow">expand_more</span>
+                <span class="material-symbols-outlined text-sm sidebar-arrow text-slate-400">expand_more</span>
               </button>
               <div id="live-quiz-panel"
-                class="sidebar-submenu mt-1 ml-6 bg-white shadow-2xl rounded-xl border border-indigo-100 w-full hidden z-30">
+                class="sidebar-submenu mt-1 ml-6 space-y-1 hidden">
                 <a href="live_host"
-                  class="flex items-center gap-2 px-3 py-2 hover:bg-indigo-50 text-indigo-700 text-xs border-b rounded-t-xl">
+                  class="flex items-center gap-2 px-3 py-1.5 text-xs text-slate-700 rounded-l-full hover:bg-slate-100">
                   <span class="material-symbols-outlined text-base">cast_for_education</span>
                   <span>Teacher (Host)</span>
                 </a>
                 <a href="live_join"
-                  class="flex items-center gap-2 px-3 py-2 hover:bg-indigo-50 text-indigo-700 text-xs rounded-b-xl">
+                  class="flex items-center gap-2 px-3 py-1.5 text-xs text-slate-700 rounded-l-full hover:bg-slate-100">
                   <span class="material-symbols-outlined text-base">smartphone</span>
                   <span>Student (Join)</span>
                 </a>
@@ -124,18 +124,18 @@
             <!-- Class selector -->
             <li class="relative">
               <button id="class-toggle-btn"
-                class="w-full flex items-center justify-between gap-2 px-3 py-2 rounded-xl hover:bg-indigo-50 text-slate-700 text-sm font-medium transition">
+                class="w-full flex items-center justify-between px-3 py-2 rounded-xl text-slate-700 text-sm font-medium hover:bg-slate-100 transition">
                 <span class="flex items-center gap-2">
                   <span class="material-symbols-outlined text-base sidebar-icon">school</span>
                   <span id="current-class-label" class="sidebar-label">ਜਮਾਤ</span>
                 </span>
                 <span id="chevron-icon"
-                  class="material-symbols-outlined text-sm sidebar-arrow transition-transform duration-200">
+                  class="material-symbols-outlined text-sm sidebar-arrow text-slate-400 transition-transform duration-200">
                   expand_more
                 </span>
               </button>
               <div id="class-list-panel"
-                class="sidebar-submenu mt-1 ml-6 bg-white shadow-2xl rounded-xl border border-indigo-100 w-full hidden z-30 max-h-64 overflow-y-auto">
+                class="sidebar-submenu mt-1 ml-6 space-y-1 max-h-64 overflow-y-auto hidden">
                 <div id="class-list-items" class="py-1"></div>
               </div>
             </li>
@@ -143,22 +143,22 @@
             <!-- Teacher / Admin -->
             <li class="relative">
               <button id="teacher-admin-toggle"
-                class="w-full flex items-center justify-between gap-2 px-3 py-2 rounded-xl hover:bg-amber-50 text-slate-700 text-sm font-medium transition">
+                class="w-full flex items-center justify-between px-3 py-2 rounded-xl text-slate-700 text-sm font-medium hover:bg-slate-100 transition">
                 <span class="flex items-center gap-2">
                   <span class="material-symbols-outlined text-base sidebar-icon">admin_panel_settings</span>
                   <span class="sidebar-label">ਅਧਿਆਪਕ / ਐਡਮਿਨ</span>
                 </span>
-                <span class="material-symbols-outlined text-sm sidebar-arrow">expand_more</span>
+                <span class="material-symbols-outlined text-sm sidebar-arrow text-slate-400">expand_more</span>
               </button>
               <div id="teacher-admin-panel"
-                class="sidebar-submenu mt-1 ml-6 bg-white shadow-2xl rounded-xl border border-amber-100 w-full hidden z-30">
+                class="sidebar-submenu mt-1 ml-6 space-y-1 hidden">
                 <a href="teacher.html"
-                  class="flex items-center gap-2 px-3 py-2 hover:bg-amber-50 text-amber-800 text-xs border-b rounded-t-xl">
+                  class="flex items-center gap-2 px-3 py-1.5 text-xs text-slate-700 rounded-l-full hover:bg-slate-100">
                   <span class="material-symbols-outlined text-base">table_view</span>
                   <span>ਨਤੀਜੇ / ਡੈਸ਼ਬੋਰਡ</span>
                 </a>
                 <a href="content_admin.html"
-                  class="flex items-center gap-2 px-3 py-2 hover:bg-amber-50 text-amber-800 text-xs rounded-b-xl">
+                  class="flex items-center gap-2 px-3 py-1.5 text-xs text-slate-700 rounded-l-full hover:bg-slate-100">
                   <span class="material-symbols-outlined text-base">edit_square</span>
                   <span>ਕਨਟੈਂਟ ਐਡਮਿਨ</span>
                 </a>
