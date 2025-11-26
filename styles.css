@@ -1,3 +1,9 @@
+/* App sidebar container */
+#app-sidebar {
+    position: relative;
+    z-index: 10;
+}
+
 /* Base styles using Material Design principles */
 body {
     font-family: "Roboto", "Noto Sans Devanagari", sans-serif;
@@ -519,9 +525,61 @@ body {
     width: 230px;
     max-width: 260px;
     z-index: 60; /* above main content */
+    background-color: #ffffff;
+    border-radius: 0.75rem;
+    box-shadow: 0 10px 25px rgba(15, 23, 42, 0.18);
+    padding: 0.25rem 0;
+    border-left-width: 0; /* hide vertical rule in flyout mode */
 }
 
 /* Sidebar submenu vertical line style like project list */
+/* Shared styles for app sidebar menu buttons and submenu links */
+.sidebar-menu-button {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.5rem 0.75rem;
+    border-radius: 0.75rem;
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: #475569; /* slate-600 */
+    background-color: transparent;
+    transition: background-color 150ms ease, color 150ms ease;
+}
+
+.sidebar-menu-button:hover {
+    background-color: #f1f5f9; /* slate-100 */
+    color: #0f172a;
+}
+
+.sidebar-menu-button .sidebar-arrow {
+    font-size: 0.875rem;
+    color: #94a3b8; /* slate-400 */
+}
+
+/* Submenu items (Quiz, Class, Admin) */
+.sidebar-submenu-link {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.375rem 0.75rem;
+    font-size: 0.8125rem;
+    color: #475569;
+    border-radius: 9999px 0 0 9999px;
+    background-color: transparent;
+    transition: background-color 150ms ease, color 150ms ease;
+}
+
+.sidebar-submenu-link:hover {
+    background-color: #f1f5f9;
+    color: #0f172a;
+}
+
+.sidebar-submenu-link .material-symbols-outlined {
+    font-size: 1rem;
+}
+
 .sidebar-submenu {
     border-left-width: 2px;
     border-left-style: solid;

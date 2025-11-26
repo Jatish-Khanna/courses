@@ -820,7 +820,7 @@ function populateClassDropdown() {
         const btn = document.createElement("button");
 
         btn.className =
-            "w-full text-left px-4 py-2 text-sm font-semibold text-indigo-700 hover:bg-indigo-100 transition";
+            "sidebar-submenu-link w-full text-left";
         btn.textContent = cls.name;
 
         btn.onclick = () => {
@@ -838,6 +838,11 @@ function populateClassDropdown() {
     // Toggle open/close
     document.getElementById("class-toggle-btn").onclick = () => {
         const isHidden = panel.classList.contains("hidden");
+
+        if (isHidden && typeof closeOtherSidebarPanels === "function") {
+            closeOtherSidebarPanels('class-list-panel');
+        }
+
         panel.classList.toggle("hidden");
 
         // Rotate chevron icon
@@ -1122,6 +1127,11 @@ const teacherAdminArrow = teacherAdminToggle
 if (teacherAdminToggle && teacherAdminPanel) {
   teacherAdminToggle.addEventListener('click', () => {
     const isHidden = teacherAdminPanel.classList.contains('hidden');
+
+    if (isHidden && typeof closeOtherSidebarPanels === "function") {
+      closeOtherSidebarPanels('teacher-admin-panel');
+    }
+
     teacherAdminPanel.classList.toggle('hidden');
     if (teacherAdminArrow) {
       teacherAdminArrow.style.transform = isHidden ? 'rotate(180deg)' : 'rotate(0deg)';
@@ -1131,13 +1141,37 @@ if (teacherAdminToggle && teacherAdminPanel) {
 
 // Hide when clicking outside (extended)
 document.addEventListener('click', (e) => {
-  if (!liveQuizToggle.contains(e.target) && !liveQuizPanel.contains(e.target)) {
+  const target = e.target;
+
+  if (liveQuizToggle && liveQuizPanel &&
+      !liveQuizToggle.contains(target) &&
+      !liveQuizPanel.contains(target)) {
     liveQuizPanel.classList.add('hidden');
+    if (liveQuizArrow) {
+      liveQuizArrow.style.transform = 'rotate(0deg)';
+    }
   }
+
   if (teacherAdminToggle && teacherAdminPanel &&
-      !teacherAdminToggle.contains(e.target) &&
-      !teacherAdminPanel.contains(e.target)) {
+      !teacherAdminToggle.contains(target) &&
+      !teacherAdminPanel.contains(target)) {
     teacherAdminPanel.classList.add('hidden');
+    if (teacherAdminArrow) {
+      teacherAdminArrow.style.transform = 'rotate(0deg)';
+    }
+  }
+
+  const classToggleBtn = document.getElementById('class-toggle-btn');
+  const classPanel = document.getElementById('class-list-panel');
+  const classChevron = document.getElementById('chevron-icon');
+
+  if (classToggleBtn && classPanel &&
+      !classToggleBtn.contains(target) &&
+      !classPanel.contains(target)) {
+    classPanel.classList.add('hidden');
+    if (classChevron) {
+      classChevron.style.transform = 'rotate(0deg)';
+    }
   }
 });
 
@@ -1171,11 +1205,41 @@ const liveQuizArrow = liveQuizToggle ? liveQuizToggle.querySelector('.sidebar-ar
 if (liveQuizToggle && liveQuizPanel) {
   liveQuizToggle.addEventListener('click', () => {
     const isHidden = liveQuizPanel.classList.contains('hidden');
+
+    if (isHidden && typeof closeOtherSidebarPanels === "function") {
+      closeOtherSidebarPanels('live-quiz-panel');
+    }
+
     liveQuizPanel.classList.toggle('hidden');
     if (liveQuizArrow) {
       liveQuizArrow.style.transform = isHidden ? 'rotate(180deg)' : 'rotate(0deg)';
     }
   });
 }
+
+/**
+ * Ensure only one sidebar submenu (quiz, class, admin) is open at a time.
+ * `exceptId` can be 'live-quiz-panel', 'class-list-panel', or 'teacher-admin-panel'.
+ */
+function closeOtherSidebarPanels(exceptId) {
+  const classPanel = document.getElementById('class-list-panel');
+  const classChevron = document.getElementById('chevron-icon');
+
+  const panels = [
+    { id: 'live-quiz-panel', panel: liveQuizPanel, arrow: liveQuizArrow },
+    { id: 'class-list-panel', panel: classPanel, arrow: classChevron },
+    { id: 'teacher-admin-panel', panel: teacherAdminPanel, arrow: teacherAdminArrow }
+  ];
+
+  panels.forEach(({ id, panel, arrow }) => {
+    if (!panel) return;
+    if (id === exceptId) return;
+    panel.classList.add('hidden');
+    if (arrow) {
+      arrow.style.transform = 'rotate(0deg)';
+    }
+  });
+}
+
 
 
