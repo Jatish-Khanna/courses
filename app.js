@@ -1115,11 +1115,17 @@ if ("speechSynthesis" in window) {
 
 const teacherAdminToggle = document.getElementById('teacher-admin-toggle');
 const teacherAdminPanel = document.getElementById('teacher-admin-panel');
-
+const teacherAdminArrow = teacherAdminToggle
+  ? teacherAdminToggle.querySelector('.sidebar-arrow')
+  : null;
 
 if (teacherAdminToggle && teacherAdminPanel) {
   teacherAdminToggle.addEventListener('click', () => {
+    const isHidden = teacherAdminPanel.classList.contains('hidden');
     teacherAdminPanel.classList.toggle('hidden');
+    if (teacherAdminArrow) {
+      teacherAdminArrow.style.transform = isHidden ? 'rotate(180deg)' : 'rotate(0deg)';
+    }
   });
 }
 

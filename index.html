@@ -33,8 +33,8 @@
         padding-right: 0.75rem;
       }
 
+      /* Hide labels & collapse-only text (but allow flyout submenus) */
       #app-sidebar.app-sidebar-collapsed .sidebar-label,
-      #app-sidebar.app-sidebar-collapsed .sidebar-submenu,
       #app-sidebar.app-sidebar-collapsed .sidebar-brand {
         display: none !important;
       }
@@ -61,7 +61,7 @@
       #app-sidebar.app-sidebar-collapsed .sidebar-icon {
         margin: 0 auto;
       }
-    </style>
+</style>
 </head>
 <body class="bg-[#e7efff] text-slate-800 font-['Roboto',system-ui,sans-serif]">
 
@@ -331,22 +331,6 @@
 
   <!-- Your main JS logic -->
   <script src="app.js"></script>
-  <script>
-    document.addEventListener('DOMContentLoaded', function () {
-      var sidebar = document.getElementById('app-sidebar');
-      var sidebarToggle = document.getElementById('app-sidebar-toggle');
-
-      if (sidebar && sidebarToggle) {
-        var icon = sidebarToggle.querySelector('.material-symbols-outlined');
-        sidebarToggle.addEventListener('click', function () {
-          var collapsed = sidebar.classList.toggle('app-sidebar-collapsed');
-          if (icon) {
-            icon.textContent = collapsed ? 'chevron_right' : 'chevron_left';
-          }
-        });
-      }
-    });
-  </script>
 
 </body>
 

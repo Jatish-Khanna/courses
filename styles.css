@@ -494,10 +494,10 @@ body {
     padding-right: 0.75rem;
 }
 
-/* Hide labels & collapse-only text */
+/* Hide labels & collapse-only text (but keep submenus for flyout) */
 #app-sidebar.app-sidebar-collapsed .sidebar-label,
 #app-sidebar.app-sidebar-collapsed .avatar-ring + div p,
-#app-sidebar.app-sidebar-collapsed .sidebar-submenu {
+#app-sidebar.app-sidebar-collapsed .sidebar-brand {
     display: none !important;
 }
 
@@ -508,6 +508,17 @@ body {
 
 #app-sidebar.app-sidebar-collapsed ul {
     align-items: center;
+}
+
+/* When the app sidebar is collapsed, turn submenus into flyout cards */
+#app-sidebar.app-sidebar-collapsed .sidebar-submenu {
+    position: absolute;
+    top: 0.25rem;
+    left: 100%;
+    margin-left: 0.75rem;
+    width: 230px;
+    max-width: 260px;
+    z-index: 60; /* above main content */
 }
 
 /* Sidebar submenu vertical line style like project list */
