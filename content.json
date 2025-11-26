@@ -1,0 +1,35 @@
+{
+  "CLASS_7": {
+    "chapters": [
+      {
+        "id": "ch_01_integers",
+        "name": "THIS IS AN ONBOARDING TEST POEM",
+        "poem": "THIS IS AN ONBOARDING TEST POEM",
+        "questions": [
+          {
+            "c": 0,
+            "o": [
+              "2",
+              "8",
+              "-2",
+              "3"
+            ],
+            "t": "5 + (-3) ="
+          },
+          {
+            "c": 0,
+            "o": [
+              "8",
+              "-8",
+              "6",
+              "0"
+            ],
+            "t": "(-4) × (-2) ="
+          }
+        ]
+      }
+    ],
+    "id": "class_7",
+    "name": "7ਵੀਂ ਜਮਾਤ (ਗਣਿਤ)"
+  }
+}

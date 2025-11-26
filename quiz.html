@@ -392,6 +392,7 @@
 
     <!-- load data first -->
     <script src="data.js"></script>
+    <script src="content_bootstrap.js"></script>
 
     <!-- quiz logic only -->
     <script>
@@ -756,42 +757,51 @@
 
 
       // --- On page load ---
-      window.onload = function () {
-        populateClassSelect();
+      function initQuizPage() {
+  populateClassSelect();
 
-        // Check if we have student details already and a selected chapter
-        if (
-          studentName &&
-          studentRoll &&
-          selectedClassId &&
-          typeof CLASSES !== "undefined"
-        ) {
-          const chapterId = sessionStorage.getItem("currentChapterId");
-          if (chapterId) {
-            // Resolve class from selectedClassId
-            let classKey = selectedClassKey;
-            if (!classKey) {
-              classKey = Object.keys(CLASSES).find(
-                (key) => CLASSES[key].id === selectedClassId
-              );
-            }
-            if (classKey && CLASSES[classKey]) {
-              currentClassData = CLASSES[classKey];
-              const foundChapter = currentClassData.chapters.find(
-                (ch) => ch.id === chapterId
-              );
-              if (foundChapter) {
-                currentPoemData = foundChapter;
-                showPage("quizView");
-                startQuiz(currentPoemData);
-                return;
-              }
-            }
-          }
+  // Check if we have student details already and a selected chapter
+  if (
+    studentName &&
+    studentRoll &&
+    selectedClassId &&
+    typeof CLASSES !== "undefined"
+  ) {
+    const chapterId = sessionStorage.getItem("currentChapterId");
+    if (chapterId) {
+      // Resolve class from selectedClassId
+      let classKey = selectedClassKey;
+      if (!classKey) {
+        classKey = Object.keys(CLASSES).find(
+          (key) => CLASSES[key].id === selectedClassId
+        );
+      }
+      if (classKey && CLASSES[classKey]) {
+        currentClassData = CLASSES[classKey];
+        const foundChapter = currentClassData.chapters.find(
+          (ch) => ch.id === chapterId
+        );
+        if (foundChapter) {
+          currentPoemData = foundChapter;
+          showPage("quizView");
+          startQuiz(currentPoemData);
+          return;
         }
-        // Fallback: show login page
-        showPage("studentLogin");
-      };
-    </script>
+      }
+    }
+  }
+  // Fallback: show login page
+  showPage("studentLogin");
+}
+
+// --- On page load: wait for CONTENT_READY if present ---
+window.onload = function () {
+  if (window.CONTENT_READY && typeof window.CONTENT_READY.then === "function") {
+    window.CONTENT_READY.then(initQuizPage);
+  } else {
+    initQuizPage();
+  }
+};
+</script>
   </body>
 </html>

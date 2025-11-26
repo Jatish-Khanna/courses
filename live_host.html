@@ -94,8 +94,7 @@
             </button>
 
             <p class="text-[10px] text-slate-400 mt-3 leading-relaxed">
-              🔒 ਪਾਸਵਰਡ ਤੁਸੀਂ
-              <span class="font-semibold">live_host.html</span> ਦੇ ਹੇਠਾਂ JS ਵਿੱਚ ਬਦਲ ਸਕਦੇ ਹੋ।
+              🔒 ਪਾਸਵਰਡ ਸਰਵਰ 'ਤੇ ਸੈੱਟ ਹੁੰਦਾ ਹੈ (QUIZ_ADMIN_PASSWORD env var ਦੀ ਵਰਤੋਂ ਨਾਲ)।
             </p>
           </form>
         </div>
@@ -409,6 +408,13 @@
         const classId = classSelect.value;
         const chapterId = chapterSelect.value;
         const hostName = hostNameInput.value.trim() || "Teacher";
+        const adminToken = sessionStorage.getItem("liveQuizHostToken");
+
+        if (!adminToken) {
+          setupError.textContent = "ਕਿਰਪਾ ਕਰਕੇ ਪਹਿਲਾਂ ਪਾਸਵਰਡ ਨਾਲ ਲੋਗਇਨ ਕਰੋ।";
+          setupError.classList.remove("hidden");
+          return;
+        }
 
         if (!classId || !chapterId) {
           setupError.textContent = "ਕਿਰਪਾ ਕਰਕੇ ਜਮਾਤ ਅਤੇ ਪਾਠ ਚੁਣੋ।";
@@ -423,7 +429,7 @@
           const resp = await fetch("/api/live/create_game", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ classId, chapterId, hostName }),
+            body: JSON.stringify({ classId, chapterId, hostName, adminToken }),
           });
           const data = await resp.json();
           if (!data.ok) {
@@ -626,8 +632,9 @@
             });
             const data = await resp.json();
 
-            if (data.ok) {
+            if (data.ok && data.token) {
               sessionStorage.setItem("liveQuizHostAuth", "ok");
+              sessionStorage.setItem("liveQuizHostToken", data.token);
               errorEl.classList.add("hidden");
               unlock();
             } else {
@@ -647,7 +654,8 @@
         }
 
         window.addEventListener("load", function () {
-          const already = sessionStorage.getItem("liveQuizHostAuth") === "ok";
+          const already = sessionStorage.getItem("liveQuizHostAuth") === "ok" &&
+                !!sessionStorage.getItem("liveQuizHostToken");
           if (already) {
             unlock();
           } else if (loginView) {
@@ -670,13 +678,43 @@
 
           btnCopyCode.addEventListener("click", () => {
             if (!currentGame) return;
-            navigator.clipboard
-              .writeText(currentGame.gameCode)
-              .then(() => {
+            const text = currentGame.gameCode;
+
+            // Prefer modern clipboard API in secure contexts
+            if (navigator.clipboard && window.isSecureContext) {
+              navigator.clipboard
+                .writeText(text)
+                .then(() => {
+                  btnCopyCode.textContent = "Copied!";
+                  setTimeout(() => (btnCopyCode.textContent = "ਕਾਪੀ"), 1000);
+                })
+                .catch(() => {
+                  alert("ਕੋਡ ਕਾਪੀ ਨਹੀਂ ਹੋ ਸਕਿਆ, ਕਿਰਪਾ ਕਰਕੇ ਹੱਥੋਂ ਕਾਪੀ ਕਰੋ।");
+                });
+              return;
+            }
+
+            // Fallback for http / older browsers
+            const textarea = document.createElement("textarea");
+            textarea.value = text;
+            textarea.style.position = "fixed";
+            textarea.style.opacity = "0";
+            document.body.appendChild(textarea);
+            textarea.focus();
+            textarea.select();
+            try {
+              const ok = document.execCommand("copy");
+              if (ok) {
                 btnCopyCode.textContent = "Copied!";
                 setTimeout(() => (btnCopyCode.textContent = "ਕਾਪੀ"), 1000);
-              })
-              .catch(() => {});
+              } else {
+                alert("ਕੋਡ ਕਾਪੀ ਨਹੀਂ ਹੋ ਸਕਿਆ, ਕਿਰਪਾ ਕਰਕੇ ਹੱਥੋਂ ਕਾਪੀ ਕਰੋ।");
+              }
+            } catch (e) {
+              alert("ਕੋਡ ਕਾਪੀ ਨਹੀਂ ਹੋ ਸਕਿਆ, ਕਿਰਪਾ ਕਰਕੇ ਹੱਥੋਂ ਕਾਪੀ ਕਰੋ।");
+            } finally {
+              document.body.removeChild(textarea);
+            }
           });
 
           // also start polling for state once host page is loaded

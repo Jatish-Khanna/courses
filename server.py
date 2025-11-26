@@ -14,10 +14,15 @@ app = Flask(
 )
 
 RESULTS_FILE = os.path.join(BASE_DIR, 'results.json')
+CONTENT_FILE = os.path.join(BASE_DIR, 'content.json')
 
 # Simple backend-side admin/teacher password.
 # You can override this by setting the QUIZ_ADMIN_PASSWORD environment variable.
 ADMIN_PASSWORD = os.environ.get("QUIZ_ADMIN_PASSWORD", "teacher123")
+
+# Set of admin session tokens that have passed password auth.
+valid_admin_tokens = set()
+
 
 
 
@@ -74,7 +79,7 @@ def auth_check():
     """Check teacher/admin password on the server side.
 
     Expects JSON: { "password": "...." }
-    Returns: { "ok": true } or { "ok": false, "error": "..." }
+    Returns: { "ok": true, "token": "..." } or { "ok": false, "error": "..." }
     """
     data = request.get_json(force=True, silent=True) or {}
     pwd = (data.get('password') or '').strip()
@@ -82,11 +87,15 @@ def auth_check():
     if not pwd:
         return jsonify({'ok': False, 'error': 'No password provided'}), 400
 
-    if pwd == ADMIN_PASSWORD:
-        # In a more advanced setup you could return a signed token here.
-        return jsonify({'ok': True})
+    if pwd != ADMIN_PASSWORD:
+        return jsonify({'ok': False, 'error': 'Invalid password'}), 401
 
-    return jsonify({'ok': False, 'error': 'Invalid password'}), 401
+    # Generate a simple admin session token and remember it
+    token = generate_id('admin')
+    valid_admin_tokens.add(token)
+
+    return jsonify({'ok': True, 'token': token})
+
 
 # =====================
 # Live Quiz (Kahoot-style) in-memory backend
@@ -116,7 +125,14 @@ def live_join():
 
 @app.route('/api/live/create_game', methods=['POST'])
 def create_game():
+
     data = request.get_json(force=True, silent=True) or {}
+
+    # Require a valid admin token from /api/auth/check
+    admin_token = data.get('adminToken')
+    if not admin_token or admin_token not in valid_admin_tokens:
+        return jsonify({'ok': False, 'error': 'Not authorized'}), 403
+
     class_id = data.get('classId')
     chapter_id = data.get('chapterId')
     host_name = data.get('hostName') or 'Teacher'
@@ -327,6 +343,67 @@ def game_state():
         'you': you
     })
 
+
+
+
+def load_content():
+    """Load onboarding content from content.json if it exists."""
+    if not os.path.exists(CONTENT_FILE):
+        return {}
+    try:
+        with open(CONTENT_FILE, 'r', encoding='utf-8') as f:
+            data = f.read().strip()
+            if not data:
+                return {}
+            return json.loads(data)
+    except Exception:
+        return {}
+
+
+def save_content(content):
+    """Save onboarding content to content.json."""
+    with open(CONTENT_FILE, 'w', encoding='utf-8') as f:
+        json.dump(content, f, ensure_ascii=False, indent=2)
+
+
+@app.route('/api/content', methods=['GET', 'POST'])
+def api_content():
+    """GET returns current onboarding content; POST saves new content.
+
+    GET  -> returns {} or the current content.json object.
+    POST -> expects JSON:
+      {
+        "password": "teacher123",
+        "content": { ... }   # same structure as sample_content.json
+      }
+    """
+    if request.method == 'GET':
+        return jsonify(load_content())
+
+    data = request.get_json(force=True, silent=True) or {}
+    pwd = (data.get('password') or '').strip()
+    if not pwd:
+        return jsonify({'ok': False, 'error': 'No password provided'}), 400
+
+    if pwd != ADMIN_PASSWORD:
+        return jsonify({'ok': False, 'error': 'Invalid password'}), 401
+
+    content = data.get('content')
+    if not isinstance(content, dict):
+        return jsonify({'ok': False, 'error': 'content must be an object'}), 400
+
+    try:
+        # Light structural validation
+        for class_key, cls in content.items():
+            if not isinstance(cls, dict):
+                raise ValueError(f"{class_key} must be an object")
+            if 'chapters' in cls and not isinstance(cls['chapters'], list):
+                raise ValueError(f"{class_key}.chapters must be a list")
+        save_content(content)
+    except Exception as e:
+        return jsonify({'ok': False, 'error': f'Invalid structure: {e}'}), 400
+
+    return jsonify({'ok': True})
 
 if __name__ == '__main__':
     # Run on all interfaces (so phones on Wi-Fi can access)
