@@ -4214,3 +4214,7 @@ const CLASSES = {
   CLASS_8: CLASS_8_DATA
 };
 
+if (typeof window !== 'undefined') {
+  window.CLASSES = CLASSES;
+}
+

@@ -5,6 +5,11 @@
 (function () {
   if (typeof window === "undefined") return;
 
+  // Ensure CLASSES is available on window (data.js defines global const CLASSES)
+  if (typeof window.CLASSES === "undefined" && typeof CLASSES !== "undefined") {
+    window.CLASSES = CLASSES;
+  }
+
   if (typeof window.CLASSES === "undefined") {
     window.CONTENT_READY = Promise.resolve();
     return;
