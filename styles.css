@@ -595,3 +595,402 @@ body {
 #app-sidebar.app-sidebar-collapsed #app-sidebar-toggle {
     align-self: center;
 }
+
+/* === Hero math float animations === */
+@keyframes float1 {
+    0% {
+        transform: translate3d(0, 0, 0) rotate(0deg);
+    }
+    50% {
+        transform: translate3d(12px, -10px, 0) rotate(6deg);
+    }
+    100% {
+        transform: translate3d(0, 0, 0) rotate(0deg);
+    }
+}
+
+@keyframes float2 {
+    0% {
+        transform: translate3d(0, 0, 0) rotate(-3deg);
+    }
+    50% {
+        transform: translate3d(-14px, 8px, 0) rotate(3deg);
+    }
+    100% {
+        transform: translate3d(0, 0, 0) rotate(-3deg);
+    }
+}
+
+@keyframes float3 {
+    0% {
+        transform: translate3d(0, 0, 0) scale(1);
+    }
+    50% {
+        transform: translate3d(6px, -12px, 0) scale(1.05);
+    }
+    100% {
+        transform: translate3d(0, 0, 0) scale(1);
+    }
+}
+
+.math-float-1 {
+    animation: float1 10s ease-in-out infinite;
+}
+
+.math-float-2 {
+    animation: float2 12s ease-in-out infinite;
+}
+
+.math-float-3 {
+    animation: float3 14s ease-in-out infinite;
+}
+
+
+/* ==== Galaxy hero background ==== */
+.galaxy-bg {
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+    pointer-events: none;
+    z-index: 0;
+}
+
+.galaxy-blob {
+    position: absolute;
+    width: 260px;
+    height: 260px;
+    border-radius: 9999px;
+    filter: blur(80px);
+    opacity: 0.45;
+    animation: galaxyMorph 40s ease-in-out infinite;
+}
+
+.galaxy-blob-1 {
+    background: rgb(255, 200, 255);
+    top: 5%;
+    left: 5%;
+}
+
+.galaxy-blob-2 {
+    background: rgb(165, 205, 255);
+    top: 45%;
+    right: 10%;
+    animation-delay: -5s;
+}
+
+.galaxy-blob-3 {
+    background: rgb(200, 255, 220);
+    bottom: -5%;
+    left: 35%;
+    animation-delay: -10s;
+}
+
+@keyframes galaxyMorph {
+    0% {
+        transform: scale(1) translate(0, 0);
+    }
+    50% {
+        transform: scale(1.4) translate(30px, -20px);
+    }
+    100% {
+        transform: scale(1) translate(0, 0);
+    }
+}
+
+.star {
+    position: absolute;
+    width: 6px;
+    height: 6px;
+    background: white;
+    border-radius: 9999px;
+    opacity: 0.7;
+    animation: twinkle 3s ease-in-out infinite alternate;
+}
+
+@keyframes twinkle {
+    from {
+        opacity: 0.2;
+        transform: scale(0.8);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1.2);
+    }
+}
+
+
+
+
+
+/* === Floating maths symbols in hero (warp + blast, energy levels) === */
+.math-symbol {
+    position: absolute;
+    font-size: 1.05rem;
+    font-weight: 600;
+    color: rgba(255,255,255,0.9);
+    text-shadow: 0 0 6px rgba(15,23,42,0.7);
+    pointer-events: none;
+    white-space: nowrap;
+    transform-origin: center;
+}
+
+/* Energy levels */
+.math-symbol.energy-low {
+    opacity: 0.45;
+    text-shadow: 0 0 4px rgba(15,23,42,0.5);
+}
+
+.math-symbol.energy-medium {
+    opacity: 0.75;
+    text-shadow: 0 0 10px rgba(129,140,248,0.9);
+}
+
+.math-symbol.energy-high {
+    opacity: 1;
+    text-shadow: 0 0 16px rgba(239,246,255,1);
+}
+
+/* Warp symbols: long orbital paths, all >30s */
+.math-warp-1 { top: 8%;  left: 58%; animation: warpA 36s linear infinite; }
+.math-warp-2 { top: 18%; right: 10%; animation: warpB 38s linear infinite; }
+.math-warp-3 { top: 54%; left: 62%;  animation: warpC 42s linear infinite; }
+.math-warp-4 { top: 70%; right: 6%; animation: warpD 44s linear infinite; }
+.math-warp-5 { top: 32%; left: 68%; animation: warpE 48s linear infinite; }
+.math-warp-6 { top: 82%; left: 60%; animation: warpF 52s linear infinite; }
+.math-warp-7 { top: 22%; left: 74%; animation: warpG 58s linear infinite; }
+
+/* Blast symbols: episodic energy bursts */
+.math-blast-1 { top: 16%; left: 52%; animation: blastA 34s ease-in-out infinite; }
+.math-blast-2 { top: 38%; right: 18%; animation: blastB 39s ease-in-out infinite; }
+.math-blast-3 { top: 64%; left: 72%; animation: blastC 46s ease-in-out infinite; }
+.math-blast-4 { top: 10%; right: 28%; animation: blastD 50s ease-in-out infinite; }
+.math-blast-5 { top: 78%; right: 12%; animation: blastE 56s ease-in-out infinite; }
+.math-blast-6 { top: 50%; left: 80%; animation: blastF 60s ease-in-out infinite; }
+.math-blast-7 { top: 30%; left: 86%; animation: blastG 62s ease-in-out infinite; }
+
+/* Warp keyframes – curved, orbit-like paths with subtle scale */
+@keyframes warpA {
+    0%   { transform: translate3d(0, 0, 0) scale(0.9); }
+    25%  { transform: translate3d(16px, 8px, 0) scale(1.05); }
+    55%  { transform: translate3d(6px, 22px, 0) scale(1.12); }
+    80%  { transform: translate3d(-12px, 10px, 0) scale(1.0); }
+    100% { transform: translate3d(0, 0, 0) scale(0.9); }
+}
+@keyframes warpB {
+    0%   { transform: translate3d(0, 0, 0) rotate(-4deg); }
+    30%  { transform: translate3d(-20px, 10px, 0) rotate(2deg); }
+    60%  { transform: translate3d(-10px, 24px, 0) rotate(5deg); }
+    90%  { transform: translate3d(12px, -6px, 0) rotate(0deg); }
+    100% { transform: translate3d(0, 0, 0) rotate(-4deg); }
+}
+@keyframes warpC {
+    0%   { transform: translate3d(0, 0, 0) scale(1); }
+    20%  { transform: translate3d(18px, -10px, 0) scale(1.08); }
+    50%  { transform: translate3d(26px, 8px, 0) scale(0.96); }
+    80%  { transform: translate3d(-12px, 18px, 0) scale(1.1); }
+    100% { transform: translate3d(0, 0, 0) scale(1); }
+}
+@keyframes warpD {
+    0%   { transform: translate3d(0, 0, 0) rotate(3deg); }
+    28%  { transform: translate3d(-16px, -8px, 0) rotate(-3deg); }
+    55%  { transform: translate3d(-4px, 16px, 0) rotate(1deg); }
+    85%  { transform: translate3d(20px, 10px, 0) rotate(4deg); }
+    100% { transform: translate3d(0, 0, 0) rotate(3deg); }
+}
+@keyframes warpE {
+    0%   { transform: translate3d(0, 0, 0) scale(0.95); }
+    25%  { transform: translate3d(22px, -14px, 0) scale(1.04); }
+    55%  { transform: translate3d(-10px, -18px, 0) scale(1.1); }
+    82%  { transform: translate3d(-8px, 20px, 0) scale(0.9); }
+    100% { transform: translate3d(0, 0, 0) scale(0.95); }
+}
+@keyframes warpF {
+    0%   { transform: translate3d(0, 0, 0) rotate(-2deg); }
+    30%  { transform: translate3d(-22px, 6px, 0) rotate(4deg); }
+    62%  { transform: translate3d(16px, 22px, 0) rotate(-3deg); }
+    88%  { transform: translate3d(4px, -20px, 0) rotate(1deg); }
+    100% { transform: translate3d(0, 0, 0) rotate(-2deg); }
+}
+@keyframes warpG {
+    0%   { transform: translate3d(0, 0, 0) scale(1); }
+    22%  { transform: translate3d(-16px, 6px, 0) scale(1.06); }
+    48%  { transform: translate3d(-4px, 20px, 0) scale(1.1); }
+    76%  { transform: translate3d(18px, -10px, 0) scale(0.94); }
+    100% { transform: translate3d(0, 0, 0) scale(1); }
+}
+
+/* Blast keyframes – slow build, then big expansion + fade */
+@keyframes blastA {
+    0%   { transform: scale(0.4); opacity: 0; }
+    15%  { transform: scale(0.7); opacity: 0.4; }
+    40%  { transform: scale(1.2); opacity: 1; }
+    60%  { transform: scale(2.0); opacity: 0.4; }
+    100% { transform: scale(0.4); opacity: 0; }
+}
+@keyframes blastB {
+    0%   { transform: scale(0.3) translateY(0); opacity: 0; }
+    20%  { transform: scale(0.8) translateY(-6px); opacity: 0.5; }
+    45%  { transform: scale(1.4) translateY(-12px); opacity: 1; }
+    70%  { transform: scale(2.1) translateY(-4px); opacity: 0.3; }
+    100% { transform: scale(0.3) translateY(0); opacity: 0; }
+}
+@keyframes blastC {
+    0%   { transform: scale(0.5) translate3d(0, 0, 0); opacity: 0; }
+    18%  { transform: scale(0.9) translate3d(4px, -6px, 0); opacity: 0.6; }
+    45%  { transform: scale(1.5) translate3d(10px, -12px, 0); opacity: 1; }
+    68%  { transform: scale(2.3) translate3d(-4px, -4px, 0); opacity: 0.4; }
+    100% { transform: scale(0.5) translate3d(0, 0, 0); opacity: 0; }
+}
+@keyframes blastD {
+    0%   { transform: scale(0.35); opacity: 0; }
+    22%  { transform: scale(0.9); opacity: 0.7; }
+    48%  { transform: scale(1.6); opacity: 1; }
+    72%  { transform: scale(2.4); opacity: 0.35; }
+    100% { transform: scale(0.35); opacity: 0; }
+}
+@keyframes blastE {
+    0%   { transform: scale(0.4) rotate(0deg); opacity: 0; }
+    20%  { transform: scale(0.9) rotate(8deg); opacity: 0.7; }
+    50%  { transform: scale(1.7) rotate(-4deg); opacity: 1; }
+    75%  { transform: scale(2.5) rotate(0deg); opacity: 0.3; }
+    100% { transform: scale(0.4) rotate(0deg); opacity: 0; }
+}
+@keyframes blastF {
+    0%   { transform: scale(0.3); opacity: 0; }
+    18%  { transform: scale(0.8); opacity: 0.5; }
+    44%  { transform: scale(1.8); opacity: 1; }
+    70%  { transform: scale(2.8); opacity: 0.25; }
+    100% { transform: scale(0.3); opacity: 0; }
+}
+@keyframes blastG {
+    0%   { transform: scale(0.45); opacity: 0; }
+    20%  { transform: scale(0.95); opacity: 0.6; }
+    52%  { transform: scale(1.9); opacity: 1; }
+    78%  { transform: scale(2.6); opacity: 0.3; }
+    100% { transform: scale(0.45); opacity: 0; }
+}
+
+/* Hover burst effect on hero: faster blasts + extra glow on high-energy symbols */
+.hero-galaxy {
+    position: relative;
+    overflow: hidden;
+}
+.hero-galaxy::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle at 50% 50%, rgba(251,251,255,0.28), transparent 65%);
+    opacity: 0;
+    transform: scale(0.9);
+    transition: opacity 0.35s ease-out, transform 0.35s ease-out;
+    pointer-events: none;
+    z-index: 0;
+}
+.hero-galaxy:hover::after {
+    opacity: 1;
+    transform: scale(1.05);
+}
+.hero-galaxy:hover .math-blast {
+    animation-duration: 18s;
+}
+.hero-galaxy:hover .math-symbol.energy-high {
+    text-shadow: 0 0 26px rgba(255,255,255,1);
+    transform: scale(1.12);
+}
+
+/* === Planet + moon orbits in hero background === */
+.planet-orbit {
+    position: absolute;
+    width: 160px;
+    height: 160px;
+    border-radius: 9999px;
+    border: 1px dashed rgba(191, 219, 254, 0.35);
+    transform-origin: center;
+    z-index: 0;
+}
+
+.planet-orbit-1 {
+    top: 10%;
+    right: 6%;
+    animation: orbitPlanet1 40s linear infinite;
+}
+
+.planet-orbit-2 {
+    bottom: -10%;
+    right: -4%;
+    width: 200px;
+    height: 200px;
+    animation: orbitPlanet2 55s linear infinite;
+}
+
+.planet {
+    position: absolute;
+    width: 26px;
+    height: 26px;
+    border-radius: 9999px;
+    background: radial-gradient(circle at 30% 30%, #fef9c3, #f97316);
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) translateX(60px);
+    box-shadow: 0 0 12px rgba(248, 250, 252, 0.9);
+}
+
+.planet-small {
+    width: 18px;
+    height: 18px;
+    background: radial-gradient(circle at 30% 30%, #e0f2fe, #1d4ed8);
+    transform: translate(-50%, -50%) translateX(80px);
+}
+
+.moon-orbit {
+    position: absolute;
+    width: 72px;
+    height: 72px;
+    border-radius: 9999px;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    animation: orbitMoon 18s linear infinite;
+}
+
+.moon-orbit-wide {
+    width: 96px;
+    height: 96px;
+    animation-duration: 26s;
+}
+
+.moon {
+    position: absolute;
+    width: 10px;
+    height: 10px;
+    border-radius: 9999px;
+    background: radial-gradient(circle at 30% 30%, #f9fafb, #9ca3af);
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) translateX(24px);
+    box-shadow: 0 0 8px rgba(226, 232, 240, 0.9);
+}
+
+.moon-small {
+    width: 7px;
+    height: 7px;
+    transform: translate(-50%, -50%) translateX(32px);
+}
+
+@keyframes orbitPlanet1 {
+    0%   { transform: rotate(0deg); }
+    50%  { transform: rotate(200deg); }
+    100% { transform: rotate(360deg); }
+}
+
+@keyframes orbitPlanet2 {
+    0%   { transform: rotate(0deg); }
+    50%  { transform: rotate(-220deg); }
+    100% { transform: rotate(-360deg); }
+}
+
+@keyframes orbitMoon {
+    0%   { transform: translate(-50%, -50%) rotate(0deg); }
+    50%  { transform: translate(-50%, -50%) rotate(200deg); }
+    100% { transform: translate(-50%, -50%) rotate(360deg); }
+}
