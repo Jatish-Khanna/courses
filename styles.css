@@ -1118,3 +1118,173 @@ body {
 .sidebar-chapter-section #chapter-list {
     padding-top: 0.5rem;
 }
+
+
+/* === NUKE: big pulsing radial blast === */
+@keyframes mathNuke {
+    0%   { transform: scale(0.6); opacity: 0; text-shadow: 0 0 6px rgba(255,255,255,0.3); }
+    20%  { transform: scale(1.1); opacity: 1; text-shadow: 0 0 18px rgba(248,250,252,0.9); }
+    50%  { transform: scale(1.8); opacity: 0.45; text-shadow: 0 0 32px rgba(248,250,252,0.9); }
+    100% { transform: scale(0.6); opacity: 0; text-shadow: 0 0 4px rgba(15,23,42,0.6); }
+}
+
+/* === PLANETARY: slow orbital drift === */
+@keyframes mathPlanetary {
+    0%   { transform: translate3d(0, 0, 0) rotate(0deg); }
+    30%  { transform: translate3d(6px, -10px, 0) rotate(4deg); }
+    60%  { transform: translate3d(-4px, 8px, 0) rotate(-3deg); }
+    100% { transform: translate3d(0, 0, 0) rotate(0deg); }
+}
+
+/* === SHOOTING STAR: streak across sidebar === */
+@keyframes mathShootingStar {
+    0%   { transform: translate3d(0, 0, 0); opacity: 0; }
+    10%  { opacity: 1; }
+    40%  { transform: translate3d(80px, -40px, 0); opacity: 0.9; text-shadow: 0 0 18px rgba(255,255,255,1); }
+    70%  { transform: translate3d(150px, -70px, 0); opacity: 0; }
+    100% { transform: translate3d(0, 0, 0); opacity: 0; }
+}
+
+/* === SUPER NOVA: burst then fade === */
+@keyframes mathSupernova {
+    0%   { transform: scale(0.4); opacity: 0; }
+    25%  { transform: scale(1.1); opacity: 1; text-shadow: 0 0 20px rgba(255,255,255,1); }
+    55%  { transform: scale(2.0); opacity: 0.5; text-shadow: 0 0 32px rgba(255,255,255,0.9); }
+    100% { transform: scale(0.4); opacity: 0; text-shadow: 0 0 4px rgba(15,23,42,0.5); }
+}
+
+/* === AURORA: vertical wavy shimmer === */
+@keyframes mathAurora {
+    0%   { transform: translate3d(0, 0, 0) skewX(0deg); opacity: 0.5; }
+    25%  { transform: translate3d(0, -8px, 0) skewX(8deg); opacity: 0.9; }
+    50%  { transform: translate3d(0, 4px, 0) skewX(-6deg); opacity: 0.7; }
+    75%  { transform: translate3d(0, -6px, 0) skewX(4deg); opacity: 1; }
+    100% { transform: translate3d(0, 0, 0) skewX(0deg); opacity: 0.6; }
+}
+
+/* === FLARES: flickery pulses around edges === */
+@keyframes mathFlare {
+    0%   { transform: scale(0.9); opacity: 0.2; text-shadow: 0 0 4px rgba(248,250,252,0.4); }
+    30%  { transform: scale(1.05); opacity: 0.8; text-shadow: 0 0 14px rgba(248,250,252,0.9); }
+    60%  { transform: scale(0.95); opacity: 0.5; }
+    100% { transform: scale(1.1); opacity: 0.1; text-shadow: 0 0 2px rgba(15,23,42,0.7); }
+}
+
+/* NUKE symbols – center-ish explosive pulses in sidebar */
+.math-nuke-1 {
+    top: 16%;
+    left: 18%;
+    animation: mathNuke 22s ease-in-out infinite;
+}
+.math-nuke-2 {
+    top: 38%;
+    left: 26%;
+    animation: mathNuke 26s ease-in-out infinite;
+}
+.math-nuke-3 {
+    top: 64%;
+    left: 20%;
+    animation: mathNuke 30s ease-in-out infinite;
+}
+
+/* PLANETARY – slow orbit-like movement mid-right */
+.math-planetary-1 {
+    top: 22%;
+    right: 10%;
+    animation: mathPlanetary 32s ease-in-out infinite;
+}
+.math-planetary-2 {
+    top: 40%;
+    right: 6%;
+    animation: mathPlanetary 36s ease-in-out infinite;
+}
+.math-planetary-3 {
+    top: 58%;
+    right: 14%;
+    animation: mathPlanetary 40s ease-in-out infinite;
+}
+.math-planetary-4 {
+    top: 76%;
+    right: 8%;
+    animation: mathPlanetary 44s ease-in-out infinite;
+}
+
+/* SHOOTING STARS – diagonal streaks */
+.math-shooting-1 {
+    top: 18%;
+    left: 5%;
+    animation: mathShootingStar 34s linear infinite;
+}
+.math-shooting-2 {
+    top: 46%;
+    left: 2%;
+    animation: mathShootingStar 38s linear infinite;
+    animation-delay: -10s;
+}
+.math-shooting-3 {
+    top: 68%;
+    left: 4%;
+    animation: mathShootingStar 42s linear infinite;
+    animation-delay: -18s;
+}
+.math-shooting-4 {
+    top: 82%;
+    left: 10%;
+    animation: mathShootingStar 50s linear infinite;
+    animation-delay: -24s;
+}
+
+/* SUPER NOVA – intense bursts scattered around */
+.math-supernova-1 {
+    top: 30%;
+    left: 55%;
+    animation: mathSupernova 40s ease-out infinite;
+}
+.math-supernova-2 {
+    top: 52%;
+    left: 60%;
+    animation: mathSupernova 46s ease-out infinite;
+    animation-delay: -12s;
+}
+.math-supernova-3 {
+    top: 74%;
+    left: 50%;
+    animation: mathSupernova 52s ease-out infinite;
+    animation-delay: -20s;
+}
+
+/* AURORA – vertical shimmering near inner edge */
+.math-aurora-1 {
+    top: 14%;
+    left: 34%;
+    animation: mathAurora 30s ease-in-out infinite;
+}
+.math-aurora-2 {
+    top: 42%;
+    left: 36%;
+    animation: mathAurora 34s ease-in-out infinite;
+    animation-delay: -8s;
+}
+.math-aurora-3 {
+    top: 70%;
+    left: 38%;
+    animation: mathAurora 38s ease-in-out infinite;
+    animation-delay: -16s;
+}
+
+/* FLARES – small flickers around boundaries */
+.math-flare-1 {
+    top: 8%;
+    right: 2%;
+    animation: mathFlare 20s ease-in-out infinite;
+}
+.math-flare-2 {
+    bottom: 8%;
+    right: 4%;
+    animation: mathFlare 24s ease-in-out infinite;
+}
+.math-flare-3 {
+    bottom: 4%;
+    left: 12%;
+    animation: mathFlare 28s ease-in-out infinite;
+}
