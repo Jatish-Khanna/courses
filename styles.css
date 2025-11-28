@@ -1287,3 +1287,44 @@ body {
     left: 12%;
     animation: mathFlare 28s ease-in-out infinite;
 }
+/* Default position – centered vertically over the top-right padding of sidebar */
+#app-sidebar-toggle {
+    position: absolute;
+    top: 0;
+    right: 0;
+    /* Move the center of the circle to the corner */
+    transform: translate(50%, -50%);
+    z-index: 100;
+}
+
+/* Optional: same position when collapsed, just slightly bigger if you like */
+#app-sidebar.app-sidebar-collapsed #app-sidebar-toggle {
+    top: 0;
+    right: 0;
+    transform: translate(50%, -50%);
+    width: 2.5rem;
+    height: 2.5rem;
+}
+/* When sidebar is collapsed, center icons properly in menu buttons */
+#app-sidebar.app-sidebar-collapsed .sidebar-menu-button {
+    display: flex;
+    justify-content: center !important;   /* force perfect centering */
+    align-items: center;
+    padding-left: 0 !important;           /* remove text padding */
+    padding-right: 0 !important;
+    gap: 0 !important;                    /* remove any spacing */
+}
+
+/* Ensure icon inside button is perfectly centered */
+#app-sidebar.app-sidebar-collapsed .sidebar-menu-button span:first-child {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+}
+
+/* Remove any leftover arrow/icon spacing */
+#app-sidebar.app-sidebar-collapsed .sidebar-menu-button .material-symbols-outlined {
+    margin: 0 auto !important;            /* removes offset */
+}
+
