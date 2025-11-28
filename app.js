@@ -1198,6 +1198,37 @@ if (appSidebar && appSidebarToggle) {
   });
 }
 
+// === Auto-reset collapsed sidebar on mobile/tablet (below lg breakpoint) ===
+const mqSidebarReset = window.matchMedia('(max-width: 1023px)'); // Tailwind lg breakpoint
+
+function resetSidebarForSmallScreen(e) {
+  if (!e.matches) return; // only when entering small screens
+  const sidebar = document.getElementById('app-sidebar');
+  const toggleBtn = document.getElementById('app-sidebar-toggle');
+  if (!sidebar) return;
+
+  if (sidebar.classList.contains('app-sidebar-collapsed')) {
+    sidebar.classList.remove('app-sidebar-collapsed');
+
+    // Restore toggle icon to chevron_left
+    const icon = toggleBtn
+      ? toggleBtn.querySelector('.material-symbols-outlined')
+      : null;
+    if (icon) icon.textContent = 'chevron_left';
+  }
+}
+
+// Run at load (in case user lands directly on mobile while collapsed)
+resetSidebarForSmallScreen(mqSidebarReset);
+
+// Trigger whenever viewport size changes
+if (mqSidebarReset.addEventListener) {
+  mqSidebarReset.addEventListener('change', resetSidebarForSmallScreen);
+} else if (mqSidebarReset.addListener) {
+  mqSidebarReset.addListener(resetSidebarForSmallScreen);
+}
+
+
 const liveQuizToggle = document.getElementById('live-quiz-toggle');
 const liveQuizPanel = document.getElementById('live-quiz-panel');
 const liveQuizArrow = liveQuizToggle ? liveQuizToggle.querySelector('.sidebar-arrow') : null;
