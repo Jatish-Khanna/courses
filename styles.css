@@ -126,9 +126,7 @@ body {
 }
 
 #poem-content {
-    background: linear-gradient(135deg, #fafbfc 0%, #f0f4f8 100%);
     padding: 2.5rem 2rem;
-    border-radius: 1.5rem;
     position: relative;
     overflow-y: auto;
     max-height: 60vh;
@@ -546,6 +544,7 @@ body {
     color: #475569; /* slate-600 */
     background-color: transparent;
     transition: background-color 150ms ease, color 150ms ease;
+    justify-content: flex-start !important;
 }
 
 .sidebar-menu-button:hover {

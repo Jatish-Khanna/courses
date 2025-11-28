@@ -71,9 +71,13 @@
 
     <!-- LEFT PROFILE / NAV (no personal profile info) -->
     <aside id="app-sidebar" class="hero-galaxy w-full lg:w-96 rounded-3xl shadow-2xl flex flex-col justify-between p-5 md:p-6
-           space-y-6 lg:space-y-0 transition-all duration-300 ease-in-out relative overflow-hidden
-           bg-gradient-to-r from-indigo-500 via-indigo-700 to-slate-900 text-white">
+            space-y-6 lg:space-y-0 transition-all duration-300 ease-in-out relative overflow-hidden
+            bg-gradient-to-r from-indigo-500 via-indigo-700 to-slate-900 text-white">
 
+      <button id="app-sidebar-toggle" class="absolute top-3 left-3 flex items-center justify-center w-8 h-8 rounded-full border border-slate-200
+                   hover:bg-slate-50 text-slate-500 bg-white shadow-lg z-50">
+        <span class="material-symbols-outlined text-base">chevron_left</span>
+      </button>
       <!-- Galaxy background for sidebar -->
       <div class="galaxy-bg galaxy-bg-sidebar absolute inset-0 z-0 mix-blend-screen">
         <div class="galaxy-blob galaxy-blob-1"></div>
@@ -147,14 +151,8 @@
             </div>
           </div>
 
-          <!-- Sidebar collapse toggle -->
-          <button id="app-sidebar-toggle"
-            class="mt-4 ml-auto flex items-center justify-center w-8 h-8 rounded-full border border-slate-200 hover:bg-slate-50 text-slate-500 text-sm">
-            <span class="material-symbols-outlined text-base">chevron_left</span>
-          </button>
-
           <!-- Left nav menu (visual only for now) -->
-          <nav class="mt-8 space-y-1 text-sm font-medium sidebar-surface">
+          <nav class="mt-2 space-y-1 text-sm font-medium sidebar-surface">
             <ul class="space-y-2">
               <!-- Live Quiz -->
               <li class="relative">
@@ -163,7 +161,7 @@
                     <span class="material-symbols-outlined text-base sidebar-icon">cast_for_education</span>
                     <span class="sidebar-label">Live Quiz</span>
                   </span>
-                  <span class="material-symbols-outlined sidebar-arrow">expand_more</span>
+                  <!-- <span class="material-symbols-outlined sidebar-arrow">expand_more</span> -->
                 </button>
                 <div id="live-quiz-panel" class="sidebar-submenu mt-1 ml-6 space-y-1 hidden">
                   <a href="live_host" class="sidebar-submenu-link">
@@ -184,10 +182,10 @@
                     <span class="material-symbols-outlined text-base sidebar-icon">school</span>
                     <span id="current-class-label" class="sidebar-label">ਜਮਾਤ</span>
                   </span>
-                  <span id="chevron-icon"
+                  <!-- <span id="chevron-icon"
                     class="material-symbols-outlined sidebar-arrow transition-transform duration-200">
                     expand_more
-                  </span>
+                  </span> -->
                 </button>
                 <div id="class-list-panel" class="sidebar-submenu mt-1 ml-6 space-y-1 max-h-64 overflow-y-auto hidden">
                   <div id="class-list-items" class="py-1"></div>
@@ -201,7 +199,7 @@
                     <span class="material-symbols-outlined text-base sidebar-icon">admin_panel_settings</span>
                     <span class="sidebar-label">ਅਧਿਆਪਕ / ਐਡਮਿਨ</span>
                   </span>
-                  <span class="material-symbols-outlined sidebar-arrow">expand_more</span>
+                  <!-- <span class="material-symbols-outlined sidebar-arrow">expand_more</span> -->
                 </button>
                 <div id="teacher-admin-panel" class="sidebar-submenu mt-1 ml-6 space-y-1 hidden">
                   <a href="teacher.html" class="sidebar-submenu-link">
@@ -355,10 +353,10 @@
 
 
       <!-- MAIN CONTENT: reuse your original chapter + poem layout -->
-      <main class="container mx-auto p-3 md:p-4 mb-4">
+      <main class="container mx-auto">
         <!-- Main View: Chapter Selection -->
         <div id="page-chapter-selection" class="page">
-          <div class="flex flex-col lg:flex-row gap-5 items-stretch relative min-h-[600px]">
+          <div class="flex flex-col lg:flex-row gap-5 items-stretch relative min-h-[700px]">
             <!-- Sidebar -->
             <!-- Sidebar -->
 
