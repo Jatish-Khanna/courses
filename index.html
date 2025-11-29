@@ -62,6 +62,16 @@
     #app-sidebar.app-sidebar-collapsed .sidebar-icon {
       margin: 0 auto;
     }
+
+    /* Make main content full-width on mobile + tablet, keep original on desktop */
+    @media (max-width: 1024px) {
+
+      /* below lg */
+      main.container {
+        width: 100% !important;
+        max-width: 100% !important;
+      }
+    }
   </style>
 </head>
 
@@ -142,7 +152,8 @@
                 <div
                   class="w-20 h-20 md:w-24 md:h-24 rounded-full bg-white flex flex-col items-center justify-center shadow-lg">
                   <span class="text-base font-bold text-indigo-600 text-center">ਮੈਥਲਿਟ</span>
-                  <span class="text-base font-bold text-indigo-600 text-center">(MathLit)</span>                </div>
+                  <span class="text-base font-bold text-indigo-600 text-center">(MathLit)</span>
+                </div>
               </div>
             </div>
           </div>
@@ -436,80 +447,94 @@
 
 
         <!-- MAIN CONTENT: reuse your original chapter + poem layout -->
-        <main class="container mx-auto">
+        <main class="container">
           <!-- Main View: Chapter Selection -->
           <div id="page-chapter-selection" class="page">
             <div class="flex flex-col lg:flex-row gap-5 items-stretch relative min-h-[700px]">
               <!-- Sidebar -->
-              <!-- Sidebar -->
-
               <!-- Collapsed toggle (only visible when sidebar is collapsed) -->
-
               <!-- Main content -->
               <section
                 class="flex-1 w-full bg-gradient-to-br from-white to-gray-50 rounded-3xl shadow-2xl border border-gray-100 min-h-[600px] lg:min-h-[calc(100vh-180px)] relative overflow-hidden">
-                <div id="poem-empty-state"
-                  class="h-full flex flex-col items-center justify-center text-center text-gray-500 p-4">
-                  <div class="relative mb-3">
-                    <span class="material-symbols-outlined text-7xl md:text-8xl text-gray-200 drop-shadow-sm">
-                      auto_stories
-                    </span>
-                    <span class="material-symbols-outlined text-5xl text-indigo-400 absolute bottom-1 right-0">
-                      light_mode
-                    </span>
-                  </div>
-                  <p class="font-medium text-2xl md:text-3xl mt-3 text-gray-700 font-laila">
-                    ਕਵਿਤਾ ਪੜੋ
-                  </p>
-                  <p class="text-base text-gray-400 mt-1">
-                    ਇੱਕ ਪਾਠ ਚੁਣੋ ਅਤੇ ਕਵਿਤਾ ਪੜ੍ਹੋ
-                  </p>
-                </div>
 
-                <div id="poem-panel" class="hidden p-4 md:p-6">
-                  <div class="mb-4 flex flex-col md:flex-row md:items-center md:justify-between gap-3">
-                    <h2 id="poem-title"
-                      class="text-3xl md:text-4xl font-bold font-laila text-indigo-700 flex items-center gap-3 pb-3 border-b-4 border-gradient-to-r from-indigo-300 to-purple-300">
-                      <span class="material-symbols-outlined text-4xl md:text-5xl text-indigo-600">
-                        library_books
+                <!-- NORMAL CHAPTER / POEM VIEW -->
+                <div id="chapter-view" class="relative h-full">
+                  <div id="poem-empty-state"
+                    class="h-full flex flex-col items-center justify-center text-center text-gray-500 p-4">
+                    <div class="relative mb-3">
+                      <span class="material-symbols-outlined text-7xl md:text-8xl text-gray-200 drop-shadow-sm">
+                        auto_stories
                       </span>
-                      <span id="poem-title-text"></span>
-                    </h2>
-
-                    <!-- Right-side controls: Prev / Next / Read -->
-                    <div class="flex items-center gap-2">
-                      <!-- Prev chapter -->
-                      <button id="prev-chapter-btn"
-                        class="flex items-center gap-1 px-3 py-2 rounded-full border border-indigo-200 bg-white text-indigo-700 text-xs md:text-sm font-semibold shadow-sm hover:bg-indigo-50 transition disabled:opacity-50 disabled:cursor-not-allowed"
-                        aria-label="ਪਿਛਲਾ ਪਾਠ" title="ਪਿਛਲਾ ਪਾਠ" disabled>
-                        <span class="material-symbols-outlined text-base">chevron_left</span>
-                        <span class="hidden md:inline">ਪਿਛਲਾ</span>
-                      </button>
-
-                      <!-- Next chapter -->
-                      <button id="next-chapter-btn"
-                        class="flex items-center gap-1 px-3 py-2 rounded-full border border-indigo-200 bg-white text-indigo-700 text-xs md:text-sm font-semibold shadow-sm hover:bg-indigo-50 transition disabled:opacity-50 disabled:cursor-not-allowed"
-                        aria-label="ਅਗਲਾ ਪਾਠ" title="ਅਗਲਾ ਪਾਠ" disabled>
-                        <span class="hidden md:inline">ਅਗਲਾ</span>
-                        <span class="material-symbols-outlined text-base">chevron_right</span>
-                      </button>
-
-                      <!-- Read-aloud button -->
-                      <button id="poem-read-btn" onclick="togglePoemReading()"
-                        class="flex items-center gap-2 px-4 py-2 rounded-full border border-indigo-300 bg-white text-indigo-700 text-sm font-semibold shadow-sm hover:bg-indigo-50 transition">
-                        <span class="material-symbols-outlined text-xl">volume_up</span>
-                        <span class="btn-label">ਕਵਿਤਾ ਸੁਣੋ</span>
-                      </button>
+                      <span class="material-symbols-outlined text-5xl text-indigo-400 absolute bottom-1 right-0">
+                        light_mode
+                      </span>
                     </div>
+                    <p class="font-medium text-2xl md:text-3xl mt-3 text-gray-700 font-laila">
+                      ਕਵਿਤਾ ਪੜੋ
+                    </p>
+                    <p class="text-base text-gray-400 mt-1">
+                      ਇੱਕ ਪਾਠ ਚੁਣੋ ਅਤੇ ਕਵਿਤਾ ਪੜ੍ਹੋ
+                    </p>
                   </div>
 
-                  <div id="poem-content" class="font-laila max-h-[60vh] overflow-y-auto"></div>
+                  <div id="poem-panel" class="hidden p-4 md:p-6">
+                    <div class="mb-4 flex flex-col md:flex-row md:items-center md:justify-between gap-3">
+                      <h2 id="poem-title"
+                        class="text-2xl md:text-3xl font-bold font-laila text-indigo-700 flex items-center gap-3 pb-2 border-b-4 border-gradient-to-r from-indigo-300 to-purple-300">
+                        <span class="material-symbols-outlined text-3xl md:text-2xl text-indigo-600">
+                          library_books
+                        </span>
+                        <span id="poem-title-text"></span>
+                      </h2>
+
+                      <!-- Right-side controls: Prev / Next / Read -->
+                      <div class="flex items-center gap-2">
+                        <!-- Prev chapter -->
+                        <button id="prev-chapter-btn"
+                          class="flex items-center gap-1 px-3 py-2 rounded-full border border-indigo-200 bg-white text-indigo-700 text-xs md:text-sm font-semibold shadow-sm hover:bg-indigo-50 transition disabled:opacity-50 disabled:cursor-not-allowed"
+                          aria-label="ਪਿਛਲਾ ਪਾਠ" title="ਪਿਛਲਾ ਪਾਠ" disabled>
+                          <span class="material-symbols-outlined text-base">chevron_left</span>
+                          <span class="hidden md:inline">ਪਿਛਲਾ</span>
+                        </button>
+
+                        <!-- Next chapter -->
+                        <button id="next-chapter-btn"
+                          class="flex items-center gap-1 px-3 py-2 rounded-full border border-indigo-200 bg-white text-indigo-700 text-xs md:text-sm font-semibold shadow-sm hover:bg-indigo-50 transition disabled:opacity-50 disabled:cursor-not-allowed"
+                          aria-label="ਅਗਲਾ ਪਾਠ" title="ਅਗਲਾ ਪਾਠ" disabled>
+                          <span class="hidden md:inline">ਅਗਲਾ</span>
+                          <span class="material-symbols-outlined text-base">chevron_right</span>
+                        </button>
+
+                        <!-- Read-aloud button -->
+                        <button id="poem-read-btn" onclick="togglePoemReading()"
+                          class="flex items-center gap-2 px-4 py-2 rounded-full border border-indigo-300 bg-white text-indigo-700 text-sm font-semibold shadow-sm hover:bg-indigo-50 transition">
+                          <span class="material-symbols-outlined text-xl">volume_up</span>
+                          <span class="btn-label">ਕਵਿਤਾ ਸੁਣੋ</span>
+                        </button>
+                      </div>
+                    </div>
+
+                    <div id="poem-content" class="font-laila max-h-[60vh] overflow-y-auto"></div>
+                  </div>
+
+                  <!-- Start Quiz FAB -->
+                  <button id="start-quiz-fab" onclick="startQuiz(event)"
+                    class="fab text-white rounded-full shadow-xl absolute bottom-6 right-6 px-4 py-3 font-semibold flex items-center gap-1.5 ripple-surface hidden transform hover:scale-107 transition-transform duration-200">
+                    <span class="material-symbols-outlined text-2xl">quiz</span>
+                    <span class="text-base font-laila">ਟੈਸਟ ਸ਼ੁਰੂ ਕਰੋ</span>
+                  </button>
+
+
                 </div>
 
-                <button id="start-quiz-fab" onclick="startQuiz(event)"
-                  class="fab text-white rounded-full shadow-2xl absolute bottom-6 right-6 px-6 py-4 font-bold flex items-center gap-2 ripple-surface hidden transform hover:scale-110 transition-transform duration-200">
-                  <span class="material-symbols-outlined text-3xl">quiz</span>
-                  <span class="text-lg font-laila">ਟੈਸਟ ਸ਼ੁਰੂ ਕਰੋ</span>
+                <!-- EMBEDDED QUIZ VIEW -->
+                <iframe id="quiz-frame" src="about:blank" class="absolute inset-0 w-full h-full hidden" frameborder="0">
+                </iframe>
+
+                <!-- Back button (visible only while quiz is open) -->
+                <button id="close-quiz-btn" onclick="closeEmbeddedQuiz()"
+                  class="hidden absolute top-4 right-4 z-20 bg-white/80 backdrop-blur px-3 py-1 rounded-full text-xs font-semibold text-slate-700 shadow">
+                  ← ਵਾਪਸ ਪਾਠਾਂ ਵੱਲ
                 </button>
               </section>
             </div>

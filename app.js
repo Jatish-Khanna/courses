@@ -892,28 +892,82 @@ updateChapterNavButtons();
 }
 
 window.startQuiz = (e) => {
-    createRipple(e);
-    if (
-        !currentPoemData ||
-        !currentPoemData.questions ||
-        currentPoemData.questions.length === 0
-    ) {
-        alert("No questions found for this chapter!");
-        return;
+    // ripple effect (if defined)
+    if (typeof createRipple === "function") {
+      createRipple(e);
     }
-    // Store IDs so quiz.html can reconstruct from CLASSES
+  
+    // Make sure we actually have questions for this chapter
+    if (
+      !currentPoemData ||
+      !currentPoemData.questions ||
+      currentPoemData.questions.length === 0
+    ) {
+      alert("No questions found for this chapter!");
+      return;
+    }
+  
+    // Store IDs so quiz.html (inside iframe) knows what to load
     sessionStorage.setItem("selectedClassId", selectedClassId);
     sessionStorage.setItem("currentChapterId", currentPoemData.id);
-    // Keep old data for backward compatibility (not used by new quiz logic)
     sessionStorage.setItem(
-        "currentChapterData",
-        JSON.stringify(currentPoemData)
+      "currentChapterData",
+      JSON.stringify(currentPoemData)
     );
-    // Clear any previous student details so quiz always shows login first
     sessionStorage.removeItem("studentName");
     sessionStorage.removeItem("studentRoll");
-    window.location.href = "quiz.html";
-};
+  
+    // Swap views
+    const chapterView = document.getElementById("chapter-view");
+    const quizFrame = document.getElementById("quiz-frame");
+    const closeBtn = document.getElementById("close-quiz-btn");
+  
+    if (!quizFrame) {
+      console.error("quiz-frame element not found in DOM");
+      alert("Quiz area not found in the page layout.");
+      return;
+    }
+  
+    if (chapterView) {
+      chapterView.classList.add("hidden");
+    }
+  
+    quizFrame.classList.remove("hidden");
+    if (closeBtn) {
+      closeBtn.classList.remove("hidden");
+    }
+  
+    // Load quiz.html inside the iframe (picks up sessionStorage)
+    quizFrame.src = "quiz.html";
+  
+    // Optional: scroll to top
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+  
+  window.closeEmbeddedQuiz = () => {
+    const chapterView = document.getElementById("chapter-view");
+    const quizFrame = document.getElementById("quiz-frame");
+    const closeBtn = document.getElementById("close-quiz-btn");
+  
+    if (quizFrame) {
+      // Stop the running quiz and hide iframe
+      quizFrame.src = "about:blank";
+      quizFrame.classList.add("hidden");
+    }
+  
+    if (chapterView) {
+      chapterView.classList.remove("hidden");
+    }
+  
+    if (closeBtn) {
+      closeBtn.classList.add("hidden");
+    }
+  
+    // Optional: scroll back to poem
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+  
+
 
 // ======== Text-to-Speech for Poem (Punjabi + auto-scroll) ========
 
