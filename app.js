@@ -963,12 +963,20 @@ window.startQuiz = (e) => {
       closeBtn.classList.add("hidden");
     }
   
-    // Optional: scroll back to poem
+    // 🔄 Re-sync completion data from sessionStorage
+    if (typeof initializeCompletionTracking === "function") {
+      initializeCompletionTracking();
+    }
+  
+    // 🔄 Rebuild chapter list + progress bar with updated status
+    if (typeof loadChapters === "function") {
+      loadChapters();
+    }
+  
+    // Optional: scroll back to poem panel
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
   
-
-
 // ======== Text-to-Speech for Poem (Punjabi + auto-scroll) ========
 
 let isReadingPoem = false;

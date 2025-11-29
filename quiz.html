@@ -251,9 +251,12 @@
                 <span id="result-percentage" class="text-2xl text-blue-600">0%</span>
               </p>
             </div>
-            <p class="text-xs text-gray-600 mt-3 pt-3 border-t border-gray-200">
-              ⏱ ਸਮਾਂ ਲਿਆ:
-              <span id="total-time-taken" class="font-semibold"></span> ਸਕਿੰਟ
+            <p class="flex justify-between items-center text-base font-bold mt-3 pt-3 border-t border-gray-200">
+              <span class="text-indigo-700">⏱ ਸਮਾਂ ਲਿਆ:</span>
+              <span class="text-right">
+                <span id="total-time-taken" class="text-2xl text-blue-600 align-middle"></span>
+                <span class="ml-1 text-sm text-gray-600 align-middle">ਸਕਿੰਟ</span>
+              </span>
             </p>
           </div>
 
@@ -599,6 +602,35 @@
 
       saveResultToServer(resultObj);
     }
+    // Retake the same quiz with the same student & chapter
+    window.retakQuiz = () => {
+      if (!confirm("ਕੀ ਤੁਸੀਂ ਦੁਬਾਰਾ ਕਵੀਜ਼ ਦੇਣਾ ਚਾਹੁੰਦੇ ਹੋ? (Retake the quiz?)")) {
+        return;
+      }
+
+      // Stop any running timer
+      if (questionTimerInterval) {
+        clearInterval(questionTimerInterval);
+      }
+
+      // Reset state
+      currentQuestionIndex = 0;
+      userAnswers = [];
+      if (currentPoemData && currentPoemData.questions) {
+        currentQuestions = currentPoemData.questions;
+      }
+
+      quizStartTime = Date.now();
+      questionStartTime = Date.now();
+
+      // Optionally reset percentage display
+      const percEl = document.getElementById("result-percentage");
+      if (percEl) percEl.textContent = "0%";
+
+      // Go back to quiz view and load first question
+      showPage("quizView");
+      loadQuestion();
+    };
 
     // Return to home (chapter selection) from results view
     window.goBackHome = () => {
