@@ -15,6 +15,7 @@
       href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0"
     />
     <script src="data.js"></script>
+    <script src="quizzes.js"></script>
     <style>
       body {
         font-family: "Noto Sans Devanagari", system-ui, sans-serif;
@@ -438,10 +439,25 @@
           const hostToken = data.hostToken;
           currentGame = { gameCode, hostToken, classId, chapterId };
 
-          // Prepare questions
+          // Prepare questions from QUIZZES (segregated quiz data)
           const chapter = findChapterObj(classId, chapterId);
-          currentQuestions = (chapter && chapter.questions) || [];
+          let questions = [];
+          if (
+            typeof QUIZZES !== "undefined" &&
+            QUIZZES[classId] &&
+            QUIZZES[classId][chapterId]
+          ) {
+            questions = QUIZZES[classId][chapterId];
+          }
+
+          currentQuestions = Array.isArray(questions) ? questions : [];
           currentIndex = -1;
+
+          if (!currentQuestions.length) {
+            setupError.textContent = "ਇਸ ਅਧਿਆਇ ਲਈ ਕੋਈ ਕਵਿਜ ਸਵਾਲ ਨਹੀਂ ਮਿਲੇ।";
+            setupError.classList.remove("hidden");
+            return;
+          }
 
           showGameUI();
           startPollingState();

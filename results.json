@@ -97,5 +97,16 @@
     "totalQuestions": 25,
     "totalTimeSeconds": 55.4,
     "timestamp": "2025-11-26T05:27:26.477498Z"
+  },
+  {
+    "studentName": "1",
+    "studentRoll": "1",
+    "classId": "CLASS_6",
+    "chapterId": "ch_02_whole",
+    "chapterName": "ਪਾਠ 2: ਪੂਰਨ ਸੰਖਿਆਵਾਂ (Whole Numbers)",
+    "score": 6,
+    "totalQuestions": 25,
+    "totalTimeSeconds": 50.8,
+    "timestamp": "2025-11-29T23:59:53.912967Z"
   }
 ]

@@ -489,14 +489,13 @@ function clearPoemPanel() {
 function getNavigableChapters() {
     if (!currentClassData || !currentClassData.chapters) return [];
 
-    // Same sort logic as loadChapters(), but only keep chapters that actually have questions
-    return [...currentClassData.chapters]
-        .filter((chapter) => chapter.questions && chapter.questions.length > 0)
-        .sort(
-            (a, b) =>
-                (a.name.match(/\d+/)?.[0] || 0) -
-                (b.name.match(/\d+/)?.[0] || 0)
-        );
+    // Same sort logic as loadChapters(), but keep *all* chapters for navigation,
+    // even if a quiz is not yet available. Quiz availability is handled separately.
+    return [...currentClassData.chapters].sort(
+        (a, b) =>
+            (a.name.match(/\d+/)?.[0] || 0) -
+            (b.name.match(/\d+/)?.[0] || 0)
+    );
 }
 
 function setNavButtonState(btn, enabled) {
@@ -677,8 +676,17 @@ function loadChapters() {
       item.type = "button";
   
       const isCompleted = isChapterCompleted(selectedClassId, chapter.id);
-      const hasQuestions = chapter.questions && chapter.questions.length > 0;
-      const questionCount = chapter.questions?.length || 0;
+      let quizForChapter = [];
+      if (
+        typeof QUIZZES !== "undefined" &&
+        selectedClassId &&
+        QUIZZES[selectedClassId]
+      ) {
+        quizForChapter = QUIZZES[selectedClassId][chapter.id] || [];
+      }
+
+      const questionCount = Array.isArray(quizForChapter) ? quizForChapter.length : 0;
+      const hasQuestions = questionCount > 0;
       const chapterNumber = String(index + 1).padStart(2, "0");
   
       let stateLabel, stateClasses;
@@ -699,23 +707,26 @@ function loadChapters() {
       item.className =
         "chapter-card group w-full text-left rounded-2xl bg-white " +
         "border border-slate-100 px-3.5 py-3 shadow-sm " +
-        (hasQuestions
-          ? "hover:shadow-md hover:-translate-y-[1px] cursor-pointer transition"
-          : "opacity-60 cursor-not-allowed");
-  
+        "hover:shadow-md hover:-translate-y-[1px] cursor-pointer transition" +
+        (hasQuestions ? "" : " opacity-60");
+
       item.setAttribute("data-chapter-id", chapter.id);
-  
-      if (hasQuestions) {
-        item.onclick = (e) => {
-          if (typeof createRipple === "function") {
-            createRipple(e);
-          }
-          loadPoem(chapter);
-        };
+
+      // Always allow clicking a chapter to read the poem.
+      // Quiz availability is handled separately (e.g., Start Quiz button).
+      item.onclick = (e) => {
+        if (typeof createRipple === "function") {
+          createRipple(e);
+        }
+        loadPoem(chapter);
+      };
+
+      if (!hasQuestions) {
+        item.title = "Quiz coming soon – poem available";
       } else {
-        item.title = "Coming Soon";
+        item.title = "";
       }
-  
+
       item.innerHTML = `
         <div class="flex gap-3">
           <!-- Icon / thumbnail -->
@@ -898,14 +909,25 @@ window.startQuiz = (e) => {
     }
   
     // Make sure we actually have questions for this chapter
+    if (!currentPoemData || !selectedClassId) {
+      alert("No chapter selected!");
+      return;
+    }
+
+    let quizForChapter = [];
     if (
-      !currentPoemData ||
-      !currentPoemData.questions ||
-      currentPoemData.questions.length === 0
+      typeof QUIZZES !== "undefined" &&
+      QUIZZES[selectedClassId] &&
+      QUIZZES[selectedClassId][currentPoemData.id]
     ) {
+      quizForChapter = QUIZZES[selectedClassId][currentPoemData.id];
+    }
+
+    if (!Array.isArray(quizForChapter) || quizForChapter.length === 0) {
       alert("No questions found for this chapter!");
       return;
     }
+
   
     // Store IDs so quiz.html (inside iframe) knows what to load
     sessionStorage.setItem("selectedClassId", selectedClassId);

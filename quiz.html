@@ -284,6 +284,7 @@
 
   <!-- load data first -->
   <script src="data.js"></script>
+  <script src="quizzes.js"></script>
   <script src="content_bootstrap.js"></script>
 
   <!-- quiz logic only -->
@@ -401,7 +402,26 @@
     // Start quiz
     function startQuiz(poemData) {
       currentPoemData = poemData;
-      currentQuestions = poemData.questions || [];
+
+      // Load questions from QUIZZES using selectedClassId and chapter id
+      let quizForChapter = [];
+      if (
+        typeof QUIZZES !== "undefined" &&
+        selectedClassId &&
+        QUIZZES[selectedClassId] &&
+        QUIZZES[selectedClassId][poemData.id]
+      ) {
+        quizForChapter = QUIZZES[selectedClassId][poemData.id];
+      }
+
+      currentQuestions = Array.isArray(quizForChapter) ? quizForChapter : [];
+
+      if (!currentQuestions.length) {
+        alert("No questions found for this chapter.");
+        showPage("studentLogin");
+        return;
+      }
+
       currentQuestionIndex = 0;
       userAnswers = [];
       quizStartTime = Date.now();
@@ -409,7 +429,6 @@
 
       // Render poem text
       document.getElementById("quiz-title").textContent = poemData.name || "";
-
 
       document.getElementById("total-questions").textContent =
         currentQuestions.length;
@@ -616,9 +635,18 @@
       // Reset state
       currentQuestionIndex = 0;
       userAnswers = [];
-      if (currentPoemData && currentPoemData.questions) {
-        currentQuestions = currentPoemData.questions;
+
+      let quizForChapter = [];
+      if (
+        typeof QUIZZES !== "undefined" &&
+        selectedClassId &&
+        QUIZZES[selectedClassId] &&
+        currentPoemData &&
+        QUIZZES[selectedClassId][currentPoemData.id]
+      ) {
+        quizForChapter = QUIZZES[selectedClassId][currentPoemData.id];
       }
+      currentQuestions = Array.isArray(quizForChapter) ? quizForChapter : [];
 
       quizStartTime = Date.now();
       questionStartTime = Date.now();

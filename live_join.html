@@ -15,6 +15,7 @@
       href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0"
     />
     <script src="data.js"></script>
+    <script src="quizzes.js"></script>
     <style>
       body {
         font-family: "Noto Sans Devanagari", system-ui, sans-serif;
@@ -275,14 +276,26 @@
 
       function renderQuestion() {
         if (!player) return;
-        const chapter = findChapterObj(player.classId, player.chapterId);
-        if (!chapter || !chapter.questions) {
+
+        const classId = player.classId;
+        const chapterId = player.chapterId;
+
+        let questions = [];
+        if (
+          typeof QUIZZES !== "undefined" &&
+          QUIZZES[classId] &&
+          QUIZZES[classId][chapterId]
+        ) {
+          questions = QUIZZES[classId][chapterId];
+        }
+
+        if (!Array.isArray(questions) || !questions.length) {
           qText.textContent = "ਸਵਾਲ ਲੋਡ ਕਰਨ ਵਿੱਚ ਸਮੱਸਿਆ।";
           optionsContainer.innerHTML = "";
           return;
         }
 
-        const q = chapter.questions[currentQuestionIndex];
+        const q = questions[currentQuestionIndex];
         if (!q) {
           qText.textContent = "Teacher ਨੇ ਅਜੇ ਸਵਾਲ ਸ਼ੁਰੂ ਨਹੀਂ ਕੀਤਾ।";
           optionsContainer.innerHTML = "";
