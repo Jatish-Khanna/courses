@@ -188,7 +188,8 @@ def join_game():
         'name': name,
         'score': 0,
         'lastCorrect': None,
-        'answered': False
+        'answered': False,
+        'lastActiveAt': datetime.utcnow().timestamp() * 1000
     }
 
     return jsonify({
@@ -308,6 +309,12 @@ def game_state():
     if not game:
         return jsonify({'ok': False, 'error': 'Game not found'}), 404
 
+    # ✅ HEARTBEAT: every poll updates activity
+    if player_id and player_id in game['players']:
+        game['players'][player_id]['lastActiveAt'] = (
+            datetime.utcnow().timestamp() * 1000
+        )
+
     players_list = []
     for pid, p in game['players'].items():
         players_list.append({
@@ -315,10 +322,10 @@ def game_state():
             'name': p['name'],
             'score': p['score'],
             'answered': p['answered'],
-            'lastCorrect': p['lastCorrect']
+            'lastCorrect': p['lastCorrect'],
+            'lastActiveAt': p.get('lastActiveAt')
         })
 
-    # Sort leaderboard by score desc, then name
     players_list.sort(key=lambda x: (-x['score'], x['name'].lower()))
 
     you = None
@@ -343,7 +350,13 @@ def game_state():
         'you': you
     })
 
-
+@app.route('/api/live/disconnect', methods=['POST'])
+def disconnect_player():
+    data = request.get_json(force=True)
+    game = games.get(data['gameCode'])
+    if game and data['playerId'] in game['players']:
+        game['players'][data['playerId']]['lastActiveAt'] = 0
+    return jsonify({'ok': True})
 
 
 def load_content():

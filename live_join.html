@@ -360,6 +360,18 @@
       }
     });
 
+    window.addEventListener("beforeunload", () => {
+      if (!player) return;
+      navigator.sendBeacon(
+        "/api/live/disconnect",
+        JSON.stringify({
+          gameCode: player.gameCode,
+          playerId: player.playerId
+        })
+      );
+    });
+
+
   </script>
 </body>
 
