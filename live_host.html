@@ -1,740 +1,918 @@
 <!DOCTYPE html>
 <html lang="pa">
-  <head>
-    <meta charset="UTF-8" />
-    <title>Live Quiz - Teacher Host</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link
-      rel="stylesheet"
-      href="https://fonts.googleapis.com/css2?family=Laila:wght@400;700&family=Noto+Sans+Devanagari:wght@400;500;700&display=swap"
-    />
-    <link
-      rel="stylesheet"
-      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0"
-    />
-    <script src="data.js"></script>
-    <script src="quizzes.js"></script>
-    <style>
-      body {
-        font-family: "Noto Sans Devanagari", system-ui, sans-serif;
+<head>
+  <meta charset="UTF-8" />
+  <title>Live Quiz - Teacher Host</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/qrcodejs/qrcode.min.js"></script>
+
+  <link rel="stylesheet"
+    href="https://fonts.googleapis.com/css2?family=Laila:wght@400;700&family=Noto+Sans+Devanagari:wght@400;500;700&display=swap" />
+  <link rel="stylesheet"
+    href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
+  <script src="data.js"></script>
+  <script src="quizzes.js"></script>
+  <style>
+    body {
+      font-family: "Noto Sans Devanagari", system-ui, sans-serif;
+    }
+
+    .font-laila {
+      font-family: "Laila", "Noto Sans Devanagari", serif;
+    }
+
+    /* 📺 PROJECTOR MODE */
+    .projector-mode {
+      font-size: 1.05em;
+    }
+
+    .projector-mode #game-code-display {
+      font-size: 3.5rem;
+      letter-spacing: 0.45em;
+    }
+
+    .projector-mode #qr-code {
+      transform: scale(1.15);
+      transform-origin: top left;
+    }
+
+    #game-panel {
+      background-image:
+        radial-gradient(circle at 1px 1px, rgba(0, 0, 0, 0.04) 1px, transparent 0);
+      background-size: 24px 24px;
+    }
+
+    @keyframes floatSlow {
+
+      0%,
+      100% {
+        transform: translateY(0) translateX(0);
       }
-      .font-laila {
-        font-family: "Laila", "Noto Sans Devanagari", serif;
+
+      50% {
+        transform: translateY(-40px) translateX(20px);
       }
-    </style>
-  </head>
-  <body class="bg-gradient-to-br from-sky-50 via-white to-indigo-50 min-h-screen text-slate-900">
-    <!-- Login / password gate -->
+    }
+
+    .animate-float-slow {
+      animation: floatSlow 14s ease-in-out infinite;
+    }
+
+    .delay-2000 {
+      animation-delay: 2s;
+    }
+
+    .delay-4000 {
+      animation-delay: 4s;
+    }
+    /* 🌌 Galaxy Background Base */
+#galaxy-bg {
+  position: fixed;
+  inset: 0;
+  z-index: -20;
+  background: radial-gradient(ellipse at bottom, #0b1026 0%, #02030a 100%);
+  overflow: hidden;
+}
+
+/* ⭐ Stars */
+.stars {
+  position: absolute;
+  inset: 0;
+  background: transparent
+    url("https://www.transparenttextures.com/patterns/stardust.png")
+    repeat;
+  animation: moveStars 120s linear infinite;
+  opacity: 0.8;
+}
+
+/* ✨ Twinkling stars */
+.twinkling {
+  position: absolute;
+  inset: 0;
+  background: transparent
+    url("https://www.transparenttextures.com/patterns/tiny-stars.png")
+    repeat;
+  animation: twinkle 60s linear infinite;
+  opacity: 0.5;
+}
+
+/* 🌫️ Nebula glow */
+.nebula {
+  position: absolute;
+  width: 140%;
+  height: 140%;
+  top: -20%;
+  left: -20%;
+  background:
+    radial-gradient(circle at 30% 40%, rgba(120, 80, 255, 0.25), transparent 40%),
+    radial-gradient(circle at 70% 60%, rgba(0, 200, 255, 0.18), transparent 45%),
+    radial-gradient(circle at 50% 50%, rgba(255, 0, 200, 0.12), transparent 50%);
+  animation: nebulaMove 40s ease-in-out infinite alternate;
+}
+
+/* 🎞️ Animations */
+@keyframes moveStars {
+  from { background-position: 0 0; }
+  to { background-position: -2000px 2000px; }
+}
+
+@keyframes twinkle {
+  from { background-position: 0 0; }
+  to { background-position: 1000px -1000px; }
+}
+
+@keyframes nebulaMove {
+  from { transform: scale(1) translate(0, 0); }
+  to { transform: scale(1.1) translate(-40px, 30px); }
+}
+
+  </style>
+
+</head>
+
+<body class="bg-gradient-to-br from-sky-50 via-white to-indigo-50 min-h-screen text-slate-900">
+  <div id="galaxy-bg">
+    <div class="stars"></div>
+    <div class="twinkling"></div>
+    <div class="nebula"></div>
+  </div>
+  <!-- Login / password gate -->
+  <!-- Animated Background -->
+  <div class="fixed inset-0 -z-0 overflow-hidden">
+    <div class="absolute -top-32 -left-32 w-96 h-96 bg-indigo-200 rounded-full blur-3xl opacity-40 animate-float-slow">
+    </div>
     <div
-      id="host-login"
-      class="min-h-screen flex items-center justify-center px-4 py-8"
-    >
-      <div
-        class="w-full max-w-md bg-white rounded-3xl shadow-2xl border border-indigo-100 p-7 relative overflow-hidden"
-      >
-        <div
-          class="absolute -right-10 -top-10 w-32 h-32 bg-indigo-100 rounded-full opacity-40 blur-2xl"
-        ></div>
-        <div
-          class="absolute -left-10 bottom-0 w-28 h-28 bg-purple-100 rounded-full opacity-40 blur-2xl"
-        ></div>
+      class="absolute top-1/3 -right-32 w-96 h-96 bg-violet-200 rounded-full blur-3xl opacity-40 animate-float-slow delay-2000">
+    </div>
+    <div
+      class="absolute bottom-0 left-1/4 w-96 h-96 bg-sky-200 rounded-full blur-3xl opacity-30 animate-float-slow delay-4000">
+    </div>
+  </div>
 
-        <div class="relative">
-          <div class="flex items-center gap-3 mb-4">
-            <div
-              class="w-11 h-11 rounded-2xl bg-indigo-600 flex items-center justify-center shadow-lg"
-            >
-              <span class="material-symbols-outlined text-white text-2xl">
-                cast_for_education
-              </span>
-            </div>
-            <div>
-              <h1 class="text-2xl font-extrabold text-indigo-700 font-laila leading-snug">
-                MathLit Live Quiz (Teacher)
-              </h1>
-              <p class="text-xs text-slate-500 mt-1">
-                ਇਹ ਸਿਰਫ਼ ਅਧਿਆਪਕ / ਐਡਮਿਨ ਲਈ ਹੈ। ਕਿਰਪਾ ਕਰਕੇ ਗੁਪਤ ਪਾਸਵਰਡ ਭਰੋ।
-              </p>
-            </div>
+  <div id="host-login" class="min-h-screen flex items-center justify-center px-4 py-8">
+    <div class="w-full max-w-md bg-white rounded-3xl shadow-2xl border border-indigo-100 p-7 relative overflow-hidden">
+      <div class="absolute -right-10 -top-10 w-32 h-32 bg-indigo-100 rounded-full opacity-40 blur-2xl"></div>
+      <div class="absolute -left-10 bottom-0 w-28 h-28 bg-purple-100 rounded-full opacity-40 blur-2xl"></div>
+
+      <div class="relative">
+        <div class="flex items-center gap-3 mb-4">
+          <div class="w-11 h-11 rounded-2xl bg-indigo-600 flex items-center justify-center shadow-lg">
+            <span class="material-symbols-outlined text-white text-2xl">
+              cast_for_education
+            </span>
+          </div>
+          <div>
+            <h1 class="text-2xl font-extrabold text-indigo-700 font-laila leading-snug">
+              MathLit Live Quiz (Teacher)
+            </h1>
+            <p class="text-xs text-slate-500 mt-1">
+              ਇਹ ਸਿਰਫ਼ ਅਧਿਆਪਕ / ਐਡਮਿਨ ਲਈ ਹੈ। ਕਿਰਪਾ ਕਰਕੇ ਗੁਪਤ ਪਾਸਵਰਡ ਭਰੋ।
+            </p>
+          </div>
+        </div>
+
+        <form id="host-login-form" class="space-y-4 mt-3">
+          <div>
+            <label class="block text-xs font-bold text-slate-700 mb-1 flex items-center gap-1">
+              <span class="material-symbols-outlined text-sm">key</span>
+              ਪਾਸਵਰਡ (Password)
+            </label>
+            <input type="password" id="host-password"
+              class="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-sm bg-slate-50"
+              placeholder="••••••" autocomplete="off" />
           </div>
 
-          <form id="host-login-form" class="space-y-4 mt-3">
-            <div>
-              <label
-                class="block text-xs font-bold text-slate-700 mb-1 flex items-center gap-1"
-              >
-                <span class="material-symbols-outlined text-sm">key</span>
-                ਪਾਸਵਰਡ (Password)
-              </label>
-              <input
-                type="password"
-                id="host-password"
-                class="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-sm bg-slate-50"
-                placeholder="••••••"
-                autocomplete="off"
-              />
-            </div>
+          <p id="host-error" class="text-xs text-rose-600 font-medium hidden">
+            ❌ ਗਲਤ ਪਾਸਵਰਡ। ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ।
+          </p>
 
-            <p
-              id="host-error"
-              class="text-xs text-rose-600 font-medium hidden"
-            >
-              ❌ ਗਲਤ ਪਾਸਵਰਡ। ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ।
-            </p>
+          <button type="submit"
+            class="w-full flex items-center justify-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-sm py-2.5 rounded-xl shadow-md transition">
+            <span class="material-symbols-outlined text-base">login</span>
+            <span>Host ਸਕਰੀਨ ਖੋਲ੍ਹੋ</span>
+          </button>
 
-            <button
-              type="submit"
-              class="w-full flex items-center justify-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-sm py-2.5 rounded-xl shadow-md transition"
-            >
-              <span class="material-symbols-outlined text-base">login</span>
-              <span>Host ਸਕਰੀਨ ਖੋਲ੍ਹੋ</span>
-            </button>
-
-            <p class="text-[10px] text-slate-400 mt-3 leading-relaxed">
-              🔒 ਪਾਸਵਰਡ ਸਰਵਰ 'ਤੇ ਸੈੱਟ ਹੁੰਦਾ ਹੈ (QUIZ_ADMIN_PASSWORD env var ਦੀ ਵਰਤੋਂ ਨਾਲ)।
-            </p>
-          </form>
-        </div>
+          <p class="text-[10px] text-slate-400 mt-3 leading-relaxed">
+            🔒 ਪਾਸਵਰਡ ਸਰਵਰ 'ਤੇ ਸੈੱਟ ਹੁੰਦਾ ਹੈ (QUIZ_ADMIN_PASSWORD env var ਦੀ ਵਰਤੋਂ ਨਾਲ)।
+          </p>
+        </form>
       </div>
     </div>
+  </div>
 
-    <!-- Main host UI (hidden until password correct) -->
-    <div id="host-main" class="hidden">
-      <div class="max-w-5xl mx-auto p-4 md:p-6">
-        <header class="mb-5 flex items-center justify-between gap-3 bg-white/70 backdrop-blur border border-slate-100 rounded-2xl px-3 py-2 shadow-sm">
-          <div class="flex items-center gap-3">
-            <div
-              class="w-11 h-11 rounded-2xl bg-indigo-600 flex items-center justify-center shadow-lg"
-            >
-              <span class="material-symbols-outlined text-white text-2xl">
-                cast_for_education
-              </span>
-            </div>
-            <div>
-              <h1 class="text-2xl md:text-3xl font-extrabold text-indigo-700 font-laila">
-                MathLit Live Quiz (Teacher)
-              </h1>
-              <p class="text-xs md:text-sm text-slate-600">
-                Kahoot-style ਕਵੀਜ਼ • Students join with code • Live leaderboard
-              </p>
-            </div>
+  <!-- Main host UI (hidden until password correct) -->
+  <div id="host-main" class="hidden">
+    <div class="max-w-5xl mx-auto p-4 md:p-6">
+      <header
+        class="mb-5 flex items-center justify-between gap-3 bg-white/70 backdrop-blur border border-slate-100 rounded-2xl px-3 py-2 shadow-sm">
+        <div class="flex items-center gap-3">
+          <div class="w-11 h-11 rounded-2xl bg-indigo-600 flex items-center justify-center shadow-lg">
+            <span class="material-symbols-outlined text-white text-2xl">
+              cast_for_education
+            </span>
           </div>
-          <a
-            href="index.html"
-            class="inline-flex items-center gap-1 px-3 py-1.5 rounded-xl text-xs md:text-sm font-semibold border border-indigo-200 bg-white hover:bg-indigo-50 text-indigo-700 shadow-sm"
-          >
-            <span class="material-symbols-outlined text-base"> home </span>
-            ਮੁੱਖ ਸਫ਼ਾ
-          </a>
-        </header>
+          <div>
+            <h1 class="text-2xl md:text-3xl font-extrabold text-indigo-700 font-laila">
+              MathLit Live Quiz (Teacher)
+            </h1>
+          </div>
+        </div>
+        <a href="index.html"
+          class="inline-flex items-center gap-1 px-3 py-1.5 rounded-xl text-xs md:text-sm font-semibold border border-indigo-200 bg-white hover:bg-indigo-50 text-indigo-700 shadow-sm">
+          <span class="material-symbols-outlined text-base"> home </span>
+          ਮੁੱਖ ਸਫ਼ਾ
+        </a>
+      </header>
 
-        <!-- Setup panel -->
-        <section
-          id="setup-panel"
-          class="bg-white border border-indigo-100 rounded-2xl shadow-md p-4 md:p-5 mb-5"
-        >
-          <h2 class="text-base md:text-lg font-bold text-slate-800 mb-3 font-laila">
-            1️⃣ ਕਵੀਜ਼ ਸੈੱਟ ਕਰੋ (Setup Quiz)
-          </h2>
-          <div class="grid md:grid-cols-3 gap-4 text-sm">
-            <div>
-              <label class="block text-xs font-semibold mb-1 text-slate-600">
+      <!-- Setup panel (Punjabi-first, same functionality) -->
+      <div id="setup-wrapper" class="min-h-[calc(100vh-180px)]
+         flex items-center justify-center
+         px-4 relative z-10">
+        <section id="setup-panel" class="bg-white border-4 border-indigo-100 rounded-[2rem] shadow-xl p-6 md:p-8 mb-6">
+          <!-- Header -->
+          <div class="text-center mb-6">
+            <h2 class="text-2xl md:text-3xl font-black text-indigo-800 font-laila">
+              ਕਵੀਜ਼ ਸੈੱਟ ਕਰੋ (Setup Quiz)
+            </h2>
+            <p class="text-sm text-slate-500 font-semibold mt-1">
+              ਜਮਾਤ, ਪਾਠ ਅਤੇ ਅਧਿਆਪਕ ਦਾ ਨਾਮ ਚੁਣੋ (Select class, chapter & teacher)
+            </p>
+          </div>
+
+          <!-- Form -->
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-5 max-w-4xl mx-auto">
+
+            <!-- Class -->
+            <div class="space-y-1.5">
+              <label class="block text-xs font-bold uppercase tracking-wider text-slate-500">
                 ਜਮਾਤ (Class)
               </label>
-              <select
-                id="host-class-select"
-                class="w-full border border-slate-300 rounded-xl px-3 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
-              ></select>
+              <select id="host-class-select" class="w-full px-4 py-3 bg-slate-50 border-2 border-slate-200
+             rounded-xl text-sm font-bold outline-none
+             focus:border-indigo-400 focus:ring-4 focus:ring-indigo-100"></select>
             </div>
-            <div>
-              <label class="block text-xs font-semibold mb-1 text-slate-600">
-                ਪਾਠ (Chapter)
+
+            <!-- Chapter -->
+            <div class="space-y-1.5">
+              <label class="block text-xs font-bold uppercase tracking-wider text-slate-500">
+                ਪਾਠ / ਅਧਿਆਇ (Chapter)
               </label>
-              <select
-                id="host-chapter-select"
-                class="w-full border border-slate-300 rounded-xl px-3 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
-              ></select>
+              <select id="host-chapter-select" class="w-full px-4 py-3 bg-slate-50 border-2 border-slate-200
+             rounded-xl text-sm font-bold outline-none
+             focus:border-indigo-400 focus:ring-4 focus:ring-indigo-100"></select>
             </div>
-            <div>
-              <label class="block text-xs font-semibold mb-1 text-slate-600">
-                ਅਧਿਆਪਕ ਨਾਮ (Teacher name)
+
+            <!-- Teacher Name -->
+            <div class="space-y-1.5">
+              <label class="block text-xs font-bold uppercase tracking-wider text-slate-500">
+                ਅਧਿਆਪਕ ਦਾ ਨਾਮ (Teacher Name)
               </label>
-              <input
-                id="host-name-input"
-                type="text"
-                class="w-full border border-slate-300 rounded-xl px-3 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                placeholder="Teacher ji"
-              />
+              <input id="host-name-input" type="text" placeholder="Teacher ji (e.g. Mr. Singh)" class="w-full px-4 py-3 bg-slate-50 border-2 border-slate-200
+             rounded-xl text-sm font-bold outline-none
+             focus:border-indigo-400 focus:ring-4 focus:ring-indigo-100" />
             </div>
           </div>
-          <button
-            id="btn-create-game"
-            class="mt-4 inline-flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-bold px-4 py-2.5 rounded-xl shadow-md transform transition hover:scale-[1.02]"
-          >
-            <span class="material-symbols-outlined text-base"> play_arrow </span>
-            Live Quiz ਸ਼ੁਰੂ ਕਰੋ (Create Game)
-          </button>
-          <p id="setup-error" class="mt-2 text-xs text-rose-600 hidden"></p>
+
+          <!-- CTA -->
+          <div class="flex flex-col items-center mt-8">
+            <button id="btn-create-game" class="flex items-center gap-2
+                 bg-gradient-to-br from-indigo-600 via-indigo-500 to-violet-600
+                 hover:from-indigo-700 hover:via-indigo-600 hover:to-violet-700
+                 text-white font-black text-lg
+                 px-8 py-4 rounded-2xl
+                 border-b-4 border-indigo-900
+                 shadow-xl transition
+                 active:translate-y-1 active:border-b-0">
+
+              ਲਾਈਵ ਕਵੀਜ਼ ਸ਼ੁਰੂ ਕਰੋ (Start Live Quiz)
+            </button>
+            <p id="setup-error" class="mt-3 text-sm font-bold text-rose-600 hidden
+                   bg-rose-50 px-4 py-2 rounded-xl text-center">
+            </p>
         </section>
+      </div>
+      <!-- Game panel -->
+      <section id="game-panel" class="hidden bg-white border border-emerald-100 rounded-2xl shadow-lg p-4 md:p-5">
+        <div class="flex flex-col md:flex-row md:items-stretch md:justify-between gap-3 mb-4">
+          <div class="bg-gradient-to-br from-emerald-50 via-white to-emerald-50
+         border border-emerald-200 rounded-3xl p-6 shadow-md
+         w-full md:max-w-lg">
 
-        <!-- Game panel -->
-        <section
-          id="game-panel"
-          class="hidden bg-white border border-emerald-100 rounded-2xl shadow-lg p-4 md:p-5"
-        >
-          <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-3 mb-4">
             <div>
-              <p class="text-xs text-slate-500">Join Code</p>
-              <div class="flex items-baseline gap-3">
-                <span
-                  id="game-code-display"
-                  class="text-3xl md:text-4xl font-extrabold tracking-[0.35em] text-emerald-600"
-                >
-                  000000
-                </span>
-                <button
-                  id="btn-copy-code"
-                  class="inline-flex items-center gap-1 text-[11px] px-2 py-1 rounded-full border border-emerald-200 bg-emerald-50 text-emerald-700 hover:bg-emerald-100"
-                >
-                  <span class="material-symbols-outlined text-sm">content_copy</span>
-                  ਕਾਪੀ
-                </button>
-              </div>
-              <p class="text-[11px] text-slate-500 mt-1">
-                ਵਿਦਿਆਰਥੀ ਆਪਣੇ ਮੋਬਾਈਲ/PC 'ਤੇ <code>/live_join</code> ਖੋਲ੍ਹ ਕੇ ਇਹ ਕੋਡ ਭਰਨਗੇ
-              </p>
-            </div>
-
-            <div class="text-xs text-right space-y-1">
               <p>
                 ਜਮਾਤ:
                 <span id="label-class" class="font-semibold text-indigo-700"></span>
               </p>
               <p>
-                ਪਾਠ:
-                <span id="label-chapter" class="font-semibold text-indigo-700"></span>
-              </p>
-              <p>
                 ਕੁੱਲ ਸਵਾਲ:
                 <span id="label-total-questions" class="font-semibold text-slate-700"></span>
               </p>
-            </div>
-          </div>
-
-          <div class="grid md:grid-cols-[2fr,1.5fr] gap-4">
-            <!-- Question viewer -->
-            <div
-              class="border border-slate-200 rounded-2xl p-4 bg-slate-50/80 flex flex-col min-h-[260px] shadow-sm"
-            >
-              <div class="flex items-center justify-between mb-2 text-xs">
-                <span class="font-semibold text-slate-600">
-                  ਸਵਾਲ
-                  <span id="label-question-index" class="text-indigo-700">0</span>
-                  /
-                  <span id="label-question-total" class="text-slate-700">0</span>
-                </span>
-                <span id="label-game-status" class="text-[11px] px-2 py-0.5 rounded-full bg-amber-50 text-amber-700">
-                  Waiting for players...
-                </span>
-              </div>
-              <div class="flex-1">
-                <p
-                  id="host-question-text"
-                  class="text-lg md:text-xl font-bold text-slate-900 font-laila mb-3 min-h-[60px]"
-                >
-                  —
-                </p>
-                <ol id="host-options-list" class="space-y-1 text-sm"></ol>
-              </div>
-              <div class="mt-3 flex items-center justify-between">
-                <button
-                  id="btn-prev-q"
-                  class="px-3 py-1.5 rounded-xl text-xs font-semibold bg-slate-200 text-slate-700 hover:bg-slate-300 disabled:opacity-40"
-                >
-                  ← ਪਿਛਲਾ
-                </button>
-                <button
-                  id="btn-next-q"
-                  class="px-4 py-1.5 rounded-xl text-xs font-semibold transform transition hover:scale-[1.02] bg-indigo-600 text-white hover:bg-indigo-700 disabled:opacity-40"
-                >
-                  ਅੱਗਲਾ ਸਵਾਲ →
-                </button>
-                <button
-                  id="btn-end-game"
-                  class="px-3 py-1.5 rounded-xl text-xs font-semibold bg-rose-600 text-white hover:bg-rose-700"
-                >
-                  ਕਵੀਜ਼ ਖਤਮ ਕਰੋ
-                </button>
-              </div>
-            </div>
-
-            <!-- Leaderboard -->
-            <div class="border border-slate-200 rounded-2xl p-4 bg-white/90 shadow-sm">
-              <div class="flex items-center justify-between mb-2">
-                <h3 class="text-sm font-bold text-slate-800 flex items-center gap-1">
-                  <span class="material-symbols-outlined text-base text-amber-500">
-                    leaderboard
-                  </span>
-                  ਲੀਡਰਬੋਰਡ
-                </h3>
-                <span
-                  id="label-player-count"
-                  class="inline-flex items-center gap-1 text-[11px] px-2 py-0.5 rounded-full bg-indigo-50 text-indigo-700"
-                >
-                  0 players
-                </span>
-              </div>
-              <ul id="leaderboard-list" class="space-y-1 text-sm max-h-64 overflow-y-auto"></ul>
-              <p
-                id="leaderboard-empty"
-                class="text-xs text-slate-500 text-center mt-4"
-              >
-                ਹਾਲੇ ਕੋਈ ਵਿਦਿਆਰਥੀ ਨਹੀਂ ਜੁੜਿਆ।
+              <p>
+                ਪਾਠ:
+                <span id="label-chapter" class="font-semibold text-indigo-700"></span>
               </p>
+
+            </div>
+
+            <!-- Join Code -->
+            <div class="flex items-center gap-3 mb-3">
+              <span id="game-code-display" class="text-5xl font-black tracking-[0.4em]
+         text-emerald-700 bg-white px-6 py-3 rounded-2xl
+         border-2 border-emerald-300 shadow-inner">
+
+                000000
+              </span>
+
+              <button id="btn-copy-code" class="inline-flex items-center gap-1
+             px-3 py-2 rounded-xl text-xs font-semibold
+             border border-emerald-300
+             bg-emerald-100 text-emerald-800
+             hover:bg-emerald-200">
+                <span class="material-symbols-outlined text-sm">content_copy</span>
+                Copy
+              </button>
+            </div>
+
+
+          </div>
+          <div class="flex flex-1 items-center justify-center">
+            <div class="flex flex-col items-center justify-center gap-2">
+
+              <p class="text-sm font-semibold text-slate-800">
+                ਕਵੀਜ਼ ਵਿੱਚ ਸ਼ਾਮਲ ਹੋਣ ਲਈ QR ਕੋਡ ਸਕੈਨ ਕਰੋ
+              </p>
+              <div id="qr-code"
+                class="mt-1 bg-white p-3 rounded-2xl border border-slate-200 shadow-md cursor-pointer hover:scale-[1.03] transition"
+                onclick="openQrModal()"></div>
+
             </div>
           </div>
-        </section>
-      </div>
+        </div>
+
+        <div class="grid md:grid-cols-[2fr,1.5fr] gap-4">
+          <!-- Question viewer -->
+          <div class="border border-slate-200 rounded-2xl p-4 bg-slate-50/80 flex flex-col min-h-[260px] shadow-sm">
+            <div class="flex items-center justify-between mb-2 text-xs">
+              <span class="font-semibold text-slate-600">
+                ਸਵਾਲ
+                <span id="label-question-index" class="text-indigo-700">0</span>
+                /
+                <span id="label-question-total" class="text-slate-700">0</span>
+              </span>
+              <span id="label-game-status" class="text-xs px-3 py-1 rounded-full
+                       bg-amber-100 text-amber-800 font-semibold">
+                Waiting for players...
+              </span>
+            </div>
+            <div class="flex-1">
+              <p id="host-question-text"
+                class="text-lg md:text-xl font-bold text-slate-900 font-laila mb-3 min-h-[60px]">
+                —
+              </p>
+              <ol id="host-options-list" class="space-y-1 text-sm"></ol>
+            </div>
+            <div class="mt-3 flex items-center justify-between">
+              <button id="btn-prev-q"
+                class="px-3 py-1.5 rounded-xl text-xs font-semibold bg-slate-200 text-slate-700 hover:bg-slate-300 disabled:opacity-40">
+                ← ਪਿਛਲਾ
+              </button>
+              <button id="btn-next-q"
+                class="px-4 py-1.5 rounded-xl text-xs font-semibold transform transition hover:scale-[1.02] bg-indigo-600 text-white hover:bg-indigo-700 disabled:opacity-40">
+                ਅੱਗਲਾ ਸਵਾਲ →
+              </button>
+              <button id="btn-end-game"
+                class="px-3 py-1.5 rounded-xl text-xs font-semibold bg-rose-600 text-white hover:bg-rose-700">
+                ਕਵੀਜ਼ ਖਤਮ ਕਰੋ
+              </button>
+            </div>
+          </div>
+
+          <!-- Leaderboard -->
+          <div class="border border-slate-200 rounded-2xl p-4 bg-white shadow-md">
+            <div class="flex items-center justify-between mb-2">
+              <h3 class="text-sm font-bold text-slate-800 flex items-center gap-1">
+                <span class="material-symbols-outlined text-base text-amber-500">
+                  leaderboard
+                </span>
+                ਲੀਡਰਬੋਰਡ
+              </h3>
+              <span id="label-player-count"
+                class="inline-flex items-center gap-1 text-[11px] px-2 py-0.5 rounded-full bg-indigo-50 text-indigo-700">
+                0 players
+              </span>
+            </div>
+            <ul id="leaderboard-list" class="space-y-1 text-sm max-h-64 overflow-y-auto"></ul>
+            <p id="leaderboard-empty" class="text-xs text-slate-500 text-center mt-4">
+              ਹਾਲੇ ਕੋਈ ਵਿਦਿਆਰਥੀ ਨਹੀਂ ਜੁੜਿਆ।
+            </p>
+          </div>
+        </div>
+      </section>
     </div>
+  </div>
 
-    <script>
-      // Host-side JS for live quiz (Kahoot-style)
+  <script>
 
-      // Expect CLASSES global from data.js if available, otherwise fall back to CLASS_7_DATA only
-      function getAllClasses() {
-        if (typeof CLASSES !== "undefined") {
-          return CLASSES;
-        }
-        // fallback basic object
-        return {
-          CLASS_7: CLASS_7_DATA,
-        };
+    // Expect CLASSES global from data.js if available, otherwise fall back to CLASS_7_DATA only
+    function getAllClasses() {
+      if (typeof CLASSES !== "undefined") {
+        return CLASSES;
       }
+      // fallback basic object
+      return {
+        CLASS_7: CLASS_7_DATA,
+      };
+    }
 
-      const classesMap = getAllClasses();
+    const classesMap = getAllClasses();
 
-      const classSelect = document.getElementById("host-class-select");
-      const chapterSelect = document.getElementById("host-chapter-select");
-      const hostNameInput = document.getElementById("host-name-input");
-      const btnCreate = document.getElementById("btn-create-game");
-      const setupError = document.getElementById("setup-error");
+    const classSelect = document.getElementById("host-class-select");
+    const chapterSelect = document.getElementById("host-chapter-select");
+    const hostNameInput = document.getElementById("host-name-input");
+    const btnCreate = document.getElementById("btn-create-game");
+    const setupError = document.getElementById("setup-error");
 
-      const setupPanel = document.getElementById("setup-panel");
-      const gamePanel = document.getElementById("game-panel");
+    const setupPanel = document.getElementById("setup-panel");
+    const gamePanel = document.getElementById("game-panel");
 
-      const gameCodeDisplay = document.getElementById("game-code-display");
-      const btnCopyCode = document.getElementById("btn-copy-code");
-      const labelClass = document.getElementById("label-class");
-      const labelChapter = document.getElementById("label-chapter");
-      const labelTotalQuestions = document.getElementById("label-total-questions");
-      const labelQuestionIndex = document.getElementById("label-question-index");
-      const labelQuestionTotal = document.getElementById("label-question-total");
-      const labelStatus = document.getElementById("label-game-status");
-      const labelPlayerCount = document.getElementById("label-player-count");
-      const leaderboardList = document.getElementById("leaderboard-list");
-      const leaderboardEmpty = document.getElementById("leaderboard-empty");
+    const gameCodeDisplay = document.getElementById("game-code-display");
+    const btnCopyCode = document.getElementById("btn-copy-code");
+    const labelClass = document.getElementById("label-class");
+    const labelChapter = document.getElementById("label-chapter");
+    const labelTotalQuestions = document.getElementById("label-total-questions");
+    const labelQuestionIndex = document.getElementById("label-question-index");
+    const labelQuestionTotal = document.getElementById("label-question-total");
+    const labelStatus = document.getElementById("label-game-status");
+    const labelPlayerCount = document.getElementById("label-player-count");
+    const leaderboardList = document.getElementById("leaderboard-list");
+    const leaderboardEmpty = document.getElementById("leaderboard-empty");
 
-      const btnPrevQ = document.getElementById("btn-prev-q");
-      const btnNextQ = document.getElementById("btn-next-q");
-      const btnEndGame = document.getElementById("btn-end-game");
+    const btnPrevQ = document.getElementById("btn-prev-q");
+    const btnNextQ = document.getElementById("btn-next-q");
+    const btnEndGame = document.getElementById("btn-end-game");
 
-      const qText = document.getElementById("host-question-text");
-      const qOptionsList = document.getElementById("host-options-list");
+    const qText = document.getElementById("host-question-text");
+    const qOptionsList = document.getElementById("host-options-list");
 
-      let currentGame = null; // {gameCode, hostToken, classId, chapterId}
-      let currentQuestions = [];
-      let currentIndex = -1;
+    let currentGame = null; // {gameCode, hostToken, classId, chapterId}
+    let currentQuestions = [];
+    let currentIndex = -1;
 
-      function initClassAndChapters() {
-        Object.keys(classesMap).forEach((key) => {
-          const cls = classesMap[key];
-          const opt = document.createElement("option");
-          opt.value = cls.id || key;
-          opt.textContent = cls.name || key;
-          classSelect.appendChild(opt);
-        });
+    function initClassAndChapters() {
+      Object.keys(classesMap).forEach((key) => {
+        const cls = classesMap[key];
+        const opt = document.createElement("option");
+        opt.value = cls.id || key;
+        opt.textContent = cls.name || key;
+        classSelect.appendChild(opt);
+      });
 
-        classSelect.addEventListener("change", () => {
-          populateChapters();
-        });
-
+      classSelect.addEventListener("change", () => {
         populateChapters();
+      });
+
+      populateChapters();
+    }
+
+    function populateChapters() {
+      chapterSelect.innerHTML = "";
+      const selectedClassId = classSelect.value || Object.values(classesMap)[0].id;
+      let clsObj = null;
+      Object.keys(classesMap).forEach((key) => {
+        const c = classesMap[key];
+        if (c.id === selectedClassId || key === selectedClassId) {
+          clsObj = c;
+        }
+      });
+      if (!clsObj) {
+        clsObj = Object.values(classesMap)[0];
       }
 
-      function populateChapters() {
-        chapterSelect.innerHTML = "";
-        const selectedClassId = classSelect.value || Object.values(classesMap)[0].id;
-        let clsObj = null;
-        Object.keys(classesMap).forEach((key) => {
-          const c = classesMap[key];
-          if (c.id === selectedClassId || key === selectedClassId) {
-            clsObj = c;
-          }
+      (clsObj.chapters || []).forEach((ch) => {
+        const opt = document.createElement("option");
+        opt.value = ch.id;
+        opt.textContent = ch.name;
+        chapterSelect.appendChild(opt);
+      });
+    }
+
+    function findClassObjById(classId) {
+      let found = null;
+      Object.keys(classesMap).forEach((k) => {
+        const c = classesMap[k];
+        if (c.id === classId || k === classId) {
+          found = c;
+        }
+      });
+      return found || Object.values(classesMap)[0];
+    }
+
+    function findChapterObj(classId, chapterId) {
+      const cls = findClassObjById(classId);
+      if (!cls || !cls.chapters) return null;
+      return cls.chapters.find((ch) => ch.id === chapterId) || null;
+    }
+
+    async function createGame() {
+      setupError.classList.add("hidden");
+      const classId = classSelect.value;
+      const chapterId = chapterSelect.value;
+      const hostName = hostNameInput.value.trim() || "Teacher";
+      const adminToken = sessionStorage.getItem("liveQuizHostToken");
+
+      if (!adminToken) {
+        setupError.textContent = "ਕਿਰਪਾ ਕਰਕੇ ਪਹਿਲਾਂ ਪਾਸਵਰਡ ਨਾਲ ਲੋਗਇਨ ਕਰੋ।";
+        setupError.classList.remove("hidden");
+        return;
+      }
+
+      if (!classId || !chapterId) {
+        setupError.textContent = "ਕਿਰਪਾ ਕਰਕੇ ਜਮਾਤ ਅਤੇ ਪਾਠ ਚੁਣੋ।";
+        setupError.classList.remove("hidden");
+        return;
+      }
+
+      try {
+        btnCreate.disabled = true;
+        btnCreate.textContent = "Creating game...";
+
+        const resp = await fetch("/api/live/create_game", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ classId, chapterId, hostName, adminToken }),
         });
-        if (!clsObj) {
-          clsObj = Object.values(classesMap)[0];
+        const data = await resp.json();
+        if (!data.ok) {
+          throw new Error(data.error || "Failed to create game");
         }
 
-        (clsObj.chapters || []).forEach((ch) => {
-          const opt = document.createElement("option");
-          opt.value = ch.id;
-          opt.textContent = ch.name;
-          chapterSelect.appendChild(opt);
-        });
-      }
+        const gameCode = data.gameCode;
+        const hostToken = data.hostToken;
+        currentGame = { gameCode, hostToken, classId, chapterId };
 
-      function findClassObjById(classId) {
-        let found = null;
-        Object.keys(classesMap).forEach((k) => {
-          const c = classesMap[k];
-          if (c.id === classId || k === classId) {
-            found = c;
-          }
-        });
-        return found || Object.values(classesMap)[0];
-      }
-
-      function findChapterObj(classId, chapterId) {
-        const cls = findClassObjById(classId);
-        if (!cls || !cls.chapters) return null;
-        return cls.chapters.find((ch) => ch.id === chapterId) || null;
-      }
-
-      async function createGame() {
-        setupError.classList.add("hidden");
-        const classId = classSelect.value;
-        const chapterId = chapterSelect.value;
-        const hostName = hostNameInput.value.trim() || "Teacher";
-        const adminToken = sessionStorage.getItem("liveQuizHostToken");
-
-        if (!adminToken) {
-          setupError.textContent = "ਕਿਰਪਾ ਕਰਕੇ ਪਹਿਲਾਂ ਪਾਸਵਰਡ ਨਾਲ ਲੋਗਇਨ ਕਰੋ।";
-          setupError.classList.remove("hidden");
-          return;
+        // Prepare questions from QUIZZES (segregated quiz data)
+        const chapter = findChapterObj(classId, chapterId);
+        let questions = [];
+        if (
+          typeof QUIZZES !== "undefined" &&
+          QUIZZES[classId] &&
+          QUIZZES[classId][chapterId]
+        ) {
+          questions = QUIZZES[classId][chapterId];
         }
 
-        if (!classId || !chapterId) {
-          setupError.textContent = "ਕਿਰਪਾ ਕਰਕੇ ਜਮਾਤ ਅਤੇ ਪਾਠ ਚੁਣੋ।";
-          setupError.classList.remove("hidden");
-          return;
-        }
+        currentQuestions = Array.isArray(questions) ? questions : [];
+        currentIndex = -1;
 
-        try {
-          btnCreate.disabled = true;
-          btnCreate.textContent = "Creating game...";
-
-          const resp = await fetch("/api/live/create_game", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ classId, chapterId, hostName, adminToken }),
-          });
-          const data = await resp.json();
-          if (!data.ok) {
-            throw new Error(data.error || "Failed to create game");
-          }
-
-          const gameCode = data.gameCode;
-          const hostToken = data.hostToken;
-          currentGame = { gameCode, hostToken, classId, chapterId };
-
-          // Prepare questions from QUIZZES (segregated quiz data)
-          const chapter = findChapterObj(classId, chapterId);
-          let questions = [];
-          if (
-            typeof QUIZZES !== "undefined" &&
-            QUIZZES[classId] &&
-            QUIZZES[classId][chapterId]
-          ) {
-            questions = QUIZZES[classId][chapterId];
-          }
-
-          currentQuestions = Array.isArray(questions) ? questions : [];
-          currentIndex = -1;
-
-          if (!currentQuestions.length) {
-            setupError.textContent = "ਇਸ ਅਧਿਆਇ ਲਈ ਕੋਈ ਕਵਿਜ ਸਵਾਲ ਨਹੀਂ ਮਿਲੇ।";
-            setupError.classList.remove("hidden");
-            return;
-          }
-
-          showGameUI();
-          startPollingState();
-        } catch (err) {
-          console.error(err);
-          setupError.textContent = "Game ਬਣਾਉਂਦੇ ਸਮੇਂ ਗੜਬੜ ਹੋਈ।";
-          setupError.classList.remove("hidden");
-        } finally {
-          btnCreate.disabled = false;
-          btnCreate.textContent = "Live Quiz ਸ਼ੁਰੂ ਕਰੋ (Create Game)";
-        }
-      }
-
-      function showGameUI() {
-        if (!currentGame) return;
-        setupPanel.classList.add("hidden");
-        gamePanel.classList.remove("hidden");
-
-        const cls = findClassObjById(currentGame.classId);
-        const chapter = findChapterObj(currentGame.classId, currentGame.chapterId);
-
-        gameCodeDisplay.textContent = currentGame.gameCode;
-        labelClass.textContent = cls ? cls.name : currentGame.classId;
-        labelChapter.textContent = chapter ? chapter.name : currentGame.chapterId;
-        labelTotalQuestions.textContent = currentQuestions.length;
-        labelQuestionTotal.textContent = currentQuestions.length;
-
-        updateQuestionView();
-      }
-
-      function updateQuestionView() {
         if (!currentQuestions.length) {
-          qText.textContent = "No questions found for this chapter.";
-          qOptionsList.innerHTML = "";
-          btnPrevQ.disabled = true;
-          btnNextQ.disabled = true;
+          setupError.textContent = "ਇਸ ਅਧਿਆਇ ਲਈ ਕੋਈ ਕਵਿਜ ਸਵਾਲ ਨਹੀਂ ਮਿਲੇ।";
+          setupError.classList.remove("hidden");
           return;
         }
 
-        if (currentIndex < 0) {
-          labelQuestionIndex.textContent = "0";
-          qText.textContent = "ਕਿਰਪਾ ਕਰਕੇ 'ਅੱਗਲਾ ਸਵਾਲ' ਦਬਾ ਕੇ ਕਵੀਜ਼ ਸ਼ੁਰੂ ਕਰੋ।";
-          qOptionsList.innerHTML = "";
-          btnPrevQ.disabled = true;
-          return;
-        }
+        showGameUI();
+        startPollingState();
+      } catch (err) {
+        console.error(err);
+        setupError.textContent = "Game ਬਣਾਉਂਦੇ ਸਮੇਂ ਗੜਬੜ ਹੋਈ।";
+        setupError.classList.remove("hidden");
+      } finally {
+        btnCreate.disabled = false;
+        btnCreate.textContent = "Live Quiz ਸ਼ੁਰੂ ਕਰੋ (Create Game)";
+      }
+    }
 
-        const q = currentQuestions[currentIndex];
-        labelQuestionIndex.textContent = String(currentIndex + 1);
-        qText.textContent = q.t;
+    function showGameUI() {
+      if (!currentGame) return;
+      const wrapper = document.getElementById("setup-wrapper");
+      wrapper.classList.add("opacity-0");
+
+      setTimeout(() => {
+        wrapper.classList.add("hidden");
+      }, 200);
+
+      document.getElementById("setup-wrapper").classList.add("hidden");
+      gamePanel.classList.remove("hidden");
+      document.body.classList.add("projector-mode");
+
+      const cls = findClassObjById(currentGame.classId);
+      const chapter = findChapterObj(currentGame.classId, currentGame.chapterId);
+
+      gameCodeDisplay.textContent = currentGame.gameCode;
+
+      const joinUrl =
+        `${location.origin}/live_join.html?code=${currentGame.gameCode}`;
+
+      const qrContainer = document.getElementById("qr-code");
+      qrContainer.innerHTML = ""; // reset
+
+      new QRCode(qrContainer, {
+        text: joinUrl,
+        width: 140,
+        height: 140,
+      });
+
+      labelClass.textContent = cls ? cls.name : currentGame.classId;
+      labelChapter.textContent = chapter ? chapter.name : currentGame.chapterId;
+      labelTotalQuestions.textContent = currentQuestions.length;
+      labelQuestionTotal.textContent = currentQuestions.length;
+
+      updateQuestionView();
+    }
+
+    function updateQuestionView() {
+      if (!currentQuestions.length) {
+        qText.textContent = "No questions found for this chapter.";
         qOptionsList.innerHTML = "";
-        q.o.forEach((opt, idx) => {
-          const li = document.createElement("li");
-          li.textContent = `${idx + 1}. ${opt}`;
-          li.className =
-            "px-2 py-1 rounded-lg bg-white border border-slate-200 text-slate-700 text-sm";
-          if (idx === q.c) {
-            li.classList.add("border-emerald-400", "bg-emerald-50");
-          }
-          qOptionsList.appendChild(li);
+        btnPrevQ.disabled = true;
+        btnNextQ.disabled = true;
+        return;
+      }
+
+      if (currentIndex < 0) {
+        labelQuestionIndex.textContent = "0";
+        qText.textContent = "ਕਿਰਪਾ ਕਰਕੇ 'ਅੱਗਲਾ ਸਵਾਲ' ਦਬਾ ਕੇ ਕਵੀਜ਼ ਸ਼ੁਰੂ ਕਰੋ।";
+        qOptionsList.innerHTML = "";
+        btnPrevQ.disabled = true;
+        return;
+      }
+
+      const q = currentQuestions[currentIndex];
+      labelQuestionIndex.textContent = String(currentIndex + 1);
+      qText.textContent = q.t;
+      qOptionsList.innerHTML = "";
+      q.o.forEach((opt, idx) => {
+        const li = document.createElement("li");
+        li.textContent = `${idx + 1}. ${opt}`;
+        li.className =
+          "px-2 py-1 rounded-lg bg-white border border-slate-200 text-slate-700 text-sm";
+        if (idx === q.c) {
+          li.classList.add("border-emerald-400", "bg-emerald-50");
+        }
+        qOptionsList.appendChild(li);
+      });
+
+      btnPrevQ.disabled = currentIndex <= 0;
+      btnNextQ.disabled = currentIndex >= currentQuestions.length - 1;
+    }
+
+    async function goToQuestion(newIndex) {
+      if (!currentGame) return;
+      if (newIndex < 0 || newIndex >= currentQuestions.length) return;
+      currentIndex = newIndex;
+      updateQuestionView();
+
+      const q = currentQuestions[currentIndex];
+      try {
+        labelStatus.textContent = "Question live for students...";
+        await fetch("/api/live/next_question", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            gameCode: currentGame.gameCode,
+            hostToken: currentGame.hostToken,
+            questionIndex: currentIndex,
+            correctIndex: q.c,
+          }),
         });
-
-        btnPrevQ.disabled = currentIndex <= 0;
-        btnNextQ.disabled = currentIndex >= currentQuestions.length - 1;
+      } catch (err) {
+        console.error("Failed to update question on server", err);
       }
+    }
 
-      async function goToQuestion(newIndex) {
-        if (!currentGame) return;
-        if (newIndex < 0 || newIndex >= currentQuestions.length) return;
-        currentIndex = newIndex;
-        updateQuestionView();
-
-        const q = currentQuestions[currentIndex];
-        try {
-          labelStatus.textContent = "Question live for students...";
-          await fetch("/api/live/next_question", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              gameCode: currentGame.gameCode,
-              hostToken: currentGame.hostToken,
-              questionIndex: currentIndex,
-              correctIndex: q.c,
-            }),
-          });
-        } catch (err) {
-          console.error("Failed to update question on server", err);
-        }
+    async function endGame() {
+      if (!currentGame) return;
+      try {
+        await fetch("/api/live/end_game", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            gameCode: currentGame.gameCode,
+            hostToken: currentGame.hostToken,
+          }),
+        });
+        labelStatus.textContent = "Quiz finished.";
+      } catch (err) {
+        console.error("Failed to end game", err);
       }
+    }
 
-      async function endGame() {
-        if (!currentGame) return;
-        try {
-          await fetch("/api/live/end_game", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              gameCode: currentGame.gameCode,
-              hostToken: currentGame.hostToken,
-            }),
-          });
-          labelStatus.textContent = "Quiz finished.";
-        } catch (err) {
-          console.error("Failed to end game", err);
-        }
-      }
+    async function pollStateOnce() {
+      if (!currentGame) return;
+      try {
+        const resp = await fetch(
+          `/api/live/state?gameCode=${encodeURIComponent(currentGame.gameCode)}`
+        );
+        const data = await resp.json();
+        if (!data.ok) return;
 
-      async function pollStateOnce() {
-        if (!currentGame) return;
-        try {
-          const resp = await fetch(
-            `/api/live/state?gameCode=${encodeURIComponent(currentGame.gameCode)}`
-          );
-          const data = await resp.json();
-          if (!data.ok) return;
-
-          // Update game status text
-          labelStatus.textContent =
-            data.status === "waiting"
-              ? "Waiting for players..."
-              : data.status === "in_progress"
+        // Update game status text
+        labelStatus.textContent =
+          data.status === "waiting"
+            ? "Waiting for players..."
+            : data.status === "in_progress"
               ? "Question live."
               : "Finished.";
 
-          // Update leaderboard
-          const players = data.players || [];
-          labelPlayerCount.textContent = `${players.length} players`;
-          leaderboardList.innerHTML = "";
-          if (!players.length) {
-            leaderboardEmpty.classList.remove("hidden");
-          } else {
-            leaderboardEmpty.classList.add("hidden");
-            players.forEach((p, idx) => {
-              const li = document.createElement("li");
-              li.className =
-                "flex items-center justify-between px-3 py-1.5 rounded-xl bg-gradient-to-r from-slate-50 to-slate-100 border border-slate-200";
-              li.innerHTML = `
+        // Update leaderboard
+        const players = data.players || [];
+        labelPlayerCount.textContent = `${players.length} players`;
+        leaderboardList.innerHTML = "";
+        if (!players.length) {
+          leaderboardEmpty.classList.remove("hidden");
+        } else {
+          leaderboardEmpty.classList.add("hidden");
+          players.forEach((p, idx) => {
+            const li = document.createElement("li");
+            li.className =
+              "flex items-center justify-between px-3 py-1.5 rounded-xl bg-gradient-to-r from-slate-50 to-slate-100 border border-slate-200";
+            li.innerHTML = `
                 <span class="flex items-center gap-2">
                   <span class="text-xs font-semibold text-slate-500">#${idx + 1}</span>
                   <span class="font-semibold">${p.name}</span>
                 </span>
                 <span class="text-xs font-bold text-indigo-700">${p.score}</span>
               `;
-              leaderboardList.appendChild(li);
-            });
+            leaderboardList.appendChild(li);
+          });
+        }
+      } catch (err) {
+        console.error("Error polling state", err);
+      }
+    }
+
+    function startPollingState() {
+      setInterval(pollStateOnce, 1500);
+    }
+
+    // Password gate logic
+    (function () {
+      const loginView = document.getElementById("host-login");
+      const mainView = document.getElementById("host-main");
+      const form = document.getElementById("host-login-form");
+      const input = document.getElementById("host-password");
+      const errorEl = document.getElementById("host-error");
+
+      function unlock() {
+        if (!loginView || !mainView) return;
+        loginView.classList.add("hidden");
+        mainView.classList.remove("hidden");
+        // init class/chapter dropdowns once unlocked
+        initClassAndChapters();
+      }
+
+      async function handleSubmit(e) {
+        e.preventDefault();
+        const val = (input.value || "").trim();
+        if (!val) {
+          errorEl.textContent = "❌ ਕਿਰਪਾ ਕਰਕੇ ਪਾਸਵਰਡ ਭਰੋ।";
+          errorEl.classList.remove("hidden");
+          return;
+        }
+
+        try {
+          const resp = await fetch("/api/auth/check", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ password: val }),
+          });
+          const data = await resp.json();
+
+          if (data.ok && data.token) {
+            sessionStorage.setItem("liveQuizHostAuth", "ok");
+            sessionStorage.setItem("liveQuizHostToken", data.token);
+            errorEl.classList.add("hidden");
+            unlock();
+          } else {
+            errorEl.textContent = "❌ ਗਲਤ ਪਾਸਵਰਡ। ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ।";
+            errorEl.classList.remove("hidden");
           }
         } catch (err) {
-          console.error("Error polling state", err);
+          console.error("Host auth error", err);
+          errorEl.textContent =
+            "⚠️ ਸਰਵਰ ਨਾਲ ਕਨੈਕਸ਼ਨ ਨਹੀਂ ਬਣੀ। ਬਾਅਦ ਵਿੱਚ ਫਿਰ ਕੋਸ਼ਿਸ਼ ਕਰੋ।";
+          errorEl.classList.remove("hidden");
         }
       }
 
-      function startPollingState() {
-        setInterval(pollStateOnce, 1500);
+      if (form) {
+        form.addEventListener("submit", handleSubmit);
       }
 
-            // Password gate logic
-      (function () {
-        const loginView = document.getElementById("host-login");
-        const mainView = document.getElementById("host-main");
-        const form = document.getElementById("host-login-form");
-        const input = document.getElementById("host-password");
-        const errorEl = document.getElementById("host-error");
-
-        function unlock() {
-          if (!loginView || !mainView) return;
-          loginView.classList.add("hidden");
-          mainView.classList.remove("hidden");
-          // init class/chapter dropdowns once unlocked
-          initClassAndChapters();
+      window.addEventListener("load", function () {
+        const already = sessionStorage.getItem("liveQuizHostAuth") === "ok" &&
+          !!sessionStorage.getItem("liveQuizHostToken");
+        if (already) {
+          unlock();
+        } else if (loginView) {
+          loginView.classList.remove("hidden");
         }
+      });
 
-        async function handleSubmit(e) {
-          e.preventDefault();
-          const val = (input.value || "").trim();
-          if (!val) {
-            errorEl.textContent = "❌ ਕਿਰਪਾ ਕਰਕੇ ਪਾਸਵਰਡ ਭਰੋ।";
-            errorEl.classList.remove("hidden");
+      // Attach other event listeners once DOM is ready
+      window.addEventListener("load", function () {
+        btnCreate.addEventListener("click", createGame);
+        btnPrevQ.addEventListener("click", () => goToQuestion(currentIndex - 1));
+        btnNextQ.addEventListener("click", () => {
+          if (currentIndex < 0) {
+            goToQuestion(0);
+          } else {
+            goToQuestion(currentIndex + 1);
+          }
+        });
+        btnEndGame.addEventListener("click", endGame);
+
+        btnCopyCode.addEventListener("click", () => {
+          if (!currentGame) return;
+          const text = currentGame.gameCode;
+
+          // Prefer modern clipboard API in secure contexts
+          if (navigator.clipboard && window.isSecureContext) {
+            navigator.clipboard
+              .writeText(text)
+              .then(() => {
+                btnCopyCode.textContent = "Copied!";
+                setTimeout(() => (btnCopyCode.textContent = "ਕਾਪੀ"), 1000);
+              })
+              .catch(() => {
+                alert("ਕੋਡ ਕਾਪੀ ਨਹੀਂ ਹੋ ਸਕਿਆ, ਕਿਰਪਾ ਕਰਕੇ ਹੱਥੋਂ ਕਾਪੀ ਕਰੋ।");
+              });
             return;
           }
 
+          // Fallback for http / older browsers
+          const textarea = document.createElement("textarea");
+          textarea.value = text;
+          textarea.style.position = "fixed";
+          textarea.style.opacity = "0";
+          document.body.appendChild(textarea);
+          textarea.focus();
+          textarea.select();
           try {
-            const resp = await fetch("/api/auth/check", {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({ password: val }),
-            });
-            const data = await resp.json();
-
-            if (data.ok && data.token) {
-              sessionStorage.setItem("liveQuizHostAuth", "ok");
-              sessionStorage.setItem("liveQuizHostToken", data.token);
-              errorEl.classList.add("hidden");
-              unlock();
+            const ok = document.execCommand("copy");
+            if (ok) {
+              btnCopyCode.textContent = "Copied!";
+              setTimeout(() => (btnCopyCode.textContent = "ਕਾਪੀ"), 1000);
             } else {
-              errorEl.textContent = "❌ ਗਲਤ ਪਾਸਵਰਡ। ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ।";
-              errorEl.classList.remove("hidden");
-            }
-          } catch (err) {
-            console.error("Host auth error", err);
-            errorEl.textContent =
-              "⚠️ ਸਰਵਰ ਨਾਲ ਕਨੈਕਸ਼ਨ ਨਹੀਂ ਬਣੀ। ਬਾਅਦ ਵਿੱਚ ਫਿਰ ਕੋਸ਼ਿਸ਼ ਕਰੋ।";
-            errorEl.classList.remove("hidden");
-          }
-        }
-
-        if (form) {
-          form.addEventListener("submit", handleSubmit);
-        }
-
-        window.addEventListener("load", function () {
-          const already = sessionStorage.getItem("liveQuizHostAuth") === "ok" &&
-                !!sessionStorage.getItem("liveQuizHostToken");
-          if (already) {
-            unlock();
-          } else if (loginView) {
-            loginView.classList.remove("hidden");
-          }
-        });
-
-        // Attach other event listeners once DOM is ready
-        window.addEventListener("load", function () {
-          btnCreate.addEventListener("click", createGame);
-          btnPrevQ.addEventListener("click", () => goToQuestion(currentIndex - 1));
-          btnNextQ.addEventListener("click", () => {
-            if (currentIndex < 0) {
-              goToQuestion(0);
-            } else {
-              goToQuestion(currentIndex + 1);
-            }
-          });
-          btnEndGame.addEventListener("click", endGame);
-
-          btnCopyCode.addEventListener("click", () => {
-            if (!currentGame) return;
-            const text = currentGame.gameCode;
-
-            // Prefer modern clipboard API in secure contexts
-            if (navigator.clipboard && window.isSecureContext) {
-              navigator.clipboard
-                .writeText(text)
-                .then(() => {
-                  btnCopyCode.textContent = "Copied!";
-                  setTimeout(() => (btnCopyCode.textContent = "ਕਾਪੀ"), 1000);
-                })
-                .catch(() => {
-                  alert("ਕੋਡ ਕਾਪੀ ਨਹੀਂ ਹੋ ਸਕਿਆ, ਕਿਰਪਾ ਕਰਕੇ ਹੱਥੋਂ ਕਾਪੀ ਕਰੋ।");
-                });
-              return;
-            }
-
-            // Fallback for http / older browsers
-            const textarea = document.createElement("textarea");
-            textarea.value = text;
-            textarea.style.position = "fixed";
-            textarea.style.opacity = "0";
-            document.body.appendChild(textarea);
-            textarea.focus();
-            textarea.select();
-            try {
-              const ok = document.execCommand("copy");
-              if (ok) {
-                btnCopyCode.textContent = "Copied!";
-                setTimeout(() => (btnCopyCode.textContent = "ਕਾਪੀ"), 1000);
-              } else {
-                alert("ਕੋਡ ਕਾਪੀ ਨਹੀਂ ਹੋ ਸਕਿਆ, ਕਿਰਪਾ ਕਰਕੇ ਹੱਥੋਂ ਕਾਪੀ ਕਰੋ।");
-              }
-            } catch (e) {
               alert("ਕੋਡ ਕਾਪੀ ਨਹੀਂ ਹੋ ਸਕਿਆ, ਕਿਰਪਾ ਕਰਕੇ ਹੱਥੋਂ ਕਾਪੀ ਕਰੋ।");
-            } finally {
-              document.body.removeChild(textarea);
             }
-          });
-
-          // also start polling for state once host page is loaded
-          startPollingState();
+          } catch (e) {
+            alert("ਕੋਡ ਕਾਪੀ ਨਹੀਂ ਹੋ ਸਕਿਆ, ਕਿਰਪਾ ਕਰਕੇ ਹੱਥੋਂ ਕਾਪੀ ਕਰੋ।");
+          } finally {
+            document.body.removeChild(textarea);
+          }
         });
-      })();
-    </script>
-  </body>
+
+        // also start polling for state once host page is loaded
+        startPollingState();
+      });
+    })();
+    function openQrModal() {
+      const modal = document.getElementById("qr-modal");
+      const largeQr = document.getElementById("qr-code-large");
+
+      // Copy QR from small one
+      largeQr.innerHTML = "";
+
+      new QRCode(largeQr, {
+        text: `${location.origin}/live_join.html?code=${currentGame.gameCode}`,
+        width: 320,
+        height: 320,
+      });
+
+      modal.classList.remove("hidden");
+    }
+
+    function closeQrModal() {
+      document.getElementById("qr-modal").classList.add("hidden");
+    }
+    document.addEventListener("keydown", e => {
+      if (e.key === "Escape") closeQrModal();
+    });
+
+
+  </script>
+</body>
+
+<!-- QR FULLSCREEN MODAL -->
+<div id="qr-modal" class="fixed inset-0 bg-black/60 hidden z-50
+       flex items-center justify-center" onclick="closeQrModal()">
+  <div class="bg-white rounded-3xl p-6 shadow-2xl
+         flex flex-col items-center gap-4" onclick="event.stopPropagation()">
+    <p class="text-base font-bold text-slate-800">
+      ਕਵੀਜ਼ ਵਿੱਚ ਸ਼ਾਮਲ ਹੋਣ ਲਈ QR ਕੋਡ ਸਕੈਨ ਕਰੋ
+    </p>
+
+    <div id="qr-code-large" class="bg-white p-4 rounded-2xl border shadow"></div>
+
+    <button onclick="closeQrModal()" class="text-sm font-semibold text-indigo-600 hover:underline">
+      ਬੰਦ ਕਰੋ
+    </button>
+  </div>
+</div>
+
+
 </html>
