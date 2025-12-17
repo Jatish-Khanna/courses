@@ -7,20 +7,54 @@
 // }
 
 (function () {
-  const STORAGE_KEY = "quizResults";
-
   // 1. Load results
-  function loadResults() {
+  const STORAGE_KEY = "quizResults";
+  const RESULTS_JSON_URL = "results.json";
+
+  async function loadResultsHybrid() {
+    // 1. Try results.json
+    try {
+      const resp = await fetch(RESULTS_JSON_URL, { cache: "no-store" });
+      if (resp.ok) {
+        const jsonData = await resp.json();
+        if (Array.isArray(jsonData) && jsonData.length > 0) {
+          console.log("Loaded results from results.json");
+          return jsonData;
+        }
+      }
+    } catch (err) {
+      console.warn("results.json not available, falling back to localStorage");
+    }
+
+    // 2. Fallback to localStorage
     try {
       const raw = localStorage.getItem(STORAGE_KEY);
       if (!raw) return [];
       const parsed = JSON.parse(raw);
-      if (!Array.isArray(parsed)) return [];
-      return parsed;
-    } catch (e) {
-      console.error("Error reading quizResults from localStorage", e);
-      return [];
+      if (Array.isArray(parsed) && parsed.length > 0) {
+        console.log("Loaded results from localStorage");
+        return parsed;
+      }
+    } catch (err) {
+      console.error("Error reading localStorage quizResults", err);
     }
+
+    // 3. Nothing found
+    return [];
+  }
+
+  function rebuildDerivedData() {
+    uniqueClasses = Array.from(
+      new Set(results.map((r) => r.classId).filter(Boolean))
+    );
+
+    uniqueStudents = Array.from(
+      new Set(results.map((r) => `${r.studentName}|||${r.studentRoll}`))
+    );
+
+    uniqueChapters = Array.from(
+      new Set(results.map((r) => r.chapterId).filter(Boolean))
+    );
   }
 
   // 2. Helper to resolve class/chapters from CLASSES
@@ -47,12 +81,17 @@
       );
       if (foundKey) cls = CLASSES[foundKey];
     }
-    if (!cls || !Array.isArray(cls.chapters)) return fallback || chapterId || "";
+    if (!cls || !Array.isArray(cls.chapters))
+      return fallback || chapterId || "";
     const chapter = cls.chapters.find((ch) => ch.id === chapterId);
     return (chapter && chapter.name) || fallback || chapterId || "";
   }
 
-  const results = loadResults();
+  //const results = loadResults();
+  let results = [];
+  let uniqueClasses = [];
+  let uniqueStudents = [];
+  let uniqueChapters = [];
 
   // DOM references
   const filterClassEl = document.getElementById("filter-class");
@@ -73,15 +112,15 @@
   let barChart = null;
 
   // Build unique lists for filters
-  const uniqueClasses = Array.from(
-    new Set(results.map((r) => r.classId).filter(Boolean))
-  );
-  const uniqueStudents = Array.from(
-    new Set(results.map((r) => `${r.studentName}|||${r.studentRoll}`))
-  );
-  const uniqueChapters = Array.from(
-    new Set(results.map((r) => r.chapterId).filter(Boolean))
-  );
+  // const uniqueClasses = Array.from(
+  //   new Set(results.map((r) => r.classId).filter(Boolean))
+  // );
+  // const uniqueStudents = Array.from(
+  //   new Set(results.map((r) => `${r.studentName}|||${r.studentRoll}`))
+  // );
+  // const uniqueChapters = Array.from(
+  //   new Set(results.map((r) => r.chapterId).filter(Boolean))
+  // );
 
   function initFilters() {
     // Classes
@@ -108,8 +147,7 @@
       // Try to fetch name using first matching result entry
       const any = results.find((r) => r.chapterId === chId);
       opt.textContent =
-        (any && (any.chapterName || getChapterName(any.classId, chId))) ||
-        chId;
+        (any && (any.chapterName || getChapterName(any.classId, chId))) || chId;
       filterChapterEl.appendChild(opt);
     });
   }
@@ -144,9 +182,7 @@
       const tr = document.createElement("tr");
       tr.className = "odd:bg-white even:bg-slate-50";
 
-      const percent = r.totalQuestions
-        ? (r.score / r.totalQuestions) * 100
-        : 0;
+      const percent = r.totalQuestions ? (r.score / r.totalQuestions) * 100 : 0;
 
       tr.innerHTML = `
         <td class="px-3 py-2 border-b border-slate-100 text-left">
@@ -159,7 +195,9 @@
           ${r.studentRoll || ""}
         </td>
         <td class="px-3 py-2 border-b border-slate-100 text-left">
-          ${r.chapterName || getChapterName(r.classId, r.chapterId, r.chapterId)}
+          ${
+            r.chapterName || getChapterName(r.classId, r.chapterId, r.chapterId)
+          }
         </td>
         <td class="px-3 py-2 border-b border-slate-100 text-right">
           ${r.score} / ${r.totalQuestions}
@@ -324,7 +362,7 @@
 
     const headerRow = [
       '<table class="min-w-full border-collapse text-[11px]"><thead><tr>',
-      '<th class="border border-slate-200 px-2 py-1 bg-slate-50 text-left">ਜਮਾਤ \ ਪਾਠ</th>',
+      '<th class="border border-slate-200 px-2 py-1 bg-slate-50 text-left">ਜਮਾਤ  ਪਾਠ</th>',
     ];
 
     chapterIds.forEach((chId) => {
@@ -340,7 +378,7 @@
 
     classIds.forEach((clsId) => {
       const row = [
-        '<tr>',
+        "<tr>",
         `<td class="border border-slate-200 px-2 py-1 bg-slate-50 font-semibold">${getClassNameById(
           clsId
         )}</td>`,
@@ -404,7 +442,9 @@
         `"${getClassNameById(r.classId)}"`,
         `"${r.studentName || ""}"`,
         `"${r.studentRoll || ""}"`,
-        `"${r.chapterName || getChapterName(r.classId, r.chapterId, r.chapterId)}"`,
+        `"${
+          r.chapterName || getChapterName(r.classId, r.chapterId, r.chapterId)
+        }"`,
         r.score,
         r.totalQuestions,
         percent,
@@ -413,7 +453,9 @@
       rows.push(row.join(","));
     });
 
-    const blob = new Blob([rows.join("\n")], { type: "text/csv;charset=utf-8;" });
+    const blob = new Blob([rows.join("\n")], {
+      type: "text/csv;charset=utf-8;",
+    });
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
@@ -424,9 +466,14 @@
     URL.revokeObjectURL(url);
   }
 
-  // Init
-  initFilters();
-  updateView();
+  (async function init() {
+    results = await loadResultsHybrid();
+
+    rebuildDerivedData(); // 🔑 THIS WAS MISSING
+
+    initFilters();
+    updateView();
+  })();
 
   // Events
   filterClassEl.addEventListener("change", updateView);
