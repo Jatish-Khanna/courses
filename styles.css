@@ -1044,9 +1044,9 @@ body {
 }
 
 /* In submenu links, hide the text span (icon is first, text is last) */
-#app-sidebar.app-sidebar-collapsed .sidebar-submenu-link > span:last-child {
+/* #app-sidebar.app-sidebar-collapsed .sidebar-submenu-link > span:last-child {
     display: none !important;
-}
+} */
 
 /* Center icons when collapsed */
 #app-sidebar.app-sidebar-collapsed .sidebar-menu-button {
@@ -1459,4 +1459,23 @@ body {
   #app-sidebar .sidebar-submenu-link:hover .material-symbols-outlined {
     color: #ffffff !important;
   }
-  
+
+  /* === Collapsed sidebar flyout: improve contrast === */
+#app-sidebar.app-sidebar-collapsed .sidebar-submenu {
+    background: #0f172a; /* slate-900 */
+}
+
+#app-sidebar.app-sidebar-collapsed .sidebar-submenu-link {
+    color: #e5e7eb; /* slate-200 */
+}
+
+#app-sidebar.app-sidebar-collapsed .sidebar-submenu-link
+.material-symbols-outlined {
+    color: #c7d2fe; /* indigo-200 */
+}
+
+
+#app-sidebar.app-sidebar-collapsed .sidebar-submenu {
+    border: 1px solid rgba(255,255,255,0.08);
+}
+
