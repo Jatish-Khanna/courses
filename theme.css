@@ -1,0 +1,158 @@
+
+/* ===============================
+   MathLit Shared Theme (Responsive)
+   Galaxy + Glassmorphism
+   =============================== */
+
+/* Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Laila:wght@400;700&family=Noto+Sans+Devanagari:wght@400;500;700&display=swap');
+
+:root {
+  --indigo: #4f46e5;
+  --violet: #7c3aed;
+  --sky: #38bdf8;
+}
+
+/* Base typography */
+body {
+  font-family: "Noto Sans Devanagari", system-ui, sans-serif;
+}
+
+.font-laila {
+  font-family: "Laila", "Noto Sans Devanagari", serif;
+}
+
+/* ===============================
+   Galaxy Background
+   =============================== */
+#galaxy-bg {
+  position: fixed;
+  inset: 0;
+  z-index: -30;
+  background: radial-gradient(ellipse at bottom, #1b235a 0%, #050713 70%);
+  overflow: hidden;
+}
+
+#galaxy-bg .stars {
+  position: absolute;
+  inset: 0;
+  background: transparent url("https://www.transparenttextures.com/patterns/stardust.png") repeat;
+  animation: moveStars 120s linear infinite;
+  opacity: 0.8;
+}
+
+#galaxy-bg .twinkling {
+  position: absolute;
+  inset: 0;
+  background: transparent url("https://www.transparenttextures.com/patterns/tiny-stars.png") repeat;
+  animation: twinkle 60s linear infinite;
+  opacity: 0.5;
+}
+
+#galaxy-bg .nebula {
+  position: absolute;
+  width: 140%;
+  height: 140%;
+  top: -20%;
+  left: -20%;
+  background:
+    radial-gradient(circle at 30% 40%, rgba(138,92,255,0.35), transparent 45%),
+    radial-gradient(circle at 70% 60%, rgba(56,189,248,0.30), transparent 50%),
+    radial-gradient(circle at 50% 50%, rgba(236,72,153,0.22), transparent 55%);
+  animation: nebulaMove 45s ease-in-out infinite alternate;
+}
+
+/* ===============================
+   Floating Blobs (Small & Random)
+   =============================== */
+.floating-blob {
+  position: absolute;
+  width: 10rem;
+  height: 10rem;
+  border-radius: 9999px;
+  filter: blur(48px);
+  opacity: 0.25;
+  animation: floatDrift 22s ease-in-out infinite;
+}
+
+/* Randomized placements */
+.floating-blob:nth-child(1) { top: 10%; left: 15%; animation-duration: 26s; }
+.floating-blob:nth-child(2) { top: 60%; left: 8%; animation-duration: 30s; }
+.floating-blob:nth-child(3) { top: 25%; left: 70%; animation-duration: 28s; }
+.floating-blob:nth-child(4) { top: 75%; left: 60%; animation-duration: 32s; }
+.floating-blob:nth-child(5) { top: 40%; left: 45%; animation-duration: 24s; }
+
+.blob-indigo { background: #a5b4fc; }
+.blob-violet { background: #c4b5fd; }
+.blob-sky { background: #bae6fd; }
+
+/* ===============================
+   Glass Cards
+   =============================== */
+.glass-card {
+  background: rgba(255,255,255,0.75);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  border-radius: 1.75rem;
+  border: 1px solid rgba(99,102,241,0.25);
+  box-shadow: 0 0 60px rgba(99,102,241,0.35);
+}
+
+/* Lighter glass for admin */
+.glass-card-soft {
+  background: rgba(255,255,255,0.85);
+  backdrop-filter: blur(10px);
+  border-radius: 1.25rem;
+  border: 1px solid rgba(148,163,184,0.35);
+}
+
+/* ===============================
+   Animations
+   =============================== */
+@keyframes moveStars {
+  from { background-position: 0 0; }
+  to { background-position: -2000px 2000px; }
+}
+
+@keyframes twinkle {
+  from { background-position: 0 0; }
+  to { background-position: 1000px -1000px; }
+}
+
+@keyframes nebulaMove {
+  from { transform: scale(1) translate(0,0); }
+  to { transform: scale(1.1) translate(-40px,30px); }
+}
+
+@keyframes floatDrift {
+  0%,100% { transform: translate(0,0); }
+  50% { transform: translate(30px,-40px); }
+}
+
+/* ===============================
+   Responsive Tweaks
+   =============================== */
+@media (max-width: 640px) {
+  .floating-blob {
+    width: 7rem;
+    height: 7rem;
+    filter: blur(36px);
+  }
+  .glass-card {
+    border-radius: 1.25rem;
+  }
+}
+
+@media (min-width: 641px) and (max-width: 1024px) {
+  .floating-blob {
+    width: 8rem;
+    height: 8rem;
+  }
+}
+
+@media (min-width: 1025px) {
+  .floating-blob {
+    width: 10rem;
+    height: 10rem;
+  }
+}
