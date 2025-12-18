@@ -169,49 +169,6 @@
     });
   }
 
-  function renderTable(filtered) {
-    tbody.innerHTML = "";
-
-    if (!filtered.length) {
-      noDataMsg.classList.remove("hidden");
-      return;
-    }
-    noDataMsg.classList.add("hidden");
-
-    filtered.forEach((r) => {
-      const tr = document.createElement("tr");
-      tr.className = "odd:bg-white even:bg-slate-50";
-
-      const percent = r.totalQuestions ? (r.score / r.totalQuestions) * 100 : 0;
-
-      tr.innerHTML = `
-        <td class="px-3 py-2 border-b border-slate-100 text-left">
-          ${getClassNameById(r.classId)}
-        </td>
-        <td class="px-3 py-2 border-b border-slate-100 text-left font-semibold">
-          ${r.studentName || ""}
-        </td>
-        <td class="px-3 py-2 border-b border-slate-100 text-left">
-          ${r.studentRoll || ""}
-        </td>
-        <td class="px-3 py-2 border-b border-slate-100 text-left">
-          ${
-            r.chapterName || getChapterName(r.classId, r.chapterId, r.chapterId)
-          }
-        </td>
-        <td class="px-3 py-2 border-b border-slate-100 text-right">
-          ${r.score} / ${r.totalQuestions}
-        </td>
-        <td class="px-3 py-2 border-b border-slate-100 text-right">
-          ${percent.toFixed(0)}%
-        </td>
-        <td class="px-3 py-2 border-b border-slate-100 text-right">
-          ${r.totalTimeSeconds != null ? r.totalTimeSeconds : ""}
-        </td>
-      `;
-      tbody.appendChild(tr);
-    });
-  }
 
   function computeSummary(filtered) {
     const totalQuizzes = filtered.length;
@@ -273,7 +230,7 @@
     // Update bar chart
     renderBarChart(topicStats);
     // Update heatmap with all results (global view, not only filtered)
-    renderHeatmap(results);
+    renderHeatmap(filteredResults);
   }
 
   function renderBarChart(topicStats) {
@@ -408,12 +365,124 @@
     heatmapContainer.innerHTML =
       headerRow.join("") + bodyRows.join("") + footer;
   }
+  /***********************
+ * PAGINATION LOGIC
+ ***********************/
 
-  function updateView() {
-    const filtered = applyFilters();
-    renderTable(filtered);
-    computeSummary(filtered);
+let currentPage = 1;
+const recordsPerPage = 10;
+
+let filteredResults = [];
+
+const tableBody = document.getElementById("results-table-body");
+const paginationEl = document.getElementById("pagination");
+
+function renderTablePage(page) {
+  tableBody.innerHTML = "";
+
+  const start = (page - 1) * recordsPerPage;
+  const end = start + recordsPerPage;
+  const pageData = filteredResults.slice(start, end);
+
+  if (pageData.length === 0) {
+    document.getElementById("no-data-msg").classList.remove("hidden");
+    return;
+  } else {
+    document.getElementById("no-data-msg").classList.add("hidden");
   }
+
+  pageData.forEach(r => {
+    const percent = Math.round((r.score / r.totalQuestions) * 100);
+
+    const tr = document.createElement("tr");
+    tr.innerHTML = `
+      <td class="px-3 py-2 border-b">${r.classId.replace("CLASS_", "Class ")}</td>
+      <td class="px-3 py-2 border-b">${r.studentName}</td>
+      <td class="px-3 py-2 border-b">${r.studentRoll}</td>
+      <td class="px-3 py-2 border-b">${r.chapterName}</td>
+      <td class="px-3 py-2 border-b text-right">${r.score}/${r.totalQuestions}</td>
+      <td class="px-3 py-2 border-b text-right">${percent}%</td>
+      <td class="px-3 py-2 border-b text-right">${r.totalTimeSeconds}</td>
+    `;
+    tableBody.appendChild(tr);
+  });
+}
+
+function renderPagination() {
+  paginationEl.innerHTML = "";
+
+  const totalPages = Math.ceil(filteredResults.length / recordsPerPage);
+  if (totalPages <= 1) return;
+
+  // Prev button
+  const prev = document.createElement("button");
+  prev.textContent = "Prev";
+  prev.disabled = currentPage === 1;
+  prev.className =
+    "px-3 py-1 border rounded transition " +
+    (prev.disabled
+      ? "opacity-40 cursor-not-allowed"
+      : "hover:bg-slate-100");
+
+  prev.onclick = () => {
+    if (currentPage > 1) {
+      currentPage--;
+      updateTable();
+    }
+  };
+  paginationEl.appendChild(prev);
+
+  // Page numbers
+  for (let i = 1; i <= totalPages; i++) {
+    const btn = document.createElement("button");
+    btn.textContent = i;
+    btn.className =
+      "px-3 py-1 border rounded transition " +
+      (i === currentPage
+        ? "bg-indigo-600 text-white cursor-default"
+        : "hover:bg-slate-100");
+
+    btn.disabled = i === currentPage;
+
+    btn.onclick = () => {
+      if (i !== currentPage) {
+        currentPage = i;
+        updateTable();
+      }
+    };
+    paginationEl.appendChild(btn);
+  }
+
+  // Next button
+  const next = document.createElement("button");
+  next.textContent = "Next";
+  next.disabled = currentPage === totalPages;
+  next.className =
+    "px-3 py-1 border rounded transition " +
+    (next.disabled
+      ? "opacity-40 cursor-not-allowed"
+      : "hover:bg-slate-100");
+
+  next.onclick = () => {
+    if (currentPage < totalPages) {
+      currentPage++;
+      updateTable();
+    }
+  };
+  paginationEl.appendChild(next);
+}
+
+function updateTable() {
+  renderTablePage(currentPage);
+  renderPagination();
+}
+
+function updateView() {
+  filteredResults = applyFilters();   // 👈 pagination source
+  currentPage = 1;                    // reset to page 1
+  updateTable();                      // render paginated table
+  computeSummary(filteredResults);    // summary still works
+}
 
   function exportCSV() {
     const filtered = applyFilters();
