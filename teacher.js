@@ -150,6 +150,8 @@
         (any && (any.chapterName || getChapterName(any.classId, chId))) || chId;
       filterChapterEl.appendChild(opt);
     });
+    rebuildStudentFilterByClass("");
+    rebuildChapterFilterByClass("");
   }
 
   function applyFilters() {
@@ -535,6 +537,55 @@ function updateView() {
     URL.revokeObjectURL(url);
   }
 
+  function rebuildStudentFilterByClass(classId) {
+    // Reset student dropdown
+    filterStudentEl.innerHTML = '<option value="">ਸਭ ਵਿਦਿਆਰਥੀ</option>';
+  
+    // Filter results by class (if class selected)
+    const filteredResults = classId
+      ? results.filter(r => r.classId === classId)
+      : results;
+  
+    // Build unique students
+    const studentKeys = Array.from(
+      new Set(filteredResults.map(r => `${r.studentName}|||${r.studentRoll}`))
+    );
+  
+    studentKeys.forEach(key => {
+      const [name, roll] = key.split("|||");
+      const opt = document.createElement("option");
+      opt.value = key;
+      opt.textContent = `${name} (${roll})`;
+      filterStudentEl.appendChild(opt);
+    });
+  }
+  
+  function rebuildChapterFilterByClass(classId) {
+    // Reset chapter dropdown
+    filterChapterEl.innerHTML = '<option value="">ਸਭ ਪਾਠ</option>';
+  
+    // Filter results by class (if class selected)
+    const filteredResults = classId
+      ? results.filter(r => r.classId === classId)
+      : results;
+  
+    // Unique chapters
+    const chapterIds = Array.from(
+      new Set(filteredResults.map(r => r.chapterId).filter(Boolean))
+    );
+  
+    chapterIds.forEach(chId => {
+      const opt = document.createElement("option");
+      opt.value = chId;
+  
+      const any = filteredResults.find(r => r.chapterId === chId);
+      opt.textContent =
+        (any && (any.chapterName || getChapterName(any.classId, chId))) || chId;
+  
+      filterChapterEl.appendChild(opt);
+    });
+  }
+  
   (async function init() {
     results = await loadResultsHybrid();
 
@@ -555,4 +606,25 @@ function updateView() {
     updateView();
   });
   exportBtn.addEventListener("click", exportCSV);
+  filterClassEl.addEventListener("change", () => {
+    // Reset student selection
+    filterStudentEl.value = "";
+  
+    // Rebuild students based on selected class
+    rebuildStudentFilterByClass(filterClassEl.value);
+  
+    updateUI();
+  });
+  filterClassEl.addEventListener("change", () => {
+    // Reset dependent filters
+    filterStudentEl.value = "";
+    filterChapterEl.value = "";
+  
+    // Rebuild student & chapter filters class-wise
+    rebuildStudentFilterByClass(filterClassEl.value);
+    rebuildChapterFilterByClass(filterClassEl.value);
+  
+    updateUI();
+  });
+  
 })();
