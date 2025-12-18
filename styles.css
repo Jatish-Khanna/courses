@@ -1328,3 +1328,135 @@ body {
     margin: 0 auto !important;            /* removes offset */
 }
 
+/* =====================================================
+   SIDEBAR MENU – FINAL TYPOGRAPHY & CONTRAST STANDARD
+   ===================================================== */
+
+   .sidebar-surface {
+    font-family: "Noto Sans Devanagari", "Roboto", system-ui, sans-serif;
+  }
+  
+  /* ---------- MAIN MENU ---------- */
+  .sidebar-menu-button {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+  
+    padding: 0.6rem 0.75rem;
+    border-radius: 0.75rem;
+  
+    font-size: 14px;          /* standard */
+    font-weight: 600;
+    line-height: 1.35;
+  
+    color: rgba(255,255,255,0.88);
+    background: rgba(255,255,255,0.18);
+    backdrop-filter: blur(8px);
+  
+    transition: background 0.2s ease,
+                color 0.2s ease,
+                transform 0.2s ease;
+  }
+  
+  .sidebar-menu-button:hover {
+    background: rgba(255,255,255,0.32);
+    color: #ffffff;
+    transform: translateY(-1px);
+  }
+  
+  .sidebar-label {
+    white-space: nowrap;
+  }
+  
+  /* Icons */
+  .sidebar-menu-button .material-symbols-outlined {
+    font-size: 20px;
+    color: rgba(255,255,255,0.95);
+  }
+  
+  /* ---------- SUBMENU ---------- */
+  .sidebar-submenu {
+    margin-top: 0.25rem;
+    border-left: 2px solid rgba(255,255,255,0.25);
+  }
+  
+  .sidebar-submenu-link {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  
+    padding: 0.45rem 0.75rem;
+    border-radius: 0.6rem;
+  
+    font-size: 13px;
+    font-weight: 500;
+  
+    color: rgba(255,255,255,0.75);
+    background: transparent;
+  
+    transition: background 0.2s ease, color 0.2s ease;
+  }
+  
+  .sidebar-submenu-link:hover {
+    background: rgba(255,255,255,0.25);
+    color: #ffffff;
+  }
+  
+  .sidebar-submenu-link .material-symbols-outlined {
+    font-size: 18px;
+    opacity: 0.95;
+  }
+/* =====================================================
+   FORCE CONSISTENT FONT SIZES IN SIDEBAR DROPDOWNS (v2)
+   ===================================================== */
+
+/* MAIN MENU (Live Quiz, Class, Admin) */
+#app-sidebar .sidebar-menu-button,
+#app-sidebar #live-quiz-toggle,
+#app-sidebar #class-toggle-btn,
+#app-sidebar #teacher-admin-toggle {
+  font-size: 15px !important;   /* ⬆ increased */
+  font-weight: 600;
+  line-height: 1.4;
+}
+
+/* SUBMENU ITEMS (dropdown links) */
+#app-sidebar .sidebar-submenu-link,
+#app-sidebar #live-quiz-panel a,
+#app-sidebar #class-list-panel button,
+#app-sidebar #teacher-admin-panel a {
+  font-size: 14px !important;   /* ⬆ increased */
+  font-weight: 500;
+  line-height: 1.4;
+}
+
+/* Icons stay visually balanced */
+#app-sidebar .sidebar-menu-button .material-symbols-outlined {
+  font-size: 20px !important;
+}
+
+#app-sidebar .sidebar-submenu-link .material-symbols-outlined {
+  font-size: 18px !important;
+}
+
+/* =====================================================
+   SIDEBAR ICON COLOR – FORCE WHITE
+   ===================================================== */
+
+/* Main menu icons */
+#app-sidebar .sidebar-menu-button .material-symbols-outlined {
+    color: rgba(255, 255, 255, 0.95) !important;
+  }
+  
+  /* Submenu icons */
+  #app-sidebar .sidebar-submenu-link .material-symbols-outlined {
+    color: rgba(255, 255, 255, 0.9) !important;
+  }
+  
+  /* Hover state: full white */
+  #app-sidebar .sidebar-menu-button:hover .material-symbols-outlined,
+  #app-sidebar .sidebar-submenu-link:hover .material-symbols-outlined {
+    color: #ffffff !important;
+  }
+  
