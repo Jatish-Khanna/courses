@@ -480,10 +480,10 @@ function updateTable() {
 }
 
 function updateView() {
-  filteredResults = applyFilters();   // 👈 pagination source
-  currentPage = 1;                    // reset to page 1
-  updateTable();                      // render paginated table
-  computeSummary(filteredResults);    // summary still works
+  filteredResults = applyFilters();  
+  currentPage = 1; 
+  updateTable();  
+  computeSummary(filteredResults);  
 }
 
   function exportCSV() {
@@ -589,42 +589,36 @@ function updateView() {
   (async function init() {
     results = await loadResultsHybrid();
 
-    rebuildDerivedData(); // 🔑 THIS WAS MISSING
+    rebuildDerivedData();
 
     initFilters();
     updateView();
   })();
 
   // Events
-  filterClassEl.addEventListener("change", updateView);
-  filterStudentEl.addEventListener("change", updateView);
   filterChapterEl.addEventListener("change", updateView);
+  filterStudentEl.addEventListener("change", updateView);
   resetBtn.addEventListener("click", () => {
     filterClassEl.value = "";
     filterStudentEl.value = "";
     filterChapterEl.value = "";
+  
+    rebuildStudentFilterByClass("");
+    rebuildChapterFilterByClass("");
+  
     updateView();
   });
   exportBtn.addEventListener("click", exportCSV);
   filterClassEl.addEventListener("change", () => {
-    // Reset student selection
-    filterStudentEl.value = "";
-  
-    // Rebuild students based on selected class
-    rebuildStudentFilterByClass(filterClassEl.value);
-  
-    updateUI();
-  });
-  filterClassEl.addEventListener("change", () => {
-    // Reset dependent filters
+    // reset dependent filters
     filterStudentEl.value = "";
     filterChapterEl.value = "";
   
-    // Rebuild student & chapter filters class-wise
+    // rebuild dropdowns based on class
     rebuildStudentFilterByClass(filterClassEl.value);
     rebuildChapterFilterByClass(filterClassEl.value);
   
-    updateUI();
+    // refresh table + pagination + summary
+    updateView();
   });
-  
 })();
