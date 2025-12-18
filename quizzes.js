@@ -4160,7 +4160,7 @@ const QUIZZES = {
         c: 1,
       },
     ],
-    ch_chapter12_factorisation: [
+    ch_chapter_12_factorisation: [
       {
         t: "6x + 12 ਦਾ ਸਭ ਤੋਂ ਸਧਾਰਣ ਗੁਣਨਖੰਡ?",
         o: ["6(x + 2)", "3(2x + 4)", "12( x + 1 )", "x(6 + 12)"],
